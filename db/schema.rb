@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121207203706) do
+ActiveRecord::Schema.define(:version => 20121207210334) do
 
   create_table "comments", :force => true do |t|
     t.text     "text"
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(:version => 20121207203706) do
     t.datetime "deleted_at"
   end
 
+  add_index "items", ["md5"], :name => "index_items_on_md5", :unique => true
   add_index "items", ["taken"], :name => "index_items_on_taken"
 
   create_table "locations", :force => true do |t|
