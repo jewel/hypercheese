@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Cheese::Application.load_tasks
+HyperCheese::Application.load_tasks
