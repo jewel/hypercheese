@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# Convert from cheese database schema to hypercheese
+
+require 'mysql2'
+
+@old = Mysql2::Client.new( :host => "localhost", :username => "cheese", :password => "cheesy", :database => "cheese" )
+@new = Mysql2::Client.new( :host => "localhost", :username => "cheese", :password => "cheesy", :database => "hypercheese" )
+
+def table old, new=nil
+  new ||= old
+  @new.query( "DELETE FROM `#{new}`")
+  results = @old.query("SELECT * FROM `#{old}`")
+  puts "#{old} -> #{new} (#{results.count})"
+  results.each( :symbolize_keys => true ) do |row|
+    if block_given?
+      row = yield row
+    end
+    keys = row.keys.join( ", " )
+    values = row.values.map do |_|
+      "'" + @new.escape(_) + "'"
+    @new.query( "INSERT INTO `#{new}` (#{keys}) VALUES (#{values})" )
+  end
+end
+
+table :items
