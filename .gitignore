@@ -13,3 +13,12 @@
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
+
+# Ignore auto-go
+/.auto-go
+
+# Ignore public data (thumbnails)
+/public/data
+
+# Ignore original photos
+/originals

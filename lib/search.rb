@@ -1,3 +1,5 @@
+require_dependency 'tag_parser'
+
 module Search
   def self.execute query
     r,i = execute_with_invalid query

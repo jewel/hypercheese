@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121207210334) do
+ActiveRecord::Schema.define(:version => 20121208054025) do
 
   create_table "comments", :force => true do |t|
     t.text     "text"
@@ -49,7 +49,6 @@ ActiveRecord::Schema.define(:version => 20121207210334) do
   create_table "items", :force => true do |t|
     t.datetime "taken"
     t.text     "description"
-    t.string   "type"
     t.string   "path"
     t.string   "md5"
     t.integer  "width"
@@ -60,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20121207210334) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.datetime "deleted_at"
+    t.string   "variety"
   end
 
   add_index "items", ["md5"], :name => "index_items_on_md5", :unique => true

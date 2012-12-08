@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+path = ARGV.shift
+raise "Need path to file or directory" unless path
+
+require_dependency 'import'
+
+def import path
+  # begin
+    Import.by_path path
+  # rescue
+  #  puts "FAILED #{path}: #$!"
+  # end
+end
+
+if File.directory? path
+  require 'find'
+  Find.find( path ) do |file|
+    next unless file =~ /\.(JPG|MOV|AVI|TIF|TIFF|JPEG)\Z/i
+    import file
+  end
+else
+  import path
+end

@@ -21,9 +21,8 @@ class SearchController < ApplicationController
 
     @links = {}
     @items.each_with_index do |item,index|
-      @links[item.id] = url_for(
-        :item_view,
-        :id => item.id,
+      @links[item.id] = item_path(
+        item.id,
         :q => @query,
         :i => index + (@page - 1) * LIMIT
       )

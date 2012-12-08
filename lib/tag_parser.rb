@@ -15,7 +15,7 @@ module TagParser
     tags = []
     invalid = []
     while word = words.shift
-      tag = Tag.first :label.like => word
+      tag = Tag.where( "label like ?", word ).first
       if tag
         tags << tag
         next

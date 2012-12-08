@@ -1,6 +1,5 @@
 require 'exifr'
 require 'digest/md5'
-require 'pathname'
 require 'shellwords'
 
 module Import
@@ -15,8 +14,7 @@ module Import
   }
 
   def self.by_path path
-    path = Pathname.new( path ).cleanpath
-    path = File.join Dir.pwd, path unless path =~ /\A\//
+    path = File.absolute_path( path )
 
     if Object.const_defined? :EXCLUDE_REGEX
       EXCLUDE_REGEX.each do |regex|
@@ -27,47 +25,48 @@ module Import
     raise "Strange path" unless path =~ /\.(\w+)\Z/
     ext = $1.downcase
 
-    type = EXTS[ext]
-    raise "File extension not supported" unless type
+    variety = EXTS[ext]
+    raise "File extension not supported" unless variety
 
-    partial_path = path.sub "#{Item::BASE_PATH}/", ''
+    partial_path = path.sub "#{File.absolute_path(Item::BASE_PATH)}/", ''
+    raise "File is not in #{Item::BASE_PATH}" unless partial_path != path
 
-    old = Item.first :path => partial_path
+    old = Item.where( :path => partial_path ).first
     if old
       item = old
     else
       md5 = Digest::MD5.file( path ).hexdigest
 
-      old = Item.first :md5 => md5
+      old = Item.where( :md5 => md5 ).first
       raise "Already exists by md5:  #{old.id}" if old
 
       puts "Creating #{partial_path}"
 
-      item = Item.new( :path => partial_path )
+      item = Item.new
+
+      item.path = partial_path
 
       item.md5 = md5
 
-      item.added = Time.new
-
-      item.type = type
+      item.variety = variety
 
       load_exif_data item
 
       date = item.taken.to_date
-      event = Event.first :conditions => [ "DATE( start ) = ?", date ]
+      event = Event.where( [ "DATE( start ) = ?", date ] ).first
 
-      event ||= Event.create(
-        :name => nil,
-        :start => item.taken.strftime( "%Y-%m-%d" ),
-        :finish => item.taken.strftime( "%Y-%m-%d" )
-      )
+      event ||= Event.create({
+        name: nil,
+        start: item.taken.strftime( "%Y-%m-%d" ),
+        finish: item.taken.strftime( "%Y-%m-%d" )
+      }, without_protection: true)
 
       item.event = event
 
       item.save
     end
 
-    if type == 'photo'
+    if variety == 'photo'
       generate_resized item
     else
       generate_video_stills item
@@ -205,7 +204,7 @@ module Import
         # The '>' flag means to never enlarge
         c.thumbnail size_spec
       end
-      c.quality 88
+      c.quality "88"
     end
     image.format 'jpeg'
     image.write temp

@@ -39,11 +39,11 @@ class Item < ActiveRecord::Base
   end
 
   def video_stream_url type
-    "/resized/stream/#{id}.#{type}"
+    "/data/resized/stream/#{id}.#{type}"
   end
 
   def resized_url size
-    "/resized/#{size}/#{id}.jpg"
+    "/data/resized/#{size}/#{id}.jpg"
   end
 
   def tag_ids_as_hash

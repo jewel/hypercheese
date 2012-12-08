@@ -13,7 +13,10 @@ HyperCheese::Application.routes.draw do
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
   #
+  resources :items do
+  end
   match 'search/advanced' => 'search#advanced'
+  match 'search' => 'search#index'
 
   # Sample resource route with options:
   #   resources :products do

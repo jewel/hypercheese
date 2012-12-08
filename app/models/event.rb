@@ -18,7 +18,7 @@ class Event < ActiveRecord::Base
 
   def subtitle
     def format d
-      d.strftime Media::DATE_FORMAT
+      d.strftime "%a, %d %b %Y"
     end
     date = if start.to_date == finish.to_date
              format start
