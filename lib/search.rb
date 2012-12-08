@@ -114,15 +114,15 @@ module Search
     if opts[:by]
       raise "Invalid 'by'" unless opts[:by] =~ /\A\w+\Z/
       if opts[:reverse]
-        items = items.sort_by opts[:by]
-      else
         items = items.order "#{opts[:by]} desc"
+      else
+        items = items.sort_by opts[:by]
       end
     else
       if opts[:reverse]
-        items = items.order "taken desc"
-      else
         items = items.order "taken"
+      else
+        items = items.order "taken desc"
       end
     end
 

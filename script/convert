@@ -6,20 +6,48 @@ require 'mysql2'
 @old = Mysql2::Client.new( :host => "localhost", :username => "cheese", :password => "cheesy", :database => "cheese" )
 @new = Mysql2::Client.new( :host => "localhost", :username => "cheese", :password => "cheesy", :database => "hypercheese" )
 
-def table old, new=nil
-  new ||= old
-  @new.query( "DELETE FROM `#{new}`")
-  results = @old.query("SELECT * FROM `#{old}`")
-  puts "#{old} -> #{new} (#{results.count})"
-  results.each( :symbolize_keys => true ) do |row|
-    if block_given?
-      row = yield row
+unless File.respond_to? :binwrite
+  class File
+    def self.binwrite path, content
+      File.open path, 'wb' do |f|
+        f.write content
+      end
     end
-    keys = row.keys.join( ", " )
-    values = row.values.map do |_|
-      "'" + @new.escape(_) + "'"
-    @new.query( "INSERT INTO `#{new}` (#{keys}) VALUES (#{values})" )
   end
 end
 
-table :items
+$stdout.sync = true
+
+def table old, new=nil
+  new ||= old
+  # old_schema = @old.query("SHOW CREATE TABLE `#{old}`").first["Create Table"]
+  # new_schema = @new.query("SHOW CREATE TABLE `#{new}`").first["Create Table"]
+  # File.binwrite "/tmp/oldschema", old_schema + "\n"
+  # File.binwrite "/tmp/newschema", new_schema + "\n"
+  # system( "diff -u /tmp/oldschema /tmp/newschema" )
+  @new.query "BEGIN WORK"
+  @new.query "DELETE FROM `#{new}`"
+  results = @old.query "SELECT * FROM `#{old}` ORDER BY id"
+  puts "#{old} -> #{new} (#{results.count})"
+  results.each( :symbolize_keys => true ) do |row|
+    print "#{row[:id]}\r"
+    yield row if block_given?
+    keys = row.keys.join  ", "
+    values = row.values.map do |_|
+      "'" + @new.escape(_.to_s) + "'"
+    end.join ", "
+    @new.query( "INSERT INTO `#{new}` (#{keys}) VALUES (#{values})" )
+  end
+  @new.query "COMMIT"
+end
+
+table :events
+
+exit
+table :items do |row|
+  row.delete :deleted
+  row.delete :location_id
+  row.delete :length
+  row[:variety] = row.delete :type
+  row[:created_at] = row[:updated_at] = row.delete(:added)
+end

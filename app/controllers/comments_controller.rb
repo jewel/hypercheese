@@ -1,6 +1,6 @@
-def CommentsController < ApplicationController
-  # POST /items/:id/comment
-  post :comment, :with => :id do
+class CommentsController < ApplicationController
+  # POST /items/:id/comments
+  def create
     @item = Item.get params[:id]
 
     # If no account, tell user to log in and redirect user to the log in page.

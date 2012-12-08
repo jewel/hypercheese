@@ -17,6 +17,8 @@
 # Ignore auto-go
 /.auto-go
 
+/public/assets
+
 # Ignore public data (thumbnails)
 /public/data
 

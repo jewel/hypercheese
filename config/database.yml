@@ -19,7 +19,11 @@ test:
   timeout: 5000
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
-  pool: 5
-  timeout: 5000
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: hypercheese
+  pool: 15
+  username: cheese
+  password: cheesy
+  socket: /var/run/mysqld/mysqld.sock

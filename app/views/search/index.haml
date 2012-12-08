@@ -16,11 +16,11 @@
     = pluralize(@count, "result")
     = "| page #@page of #@total_pages | "
     - if @page > 1
-      %a{ :href => url_for( :search_index, :q => @query, :page => @page - 1 ) } Prev
+      %a{ :href => search_path( :q => @query, :page => @page - 1 ) } Prev
     - if @page > 1 && @page < @total_pages
       = " | "
     - if @page < @total_pages
-      %a{ :href => url_for( :search_index, :q => @query, :page => @page + 1 ) } Next
+      %a{ :href => search_path( :q => @query, :page => @page + 1 ) } Next
 
 = yield :nav
 

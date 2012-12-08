@@ -36,10 +36,10 @@ class ItemsController < ApplicationController
     end
 
     if @prev
-      @prev_url = url_for :item_view, :id => @prev.id, :q => @query, :e => params[:e], :i => @index - 1
+      @prev_url = item_path :id => @prev.id, :q => @query, :e => params[:e], :i => @index - 1
     end
     if @next
-      @next_url = url_for :item_view, :id => @next.id, :q => @query, :e => params[:e], :i => @index + 1
+      @next_url = item_path :id => @next.id, :q => @query, :e => params[:e], :i => @index + 1
       @next_image_url = @next.resized_url 'large'
     end
 
