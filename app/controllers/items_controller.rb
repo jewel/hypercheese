@@ -1,17 +1,17 @@
-require 'tag_parser'
-require 'search'
+require_dependency 'tag_parser'
+require_dependency 'search'
 require 'tempfile'
 require 'mimetype_fu'
 require 'zip/zip'
 
-class ItemController < ApplicationController
+class ItemsController < ApplicationController
   # GET /items/:id
   def show
     @start_time = Time.new
-    @item = Item.get params[:id]
+    @item = Item.find params[:id]
     raise "No such item" unless @item
 
-    if @item.type == 'photo'
+    if @item.variety == 'photo'
       @view_count = @item.view_count ||= 0
       @item.view_count += 1
       @item.save
@@ -47,7 +47,6 @@ class ItemController < ApplicationController
 
     @title = "Cheese"
     @title = @tags + " - Cheese" unless @tags.empty?
-    render 'item/view'
   end
 
   # GET /items/:id/download
@@ -59,7 +58,7 @@ class ItemController < ApplicationController
   end
 
   # GET /items/download_warning
-  def download_warning do
+  def download_warning
     @event = Event.get params[:id]
     @size = 0
     @event.items.each do |item|
@@ -69,7 +68,6 @@ class ItemController < ApplicationController
 
   # POST /items/download
   def download_pack
-  post :download do
     t = Tempfile.new 'download-pack'
     Zip::ZipOutputStream.open( t.path ) do |zip|
       items = []

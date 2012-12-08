@@ -30,6 +30,8 @@ gem 'annotate'
 gem 'mini_magick'
 gem 'andand'
 gem 'exifr'
+gem 'mimetype-fu', :require => 'mimetype_fu'
+gem 'rubyzip'
 
 group :production do
   gem 'mysql2'

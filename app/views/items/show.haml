@@ -2,7 +2,7 @@
 
 // Load javascript early to avoid noticable resize glitch
 :javascript
-  $type = #{@item.type.to_json};
+  $type = #{@item.variety.to_json};
   $width = #{@item.width.to_json};
   $height = #{@item.height.to_json};
   $next_image = #{@next_image_url.to_json};
@@ -13,7 +13,7 @@
 
 #background{ :href => @next_url }
   %img#item{ :src => @item.resized_url( 'large' ) }
-- if @item.type == 'video'
+- if @item.variety == 'video'
   %a#play{ :href => 'javascript:void(0)' }
     %img{ :src => '/images/play.png' }
 - if @prev
@@ -32,10 +32,10 @@
 
 .info
   -if params[:e]
-    %a{ :href => event_url( Event.get( params[:e] ) ) + "#item_#{@item.id}" }
+    %a{ :href => event_path( params[:e] ) + "#item_#{@item.id}" }
       Back to search results
   -else
-    %a{ :href => url_for( :search_index, :q => @query,
+    %a{ :href => search_path( :q => @query,
         :page => ((@index+1).to_f  / 200 ).ceil ) + "#item_#{@item.id}" }
       Back to search results
 
@@ -75,7 +75,7 @@
       %em= " at " + @item.event.location.name
     %br
 
-  %a{ :href => "/item/download/#{@item.id}" }
+  %a{ :href => "/items/#{@item.id}/download" }
     Download Original
 
   %h3 Comments
@@ -86,7 +86,7 @@
       %em= comment.created
 
   %h3 Say something
-  %form{ :method => 'POST', :action => url_for( :item_comment, :id => @item.id ) }
+  %form{ :method => 'POST', :action => "/items/#{@item.id}/comments" }
     Name:
     %textarea{ :name => 'text', :rows => 3, :cols => 40 }
     %br

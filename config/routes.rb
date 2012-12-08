@@ -14,7 +14,13 @@ HyperCheese::Application.routes.draw do
   #   resources :products
   #
   resources :items do
+    member do
+      get :download
+    end
+
+    resources :comments
   end
+
   match 'search/advanced' => 'search#advanced'
   match 'search' => 'search#index'
 
