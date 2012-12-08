@@ -1,4 +1,4 @@
-require 'search'
+require_dependency 'search'
 
 class SearchController < ApplicationController
   LIMIT = 200
@@ -34,7 +34,6 @@ class SearchController < ApplicationController
 
   # GET /e/:id/:name
   def event
-  get :event, :map => "/e/:id(/:name)" do
     @event = Event.get params[:id]
     @title = "#{@event.name} - Cheese"
     @items = @event.items.all( :order => :taken )
@@ -54,12 +53,12 @@ class SearchController < ApplicationController
   end
 
   # GET /search/advanced
-  def advanced do
+  def advanced
     @title = "Advanced Cheese"
   end
 
   # GET /search/advanced/update
-  def update_advanced do
+  def update_advanced
     @items = Search.execute params[:q]
 
     ids = []
@@ -113,14 +112,14 @@ class SearchController < ApplicationController
     end
 
     @tag_map = {}
-    ItemTag.all( :item_id => item_ids ).each do |it|
+    ItemTag.where( :item_id => item_ids ).each do |it|
       @tag_map[it.item_id] ||= {}
       @tag_map[it.item_id][it.tag_id] = true
     end
 
     @tag_order = []
     @tag_icons = {}
-    Tag.all( :order => :item_count.desc ).each do |tag|
+    Tag.order( "item_count desc" ).each do |tag|
       @tag_order << [ tag.label, tag.id ]
       next unless tag.icon
       @tag_icons[ tag.id ] = image_path tag.icon.resized_url( 'square' )

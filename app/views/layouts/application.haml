@@ -9,8 +9,12 @@
   %body
     %a#logo(href='/')
       %img(src='/images/logo.jpg')
-    .flash=[:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
-    - if current_account
+    - flash.each do |name, key|
+      - if msg.is_a? String
+        %div{:class => "alert alert-#{key == :notice ? "success" : "error"}"}
+          %a.close{"data-dismiss" => "alert"} ×
+          = content_tag :div, msg
+    -# - if current_account
       = partial "user/authbox"
     #spinner
       %img{:src => '/images/spinner.gif'}

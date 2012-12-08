@@ -1,14 +1,14 @@
 %form{ :method => 'GET', :action => '/search' }
   %input{ :name => 'q', :size => 40, :value => @query }
   %input{ :type => 'submit', :value => 'Search' }
-  %a{ :href => url( :search_advanced, :q => @query ) } Browse Tags
+  %a{ :href => "/search/advanced?q=#{CGI.escape @query}" } Browse Tags
 
 - if @invalid && @invalid.any?
   .error
     No such tags:
     = @invalid.join ", "
 
-= feed_tag :rss, url(:search_index,  :format => :rss), :title => "RSS"
+-# = feed_tag :rss, "/", :title => "RSS"
 
 - content_for :nav do
   - next unless @total_pages
@@ -25,7 +25,7 @@
 = yield :nav
 
 :javascript
-  $tags = #{Hash[Tag.map { |t| [ t.id, t.label ] }].to_json}
+  $tags = #{Hash[Tag.all.map { |t| [ t.id, t.label ] }].to_json}
   $tag_order = #{@tag_order.to_json}
   $tag_icons = #{@tag_icons.to_json}
 
