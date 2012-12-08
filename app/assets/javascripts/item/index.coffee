@@ -1,3 +1,5 @@
+return unless $('#item').length > 0
+
 window.resize_image = ->
   target_width = $(window).width()
   target_height = $(window).height()

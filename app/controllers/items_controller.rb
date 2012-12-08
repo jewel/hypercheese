@@ -21,7 +21,7 @@ class ItemsController < ApplicationController
     @index = params[:i].to_i
 
     if params[:e]
-      search = Event.get( params[:e] ).items.all( :order => :taken )
+      search = Event.find( params[:e] ).items.order :taken
     else
       search = Search.execute @query
     end
@@ -78,7 +78,7 @@ class ItemsController < ApplicationController
       end
 
       if params[:event]
-        event = Event.get params[:event]
+        event = Event.find params[:event]
         ids = event.items.each
       end
 
@@ -92,17 +92,17 @@ class ItemsController < ApplicationController
     send_file t.path, type: 'application/zip', filename: 'cheese-photos.zip'
   end
 
-  # POST /items/:id/tags
-  def update_tags
+  # POST /items/tags
+  def tags
     data = JSON.parse params[:data]
     data.each do |item_id,tags|
       item_id =~ /(\d+)/ or next
       Item.transaction do
-        item = Item.get $1.to_i
+        item = Item.find $1.to_i
         item.tags.clear
         tags.each do |tag_id,val|
           next unless val == true
-          tag = Tag.get tag_id.to_i
+          tag = Tag.find tag_id.to_i
           item.tags.push tag
         end
         item.save

@@ -33,7 +33,7 @@ class SearchController < ApplicationController
 
   # GET /e/:id/:name
   def event
-    @event = Event.get params[:id]
+    @event = Event.find params[:id]
     @title = "#{@event.name} - Cheese"
     @items = @event.items.all( :order => :taken )
     @hide_query = true
@@ -78,7 +78,7 @@ class SearchController < ApplicationController
     if params[:tag]
       tags = []
       params[:tag].each do |id|
-        tag = Tag.get id.to_i
+        tag = Tag.find id.to_i
         tags << tag.label
       end
       parts << tags.join( ', ' )

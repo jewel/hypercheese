@@ -18,6 +18,10 @@ HyperCheese::Application.routes.draw do
       get :download
     end
 
+    collection do
+      post :tags
+    end
+
     resources :comments
   end
 

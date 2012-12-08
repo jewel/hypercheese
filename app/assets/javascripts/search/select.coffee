@@ -1,3 +1,5 @@
+#= require 'jquery.cookies'
+
 $ ->
   selected_items = ->
     $('.item a.selected')
@@ -16,7 +18,7 @@ $ ->
     data = {}
     selected_items().each ->
       data[ $(@).attr('id') ] = $(@).data( 'tags' )
-    $.post '/item/tags'
+    $.post '/items/tags'
       data: JSON.stringify( data )
 
   show_icons = (item) ->
@@ -224,7 +226,7 @@ $ ->
       $.cookies.del 'cheese-advanced'
 
   $('#download').click ->
-    form = $('<form action="/item/download" method="post" />')
+    form = $('<form action="/items/download" method="post" />')
       .appendTo( document.body )
 
     ids = []
