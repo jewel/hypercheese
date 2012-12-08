@@ -1,0 +1,95 @@
+.results
+  .item
+    :display inline-block
+    :vertical-align top
+
+    img.thumb
+      :margin 4px
+      :border-radius 4px
+
+  .selected img.thumb, .active img.thumb
+    :border 4px solid black
+    :opacity 0.8
+    :margin 0
+
+  .active img.thumb
+    :border 4px dotted black
+
+  &.shrink
+    :margin-right 15em
+
+  .event-title
+    :margin-top 2em
+    :font-size 20pt
+
+  .event-subtitle
+    :font-size 10pt
+    :color #888
+
+.mode_picker
+  :right 0px
+  :position fixed
+  :background rgba(200,200,200,0.7)
+  :padding 10px
+
+.actions
+  :display none
+
+.error
+  :color red
+  :font-weight bold
+
+#prev_match
+  :color blue
+  :display none
+
+/* for icon overlay */
+.results a
+  :text-decoration none  /* for label text */
+
+.item
+
+  :position relative
+
+  .icons
+    :position absolute
+    :left 5px
+    :bottom -7px
+
+    .label
+      :display none
+
+    img
+      :height 32px
+      :width auto
+      :background white
+      :border 1px solid black
+      :padding 1px
+      :margin 4px
+      :border-radius 4px
+      :box-shadow 2px 2px 5px rgba(0,0,0,0.5)
+
+    &:hover
+      img
+        :width auto
+        :height 72px
+
+      .icon
+        :position relative
+
+      .label
+        :display inline
+        :position absolute
+        :color white
+        :font-size 8pt
+        :bottom 0
+        :left 0
+        :margin 11px
+        :overflow hidden
+        :text-shadow 1px 1px black, 0 0 3px black, 0 0 3px black, 0 0 3px black
+
+.permalink, .subtle
+  :color #99f
+
+.subtle
+  :font-size small
