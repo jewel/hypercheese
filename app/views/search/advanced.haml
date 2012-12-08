@@ -1,4 +1,4 @@
-= form_tag url( :search_advanced ), :method => :post do |f|
+= form_tag "/search/advanced", :method => :post do |f|
 
   %h2 Search options:
 
@@ -48,7 +48,7 @@
     Select some tags:
 
   .group
-    - Tag.all( :item_count.gt => 0, :order => :item_count.desc ).each do |tag|
+    - @tags.each do |tag|
       .tag{ :data => { :id => tag.id, :label => tag.label } }
         %label
           - if tag.icon

@@ -53,6 +53,7 @@ class SearchController < ApplicationController
 
   # GET /search/advanced
   def advanced
+    @tags = Tag.where( "item_count > 0" ).order( "item_count desc" )
     @title = "Advanced Cheese"
   end
 

@@ -51,15 +51,13 @@ class ItemsController < ApplicationController
 
   # GET /items/:id/download
   def download
-    @item = Item.get params[:id]
-    content_type File.mime_type?( @item.path )
-    attachment File.basename( @item.path )
-    File.open @item.full_path
+    @item = Item.find params[:id]
+    send_file @item.full_path, type: File.mime_type?( @item.path )
   end
 
   # GET /items/download_warning
   def download_warning
-    @event = Event.get params[:id]
+    @event = Event.find params[:id]
     @size = 0
     @event.items.each do |item|
       @size += File.size item.full_path
@@ -68,13 +66,13 @@ class ItemsController < ApplicationController
 
   # POST /items/download
   def download_pack
-    t = Tempfile.new 'download-pack'
+    t = Tempfile.new 'cheese-photos'
     Zip::ZipOutputStream.open( t.path ) do |zip|
       items = []
       if params[:ids]
         params[:ids].split( ',' ).each do |id|
           id.gsub! /^item_/, ''
-          item = Item.get id
+          item = Item.find id
           items.push item
         end
       end
@@ -91,8 +89,7 @@ class ItemsController < ApplicationController
       end
     end
 
-    content_type 'application/zip'
-    t
+    send_file t.path, type: 'application/zip', filename: 'cheese-photos.zip'
   end
 
   # POST /items/:id/tags
