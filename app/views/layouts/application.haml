@@ -1,0 +1,22 @@
+!!! Strict
+%html{:lang => "en", :xmlns => "http://www.w3.org/1999/xhtml"}
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
+    %link{:rel => 'icon', :href => image_path( '/images/icon.png' )}
+    %title= @title || "HyperCheese"
+    = stylesheet_link_tag "application", :media => "all"
+    = csrf_meta_tags
+  %body
+    %a#logo(href='/')
+      %img(src='/images/logo.jpg')
+    .flash=[:error, :warning, :notice].map { |type| flash_tag(type, :class => "message #{type}") }.join
+    - if current_account
+      = partial "user/authbox"
+    #spinner
+      %img{:src => '/images/spinner.gif'}
+    = yield
+    = javascript_include_tag "application"
+    - if @start_time
+      %div
+        Execution time:
+        = sprintf( "%0.3f", Time.new - @start_time)

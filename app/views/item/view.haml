@@ -1,0 +1,93 @@
+= stylesheet_link_tag :item
+
+// Load javascript early to avoid noticable resize glitch
+:javascript
+  $type = #{@item.type.to_json};
+  $width = #{@item.width.to_json};
+  $height = #{@item.height.to_json};
+  $next_image = #{@next_image_url.to_json};
+  $ogv_url = #{@item.video_stream_url( 'ogv' ).to_json};
+  $mp4_url = #{@item.video_stream_url( 'mp4' ).to_json};
+= javascript_include_tag :jgestures
+= javascript_include_tag :item
+
+#background{ :href => @next_url }
+  %img#item{ :src => @item.resized_url( 'large' ) }
+- if @item.type == 'video'
+  %a#play{ :href => 'javascript:void(0)' }
+    %img{ :src => '/images/play.png' }
+- if @prev
+  %a#prev{ :href => @prev_url }
+    %img{ :src => '/images/prev.png' }
+- if @next
+  %a#next{ :href => @next_url }
+    %img{ :src => '/images/next.png' }
+%a#fav{ :href => 'javascript:void(0)' }
+  %img{ :src => '/images/star-icon.png'}
+  -# image taken from http://icons.iconarchive.com/icons/newidols.ru/shop/256/star-icon.png
+
+
+:javascript
+  resize_image()
+
+.info
+  -if params[:e]
+    %a{ :href => event_url( Event.get( params[:e] ) ) + "#item_#{@item.id}" }
+      Back to search results
+  -else
+    %a{ :href => url_for( :search_index, :q => @query,
+        :page => ((@index+1).to_f  / 200 ).ceil ) + "#item_#{@item.id}" }
+      Back to search results
+
+  %h3 Tags
+  %ul
+    - for tag in @item.tags
+      %li
+        = tag.label
+        - if tag.birthday
+          - if tag.birthday > @item.taken
+            %em(style="color:red")= " (#{distance_of_time_in_words(tag.birthday.to_time, @item.taken.to_time)} before birth!?)"
+          - else
+            %em= " (#{distance_of_time_in_words(tag.birthday.to_time, @item.taken.to_time)} old)"
+  %br
+
+  Taken:
+  %strong
+    = @item.taken
+    %em=" (#{distance_of_time_in_words @item.taken.to_time, Time.new} ago)"
+
+  %br
+
+  Source:
+  %strong= @item.source
+
+  %br
+
+  Views:
+  %strong= @view_count
+
+  %br
+
+  - if @item.event
+    Event:
+    %strong= @item.event.name
+    -if @item.event.location
+      %em= " at " + @item.event.location.name
+    %br
+
+  %a{ :href => "/item/download/#{@item.id}" }
+    Download Original
+
+  %h3 Comments
+  - @item.comments.each do |comment|
+    .comment
+      %strong= comment.account.name
+      = comment.text
+      %em= comment.created
+
+  %h3 Say something
+  %form{ :method => 'POST', :action => url_for( :item_comment, :id => @item.id ) }
+    Name:
+    %textarea{ :name => 'text', :rows => 3, :cols => 40 }
+    %br
+    %input{ :type => 'submit', :value => 'Make Comment' }

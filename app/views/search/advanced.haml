@@ -1,0 +1,62 @@
+= form_tag url( :search_advanced ), :method => :post do |f|
+
+  %h2 Search options:
+
+  .group
+    %label
+      =check_box_tag :all, :checked => true
+      Items must have ALL tags
+
+  .group
+    %label
+      =check_box_tag :only
+      Items must not have other tags
+
+  .group
+    %label
+      Orientation
+      =select_tag :orientation, :options => %w{both portrait landscape square}
+
+  .group
+    %label
+      Type
+      =select_tag :type, :options => %w{all photo video}
+
+  .group
+    %label
+      Sort by
+      =select_tag :by, :options => %w{taken width height id}
+    %label
+      =check_box_tag :reverse
+      Reverse
+
+  .group
+    %label
+      Count:
+    #count
+
+  .group
+    %input{ :type => 'submit', :value => 'Search' }
+
+  %hr
+
+
+  %h2
+    .picture-note
+      (These pictures are chosen automatically and in no way reflect what the
+      author thinks of you.)
+    Select some tags:
+
+  .group
+    - Tag.all( :item_count.gt => 0, :order => :item_count.desc ).each do |tag|
+      .tag{ :data => { :id => tag.id, :label => tag.label } }
+        %label
+          - if tag.icon
+            %img{ :src => "/resized/square/#{tag.icon.id}.jpg" }
+            %br
+          =check_box_tag 'tag[]', :value => tag.id
+          =tag.label
+          %em= "(#{tag.item_count})"
+
+
+= javascript_include_tag :advanced
