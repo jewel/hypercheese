@@ -6,8 +6,9 @@ class App.SearchResult
     @string = ""
 
     $(window).scroll @on_scroll
-    $(window).scroll $.debounce( 500, @redraw )
-    $(window).resize $.throttle( 500, @redraw )
+    $(window).scroll $.throttle(  250, @slow_scroll )
+    $(window).scroll $.debounce( 1000, @redraw )
+    $(window).resize $.throttle(  500, @redraw )
 
   start: (string, count) ->
     @string = string
@@ -15,7 +16,15 @@ class App.SearchResult
     @redraw()
 
   on_scroll: (e) =>
-    $('#scroll_label').text( $(window).scrollTop() )
+    $('#scroll_label').text $(window).scrollTop()
+
+  slow_scroll: =>
+    # if the search window is still visible, redraw
+    win = $('#search_window')
+    pos = win.position()
+    return if $(window).scrollTop() + $(window).height < pos.top
+    return if $(window).scrollTop() > pos.top + win.height()
+    @redraw()
 
   redraw: =>
     image_size = 200
@@ -31,7 +40,6 @@ class App.SearchResult
 
     $('#search_results').css
       height: (row_height * Math.ceil( @count / images_per_row )) + "px"
-
 
     # calculate which image to start with based on scroll position
     scroll_pos = $(window).scrollTop() - $('#search_results').position().top
