@@ -29,6 +29,7 @@ gem 'andand'
 gem 'exifr'
 gem 'mimetype-fu', :require => 'mimetype_fu'
 gem 'rubyzip'
+gem 'memcache-client'
 
 group :production do
   gem 'mysql2'
