@@ -27,7 +27,7 @@ def table old, new=nil
   # system( "diff -u /tmp/oldschema /tmp/newschema" )
   @new.query "BEGIN WORK"
   @new.query "DELETE FROM `#{new}`"
-  results = @old.query "SELECT * FROM `#{old}` ORDER BY id"
+  results = @old.query "SELECT * FROM `#{old}`"
   puts "#{old} -> #{new} (#{results.count})"
   results.each( :symbolize_keys => true ) do |row|
     print "#{row[:id]}\r"
@@ -41,9 +41,16 @@ def table old, new=nil
   @new.query "COMMIT"
 end
 
-table :events
+table :tags do |row|
+  row[:parent_tag_id] = row.delete :parent_id
+  row[:icon_item_id] = row.delete :icon_id
+  row.delete :account_id
+end
+
+table :item_tags
 
 exit
+table :events
 table :items do |row|
   row.delete :deleted
   row.delete :location_id
