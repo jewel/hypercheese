@@ -17,6 +17,7 @@ group :assets do
   gem 'uglifier'
   gem 'spine-rails'
   gem 'compass-rails'
+  gem 'haml_coffee_assets'
 end
 
 gem 'turbo-sprockets-rails3'

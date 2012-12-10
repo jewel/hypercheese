@@ -10,19 +10,8 @@
 
 -# = feed_tag :rss, "/", :title => "RSS"
 
-- content_for :nav do
-  - next unless @total_pages
-  %p
-    = pluralize(@count, "result")
-    = "| page #@page of #@total_pages | "
-    - if @page > 1
-      %a{ :href => search_path( :q => @query, :page => @page - 1 ) } Prev
-    - if @page > 1 && @page < @total_pages
-      = " | "
-    - if @page < @total_pages
-      %a{ :href => search_path( :q => @query, :page => @page + 1 ) } Next
-
-= yield :nav
+%p
+  = pluralize @count, "results"
 
 :javascript
   $tags = #{Hash[Tag.all.map { |t| [ t.id, t.label ] }].to_json}
@@ -46,31 +35,14 @@
     %input#tags{ :autocomplete => 'off' }
     #prev_match
 
-.results
-  - prev_event = nil
-  - @items.each do |item|
-    - if item.event_id && item.event_id != prev_event
-      - event = item.event
-      .event
-        %a.event-title{ :href => "/e/#{event.id}/#{event.name}", 'data-event_id' => event.id }
-          = event.name
-          - if event.name && !event.name.empty?
-            %a.subtle{ :href => "/events/#{event.id}/download" } download
-        .event-subtitle
-          ="#{event.subtitle}"
-          - if !event.name || event.name.empty?
-            %a.permalink{ :href => "/e/#{event.id}/#{event.name}" } &para;
-    - prev_event = item.event_id
-    .item
-      %a{                                               |
-        :id => "item_#{item.id}",                       |
-        :data => {                                      |
-          :tags => (@tag_map[item.id] || {} ).to_json,  |
-        },                                              |
-        :href => @links[item.id]                        |
-      }                                                 |
-        = image_tag item.resized_url( 'square' ), :class => 'thumb'
-        %span.icons
+.results#search_results
+  #search_window
 
-- if @items.size > 0
-  = yield :nav
+#scroll_label
+  Loading...
+
+- content_for :javascript do
+  :javascript
+    App.search = new App.SearchResult()
+    App.search.start(#{@q.to_json}, #{@count.to_json})
+

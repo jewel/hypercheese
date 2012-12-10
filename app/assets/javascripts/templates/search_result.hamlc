@@ -1,0 +1,3 @@
+.item
+  %a{ :href => "/items/#{@item.id}" }
+    %img.thumb{ :src => "/data/resized/square/#{@item.id}.jpg", :alt => @item.id }

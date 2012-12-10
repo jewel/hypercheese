@@ -22,7 +22,7 @@ module Import
       end
     end
 
-    raise "Strange path" unless path =~ /\.(\w+)\Z/
+    raise "Strange path #{path.inspect}" unless path =~ /\.(\w+)\Z/
     ext = $1.downcase
 
     variety = EXTS[ext]
