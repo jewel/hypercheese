@@ -6,8 +6,6 @@ class App.SearchResult
     @string = ""
 
     $(window).scroll @on_scroll
-    # FIXME really we want different behaviors for the scroll handler depending
-    # on how far they are scrolling
     $(window).scroll $.debounce( 500, @redraw )
     $(window).resize $.throttle( 500, @redraw )
 
@@ -41,18 +39,19 @@ class App.SearchResult
     start_row -= overdraw
     start_row = 0 if start_row < 0
 
-    # draw enough to cover the current window
-    $('#search_window').empty().css
-      top: start_row * row_height
-
     html = ""
     needed = (Math.ceil( $(window).height() / row_height ) + overdraw * 2) * images_per_row
 
 
     first_image = @count - start_row * images_per_row
     last_image = first_image - needed
+
+    # draw enough to cover the current window
+    $('#search_window').empty().css
+      top: start_row * row_height
+
     id = first_image
-    while id >= last_image
+    while id > last_image
       if id > 0
         html += JST.search_result
           item:
