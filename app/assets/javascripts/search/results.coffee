@@ -46,12 +46,16 @@ class App.SearchResult
     html = ""
     needed = (Math.ceil( $(window).height() / row_height ) + overdraw * 2) * images_per_row
 
-    for i in [1..needed]
-      id = i + start_row * images_per_row
-      break if id > @count
-      html += JST.search_result
-        item:
-          id:
-            id
+
+    first_image = start_row * images_per_row
+    last_image = first_image + needed
+    id = last_image
+    while id >= first_image
+      if id <= @count
+        html += JST.search_result
+          item:
+            id:
+              id
+      id--
 
     $('#search_window').html(html)
