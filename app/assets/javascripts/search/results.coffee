@@ -6,8 +6,10 @@ class App.SearchResult
     @string = ""
 
     $(window).scroll @on_scroll
-    $(window).scroll $.throttle( 100, @redraw )
-    $(window).resize $.throttle( 100, @redraw )
+    # FIXME really we want different behaviors for the scroll handler depending
+    # on how far they are scrolling
+    $(window).scroll $.debounce( 500, @redraw )
+    $(window).resize $.throttle( 500, @redraw )
 
   start: (string, count) ->
     @string = string
