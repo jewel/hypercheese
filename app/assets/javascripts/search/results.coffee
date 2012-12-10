@@ -5,19 +5,49 @@ class App.SearchResult
     @count = 0
     @string = ""
 
-    $(window).scroll @on_scroll
+    $(window).scroll $.throttle(  100, @scroll_label )
     $(window).scroll $.throttle(  250, @wheel_scroll )
     $(window).scroll $.debounce( 1000, @redraw )
     $(window).resize $.throttle(  500, @redraw )
 
-  start: (string, count) ->
+  start: (string, count, sections) ->
     @string = string
     @count = count
     @cache = new App.SearchResultsCache(string, count)
+    @sections = sections
     @redraw()
 
-  on_scroll: (e) =>
-    $('#scroll_label').text $(window).scrollTop()
+  scroll_label: =>
+    image_size = 200
+    margin = 4
+
+    overdraw = 3
+
+    # calculate number of images in each row
+    images_per_row = Math.floor($('#search_results').width() / (image_size + margin*2))
+
+    # calculate height of a row
+    row_height = image_size + margin*2
+
+    # calculate which image to start with based on scroll position
+    scroll_pos = $(window).scrollTop() - $('#search_results').position().top
+    start_row = Math.floor(scroll_pos / row_height)
+    start_row = 0 if start_row < 0
+
+    index = start_row * images_per_row
+    label = null
+    while index < @count && !@sections[index]
+      index++
+
+    $('#scroll_label').show().text @sections[index] || "???"
+
+    if @label_timer
+      clearTimeout @label_timer
+    @label_timer = setTimeout(
+      ->
+        $('#scroll_label').fadeOut('slow')
+      1000
+    )
 
   wheel_scroll: =>
     # if the search window is still visible, redraw

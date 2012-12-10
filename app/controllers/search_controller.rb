@@ -6,41 +6,37 @@ class SearchController < ApplicationController
     @start_time = Time.new
     @query = params[:q] || ''
 
-    @items, @invalid = Search.execute_with_invalid @query
-
+    @search = Search.new @query
+    @items = @search.items
+    @invalid = @search.invalid
     @count = @items.count
+
+    if @search.sort_by == :taken
+      @sections = Rails.cache.fetch( "sections-#@query-#{@count}" ) do
+        sections = {}
+        prev_date = nil
+        @items.all.each_with_index do |item,index|
+          date = item.taken.strftime( "%e %b %Y" )
+          if prev_date != date
+            sections[index] = date
+            prev_date = date
+          end
+        end
+        sections
+      end
+    end
 
     @title = "#@query - HyperCheese Search" unless @query.empty?
   end
 
   # GET /search/results
   def results
-    @items = Search.execute params[:q]
+    @items = Search.new(params[:q]).items
     @items = @items.all :limit => params[:limit], :offset => params[:offset]
     @res = @items.map { |item|
       item.id
     }
     render json: @res
-  end
-
-  # GET /e/:id/:name
-  def event
-    @event = Event.find params[:id]
-    @title = "#{@event.name} - Cheese"
-    @items = @event.items.all( :order => :taken )
-    @hide_query = true
-
-    map_items
-
-    @links = {}
-    @items.each_with_index do |item,index|
-      @links[item.id] = url_for(
-        :item_view,
-        :id => item.id,
-        :e => @event.id,
-        :i => index
-      )
-    end
   end
 
   # GET /search/advanced

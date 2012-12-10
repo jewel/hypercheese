@@ -1,15 +1,36 @@
 require_dependency 'tag_parser'
 
-module Search
-  def self.execute query
-    r,i = execute_with_invalid query
-    r
+class Search
+  def initialize query
+    @query = query
   end
 
-  def self.execute_with_invalid query
+  def items
+    execute
+    @items
+  end
+
+  def invalid
+    execute
+    @invalid
+  end
+
+  def sort_by
+    execute
+    @sort_by
+  end
+
+  def tags
+    execute
+    @tags
+  end
+
+  def execute
+    return if @executed
+
     filter = [ '1=1' ]
 
-    query = query.dup
+    query = @query.dup
 
     opts = {}
     query.gsub! /\s?\b(\w+):(\w*)\b/ do
@@ -105,23 +126,18 @@ module Search
       items = items.where 'year(taken) in ?', opts[:year]
     end
 
+    raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
+    @sort_by = (opts[:by] || :taken).to_sym
 
-    if opts[:by]
-      raise "Invalid 'by'" unless opts[:by] =~ /\A\w+\Z/
-      if opts[:reverse]
-        items = items.order "#{opts[:by]} desc"
-      else
-        items = items.sort_by opts[:by]
-      end
+    if opts[:reverse]
+      items = items.order "#@sort_by desc"
     else
-      if opts[:reverse]
-        items = items.order "taken"
-      else
-        items = items.order "taken desc"
-      end
+      items = items.order @sort_by
     end
 
-    return items, invalid
+    @tags = tags
+    @items = items
+    @invalid = invalid
+    @executed = true
   end
-
 end
