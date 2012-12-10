@@ -73,41 +73,36 @@ module Search
       tags, invalid = TagParser.parse query
 
       if opts[:any]
-        items = items.all :conditions => [
-          'id in ( select item_id from item_tags where tag_id IN ? )',
-          tags.map { |t| t.id }
-        ]
+        items = items.where 'id in ( select item_id from item_tags where tag_id IN ? )', tags.map { |t| t.id }
       else
         tags.each do |tag|
-          items = items.all :conditions => [
-            'id in ( select item_id from item_tags where tag_id = ? )', tag.id
-          ]
+          items = items.where 'id in ( select item_id from item_tags where tag_id = ? )', tag.id
         end
       end
 
       if opts[:only]
-        items = items.all :conditions => [ 'id not in ( select item_id from item_tags where tag_id not in ? )', tags.map { |t| t.id } ]
+        items = items.where 'id not in ( select item_id from item_tags where tag_id not in ? )', tags.map { |t| t.id }
       end
     end
 
     if opts[:comments]
-      items = items.all :conditions => [ 'id in ( select item_id from comments )' ]
+      items = items.where 'id in ( select item_id from comments )'
     end
 
     if opts[:untagged]
-      items = items.all :conditions => [ 'id not in ( select item_id from item_tags )' ]
+      items = items.where 'id not in ( select item_id from item_tags )'
     end
 
     if opts[:source]
-      items = items.all :conditions => [ 'path like ?', opts[:source] + "/%" ]
+      items = items.where 'path like ?', opts[:source] + "/%"
     end
 
     if opts[:path]
-      items = items.all :conditions => [ 'path like ?', "%#{opts[:path]}%" ]
+      items = items.where 'path like ?', "%#{opts[:path]}%"
     end
 
     if opts[:year]
-      items = items.all :conditions => [ 'year(taken) in ?', opts[:year] ]
+      items = items.where 'year(taken) in ?', opts[:year]
     end
 
 

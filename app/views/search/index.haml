@@ -44,5 +44,5 @@
 - content_for :javascript do
   :javascript
     App.search = new App.SearchResult()
-    App.search.start(#{@q.to_json}, #{@count.to_json})
+    App.search.start(#{@query.to_json}, #{@count.to_json})
 
