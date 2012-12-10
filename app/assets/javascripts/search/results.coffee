@@ -6,20 +6,24 @@ class App.SearchResult
     @string = ""
 
     $(window).scroll @on_scroll
-    $(window).scroll $.throttle(  250, @slow_scroll )
+    $(window).scroll $.throttle(  250, @wheel_scroll )
     $(window).scroll $.debounce( 1000, @redraw )
     $(window).resize $.throttle(  500, @redraw )
 
   start: (string, count) ->
     @string = string
     @count = count
+    @cache = new App.SearchResultsCache(string, count)
     @redraw()
 
   on_scroll: (e) =>
     $('#scroll_label').text $(window).scrollTop()
 
-  slow_scroll: =>
+  wheel_scroll: =>
     # if the search window is still visible, redraw
+    #
+    # If we don't skip the redraw while the user is scrolling using the
+    # scrollbar, we'll end up queuing up megabytes of images to draw
     win = $('#search_window')
     pos = win.position()
     return if $(window).scrollTop() + $(window).height < pos.top
@@ -51,20 +55,26 @@ class App.SearchResult
     needed = (Math.ceil( $(window).height() / row_height ) + overdraw * 2) * images_per_row
 
 
-    first_image = @count - start_row * images_per_row
-    last_image = first_image - needed
+    first_image_index = start_row * images_per_row
+    last_image_index = first_image_index + needed
+
+    # are the IDs for these images in the cache?
+    unless @cache.contains(first_image_index) && @cache.contains(last_image_index)
+      @cache.update first_image_index, needed, @redraw
+      return
 
     # draw enough to cover the current window
     $('#search_window').empty().css
       top: start_row * row_height
 
-    id = first_image
-    while id > last_image
-      if id > 0
+    index = first_image_index
+    while index < last_image_index
+      id = @cache.get(index)
+      if id
         html += JST.search_result
           item:
             id:
               id
-      id--
+      index++
 
     $('#search_window').html(html)

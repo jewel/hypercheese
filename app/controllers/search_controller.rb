@@ -1,8 +1,6 @@
 require_dependency 'search'
 
 class SearchController < ApplicationController
-  LIMIT = 200
-
   # GET /
   def index
     @start_time = Time.new
@@ -10,25 +8,19 @@ class SearchController < ApplicationController
 
     @items, @invalid = Search.execute_with_invalid @query
 
-    @page = (params[:page] || 1).to_i
     @count = @items.count
 
-    @total_pages = (@count.to_f/LIMIT).ceil
+    @title = "#@query - HyperCheese Search" unless @query.empty?
+  end
 
-    @items = @items.all :limit => LIMIT, :offset => (@page-1) * LIMIT
-
-    map_items
-
-    @links = {}
-    @items.each_with_index do |item,index|
-      @links[item.id] = item_path(
-        item.id,
-        :q => @query,
-        :i => index + (@page - 1) * LIMIT
-      )
-    end
-
-    @title = "#@query - Cheese Search" unless @query.empty?
+  # GET /search/results
+  def results
+    @items = Search.execute params[:q]
+    @items = @items.all :limit => params[:limit], :offset => params[:offset]
+    @res = @items.map { |item|
+      item.id
+    }
+    render json: @res
   end
 
   # GET /e/:id/:name
