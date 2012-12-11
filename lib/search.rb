@@ -130,9 +130,9 @@ class Search
     @sort_by = (opts[:by] || :taken).to_sym
 
     if opts[:reverse]
-      items = items.order "#@sort_by desc"
-    else
       items = items.order @sort_by
+    else
+      items = items.order "#@sort_by desc"
     end
 
     @tags = tags

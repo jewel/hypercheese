@@ -21,7 +21,8 @@ end
 if File.directory? path
   require 'find'
   Find.find( path ) do |file|
-    next unless file =~ /\.(JPG|MOV|AVI|TIF|TIFF|JPEG)\Z/i
+    # next unless file =~ /\.(JPG|MOV|AVI|TIF|TIFF|JPEG)\Z/i
+    next unless file =~ /\.(JPG)\Z/i
     import file
   end
 else
