@@ -4,20 +4,31 @@ class App.SearchResult
   constructor: ->
     @count = 0
     @string = ""
+    @loaded_events = false
 
     $(window).scroll $.throttle(  100, @scroll_label )
     $(window).scroll $.throttle(  250, @wheel_scroll )
     $(window).scroll $.debounce( 1000, @redraw )
     $(window).resize $.throttle(  500, @redraw )
 
-  start: (string, count, events) ->
+  start: (string, count) ->
     @string = string
     @count = count
     @cache = new App.SearchResultsCache(string, count)
-    @events = events
     @redraw()
 
+    $.ajax
+      dataType: 'json'
+      type: 'GET'
+      data:
+        q: @string
+      url: "/search/events"
+      success: (res) =>
+        @events = res
+        @loaded_events = true
+
   scroll_label: =>
+    return unless @loaded_events
     image_size = 200
     margin = 1
 

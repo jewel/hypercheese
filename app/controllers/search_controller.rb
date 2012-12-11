@@ -11,11 +11,19 @@ class SearchController < ApplicationController
     @invalid = @search.invalid
     @count = @items.count
 
+    @title = "#@query - HyperCheese Search" unless @query.empty?
+  end
+
+  # GET /search/events
+  def events
+    @search = Search.new params[:q]
+    @events = {}
+
     if @search.sort_by == :taken
       @events = Rails.cache.fetch( "events-#@query-#{@count}" ) do
         events = {}
         prev_event_id = nil
-        @items.all.each_with_index do |item,index|
+        @search.items.all.each_with_index do |item,index|
           if prev_event_id != item.event_id
             event = item.event
             events[index] = [item.event.subtitle, item.event.name]
@@ -26,7 +34,7 @@ class SearchController < ApplicationController
       end
     end
 
-    @title = "#@query - HyperCheese Search" unless @query.empty?
+    render json: @events
   end
 
   # GET /search/results

@@ -27,6 +27,7 @@ HyperCheese::Application.routes.draw do
 
   match 'search/advanced' => 'search#advanced'
   match 'search/results' => 'search#results'
+  match 'search/events' => 'search#events'
   match 'search' => 'search#index'
 
   # Sample resource route with options:
