@@ -40,6 +40,8 @@ window.resize_image = ->
 $(window).resize resize_image
 
 $ ->
+  resize_image()
+
   $('#authbox').prependTo '.info'
   if $next_image
     $('<img/>')
