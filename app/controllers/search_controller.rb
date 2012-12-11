@@ -55,7 +55,7 @@ class SearchController < ApplicationController
 
   # GET /search/advanced/update
   def update_advanced
-    @items = Search.execute params[:q]
+    @items = Search.new(params[:q]).items
 
     ids = []
     @items.each do |item|

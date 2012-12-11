@@ -20,11 +20,7 @@ class ItemsController < ApplicationController
     @query = params[:q] || ''
     @index = params[:i].to_i
 
-    if params[:e]
-      search = Event.find( params[:e] ).items.order :taken
-    else
-      search = Search.execute @query
-    end
+    search = Search.new( @query ).items
 
     # FIXME If the search results change and someone has an old URL, the index
     # will be wrong.  In order to avoid this the index parameter shouldn't be
