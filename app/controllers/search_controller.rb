@@ -12,17 +12,17 @@ class SearchController < ApplicationController
     @count = @items.count
 
     if @search.sort_by == :taken
-      @sections = Rails.cache.fetch( "sections-#@query-#{@count}" ) do
-        sections = {}
-        prev_date = nil
+      @events = Rails.cache.fetch( "events-#@query-#{@count}" ) do
+        events = {}
+        prev_event_id = nil
         @items.all.each_with_index do |item,index|
-          date = item.taken.strftime( "%e %b %Y" )
-          if prev_date != date
-            sections[index] = date
-            prev_date = date
+          if prev_event_id != item.event_id
+            event = item.event
+            events[index] = [item.event.subtitle, item.event.name]
+            prev_event_id = event.id
           end
         end
-        sections
+        events
       end
     end
 

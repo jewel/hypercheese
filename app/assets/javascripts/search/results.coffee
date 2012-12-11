@@ -10,11 +10,11 @@ class App.SearchResult
     $(window).scroll $.debounce( 1000, @redraw )
     $(window).resize $.throttle(  500, @redraw )
 
-  start: (string, count, sections) ->
+  start: (string, count, events) ->
     @string = string
     @count = count
     @cache = new App.SearchResultsCache(string, count)
-    @sections = sections
+    @events = events
     @redraw()
 
   scroll_label: =>
@@ -35,11 +35,12 @@ class App.SearchResult
     start_row = 0 if start_row < 0
 
     index = start_row * images_per_row
-    label = null
-    while index < @count && !@sections[index]
+    while index < @count && !@events[index]
       index++
 
-    $('#scroll_label').show().text @sections[index] || "???"
+    $('#scroll_label').show()
+    $('#scroll_label .subtitle').text @events[index][0] || "???"
+    $('#scroll_label .name').text @events[index][1] || ""
 
     if @label_timer
       clearTimeout @label_timer
