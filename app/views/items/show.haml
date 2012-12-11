@@ -11,15 +11,15 @@
   %img#item{ :src => @item.resized_url( 'large' ) }
 - if @item.variety == 'video'
   %a#play{ :href => 'javascript:void(0)' }
-    %img{ :src => '/images/play.png' }
+    %img{ :src => image_path('play.png') }
 - if @prev
   %a#prev{ :href => @prev_url }
-    %img{ :src => '/images/prev.png' }
+    %img{ :src => image_path('prev.png') }
 - if @next
   %a#next{ :href => @next_url }
-    %img{ :src => '/images/next.png' }
+    %img{ :src => image_path('next.png') }
 %a#fav{ :href => 'javascript:void(0)' }
-  %img{ :src => '/images/star-icon.png'}
+  %img{ :src => image_path('star-icon.png')}
   -# image taken from http://icons.iconarchive.com/icons/newidols.ru/shop/256/star-icon.png
 
 

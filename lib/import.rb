@@ -159,7 +159,7 @@ module Import
     item.save
 
     # Add filmstrip background
-    filmstrip = "#{Padrino.root}/public/images/filmstrip.png"
+    filmstrip = "#{Rails.root}/app/assets/images/filmstrip.png"
 
     SIZES.each do |size,dim|
       dest = item.resized_path size
