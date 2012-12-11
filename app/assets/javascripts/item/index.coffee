@@ -1,6 +1,6 @@
 return unless $('#item').length > 0
 
-window.resize_image = ->
+resize_image = ->
   target_width = $(window).width()
   target_height = $(window).height()
   width = $width
@@ -39,8 +39,11 @@ window.resize_image = ->
 
 $(window).resize resize_image
 
+do resize_image
+
+$(window).scrollTop( $('#background').position().top )
+
 $ ->
-  resize_image()
 
   $('#authbox').prependTo '.info'
   if $next_image

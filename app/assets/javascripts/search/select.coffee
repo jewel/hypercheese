@@ -1,5 +1,7 @@
 #= require 'jquery.cookies'
 
+return unless $('.results').length > 0
+
 $ ->
   selected_items = ->
     $('.item a.selected')
