@@ -19,7 +19,7 @@ class App.SearchResult
 
   scroll_label: =>
     image_size = 200
-    margin = 4
+    margin = 1
 
     overdraw = 3
 
@@ -63,7 +63,7 @@ class App.SearchResult
 
   redraw: =>
     image_size = 200
-    margin = 4
+    margin = 1
 
     overdraw = 3
 
