@@ -49,7 +49,6 @@ end
 
 table :item_tags
 
-exit
 table :events
 table :items do |row|
   row.delete :deleted
