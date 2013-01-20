@@ -30,6 +30,9 @@ HyperCheese::Application.routes.draw do
   match 'search/events' => 'search#events'
   match 'search' => 'search#index'
 
+  match 'upcheese/check' => 'upcheese#check', via: 'put'
+  match 'upcheese/upload' => 'upcheese#upload', via: 'put'
+
   # Sample resource route with options:
   #   resources :products do
   #     member do
