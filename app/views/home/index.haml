@@ -1,0 +1,6 @@
+- @by_event.each do |event,items|
+  %h3= event.to_s
+
+  - items.sample(5).each do |item|
+
+    = image_tag item.resized_url( 'square' )
