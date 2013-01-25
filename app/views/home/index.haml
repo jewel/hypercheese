@@ -1,5 +1,6 @@
 - @by_event.each do |event,items|
-  %h3= event.to_s
+  %h3= event.name
+  %h6= event.subtitle
 
   - items.sample(5).each do |item|
 
