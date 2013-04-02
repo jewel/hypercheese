@@ -1,7 +1,21 @@
-- @by_event.each do |event,items|
-  %h3= event.name
-  %h6= event.subtitle
+.event-list
+  - @by_event.each do |event,items|
+    %h3
+      = event.name || event.subtitle
+      %span.subtitle= event.name && event.subtitle
+    .event-line
+      - items = items.sample 12
+      - big = items.sample 4
+      - small = items - big
+      - small_lines = [small[0..3], small[4..7]]
 
-  - items.sample(5).each do |item|
+      - big.each do |item|
+        = image_tag item.resized_url( 'square' )
 
-    = image_tag item.resized_url( 'square' )
+      .small-images
+        - small_lines.each do |line|
+          - line ||= []
+          .small-images-line
+            - line.each do |item|
+              = image_tag item.resized_url( 'square' )
+    .clearfix
