@@ -20,7 +20,8 @@ $ ->
     data = {}
     selected_items().each ->
       data[ $(@).attr('id') ] = $(@).data( 'tags' )
-    $.post '/items/tags'
+
+    $.post '/items/tags',
       data: JSON.stringify( data )
 
   show_icons = (item) ->
