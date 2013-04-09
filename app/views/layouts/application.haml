@@ -18,12 +18,14 @@
             %span.icon-bar
             %span.icon-bar
             %span.icon-bar
-          %a.brand(href="#") HyperCheese
+          %a.brand(href="/") HyperCheese
           .container.nav-collapse
             %ul.nav
               %li= link_to "Link 1", "/path1"
               %li= link_to "Link 2", "/path2"
               %li= link_to "Link 3", "/path3"
+            %form.navbar-search.pull-right(method="get" action="/search")
+              %input.search-query(type="text" name="q" placeholder="Search")
 
     .container-fluid
       #spinner
