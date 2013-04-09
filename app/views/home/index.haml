@@ -4,18 +4,8 @@
       = event.name || event.subtitle
       %span.subtitle= event.name && event.subtitle
     .event-line
-      - items = items.sample 15
-      - big = items.sample 5
-      - small = items - big
-      - small_lines = [small[0..4], small[5..9]]
-
-      - big.each do |item|
+      - items = event.best_items 10
+      - items.each do |item|
         = image_tag item.resized_url( 'square' )
 
-      .small-images
-        - small_lines.each do |line|
-          - line ||= []
-          .small-images-line
-            - line.each do |item|
-              = image_tag item.resized_url( 'square' )
     .clearfix
