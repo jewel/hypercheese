@@ -1,5 +1,5 @@
 .event-list
-  - @by_event.each do |event,items|
+  - @events.each do |event,items|
     %h3
       = event.name || event.subtitle
       %span.subtitle
@@ -13,3 +13,5 @@
           = image_tag item.resized_url('square')
 
     .clearfix
+
+= paginate @events, theme: 'twitter-bootstrap'

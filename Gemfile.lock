@@ -32,6 +32,9 @@ GEM
     annotate (2.5.0)
       rake
     arel (3.0.2)
+    bootstrap-kaminari-views (0.0.2)
+      kaminari (>= 0.13)
+      rails (>= 3.1)
     builder (3.0.4)
     chunky_png (1.2.8)
     coffee-rails (3.2.2)
@@ -73,6 +76,9 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.8.0)
     json2-rails (0.0.2)
+    kaminari (0.14.1)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -153,12 +159,14 @@ PLATFORMS
 DEPENDENCIES
   andand
   annotate
+  bootstrap-kaminari-views
   coffee-rails
   compass-rails
   exifr
   haml-rails
   haml_coffee_assets
   jquery-rails
+  kaminari
   memcache-client
   mimetype-fu
   mini_magick
