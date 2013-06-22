@@ -2,10 +2,14 @@
   - @by_event.each do |event,items|
     %h3
       = event.name || event.subtitle
-      %span.subtitle= event.name && event.subtitle
+      %span.subtitle
+        = event.name && event.subtitle
+        = surround '(', ')' do
+          = pluralize event.items.size, 'item'
     .event-line
       - items = event.best_items 10
       - items.each do |item|
-        = image_tag item.resized_url( 'square' )
+        %a{ :href => url_for(item) }
+          = image_tag item.resized_url('square')
 
     .clearfix
