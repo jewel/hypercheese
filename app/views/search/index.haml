@@ -19,22 +19,6 @@
   $tag_icons = #{@tag_icons.to_json}
 
 
-.mode_picker
-  %label
-    %input#multi{ :type => 'checkbox' }
-    Advanced Mode
-
-  .actions
-    %em
-      Double-click to view an image
-    %br
-    %button#download Download
-    %br
-    #count 0 items
-    %ul#tag_list
-    %input#tags{ :autocomplete => 'off' }
-    #prev_match
-
 .results#search_results
   #search_window
 
