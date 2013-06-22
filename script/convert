@@ -28,9 +28,9 @@ def table old, new=nil
   @new.query "BEGIN WORK"
   @new.query "DELETE FROM `#{new}`"
   results = @old.query "SELECT * FROM `#{old}`"
-  puts "#{old} -> #{new} (#{results.count})"
+  puts "#{old} -> #{new} (#{results.count})" if $stdout.tty?
   results.each( :symbolize_keys => true ) do |row|
-    print "#{row[:id]}\r"
+    print "#{row[:id]}\r" if $stdout.tty?
     yield row if block_given?
     keys = row.keys.join  ", "
     values = row.values.map do |_|
