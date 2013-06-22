@@ -21,9 +21,11 @@
           %a.brand(href="/") HyperCheese
           .container.nav-collapse
             %ul.nav
-              %li= link_to "Link 1", "/path1"
-              %li= link_to "Link 2", "/path2"
-              %li= link_to "Link 3", "/path3"
+              %li= link_to "All Photos", "/search"
+            %ul.nav
+              %li= link_to "Tags", "/tags"
+            %ul.nav
+              %li= link_to "Admin", "/admin"
             %form.navbar-search.pull-right(method="get" action="/search")
               %input.search-query(type="text" name="q" placeholder="Search")
 
