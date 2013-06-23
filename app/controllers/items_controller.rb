@@ -25,7 +25,7 @@ class ItemsController < ApplicationController
     index = item_ids.index( @item.id  )
 
     @next = nil
-    if index && index < item_ids.size
+    if index && index < item_ids.size - 1
       next_id = item_ids[index+1]
       @next = Item.find next_id
     end
@@ -36,19 +36,22 @@ class ItemsController < ApplicationController
       @prev = Item.find prev_id
     end
 
+    params = {}
+    params[:q] = @query unless @query.empty?
+
     if @prev
-      @prev_url = item_path :id => @prev.id, :q => @query
+      @prev_url = item_path params.merge(id: @prev.id)
     end
 
     if @next
-      @next_url = item_path :id => @next.id, :q => @query
+      @next_url = item_path params.merge(id: @next.id)
       @next_image_url = @next.resized_url 'large'
     end
 
     @tags = @item.tags.map { |tag| tag.label }.join( ', ' )
 
-    @title = "Cheese"
-    @title = @tags + " - Cheese" unless @tags.empty?
+    @title = "HyperCheese"
+    @title = @tags + " - HyperCheese" unless @tags.empty?
   end
 
   # GET /items/:id/download

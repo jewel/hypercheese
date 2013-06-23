@@ -1,3 +1,6 @@
 .item
-  %a{ :href => "/items/#{@item.id}" }
+  - url = "/items/#{@item.id}"
+  - if @query
+    - url += "?q=#{encodeURIComponent @query}"
+  %a{ :href => url }
     %img.thumb{ :src => "/data/resized/square/#{@item.id}.jpg", :alt => @item.id }

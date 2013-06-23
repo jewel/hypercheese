@@ -114,6 +114,7 @@ class App.SearchResult
       id = @cache.get(index)
       if id
         html += JST.search_result
+          query: @string
           item:
             id:
               id
