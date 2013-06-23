@@ -44,17 +44,7 @@ gem 'jquery-rails'
 gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
-
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano'
+gem 'devise'
 
 # To use debugger
 # gem 'debugger'

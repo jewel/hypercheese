@@ -1,4 +1,9 @@
 HyperCheese::Application.routes.draw do
+  devise_for :users, controllers: {
+    sessions: 'User::Sessions',
+    passwords: 'User::Passwords'
+  }
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
