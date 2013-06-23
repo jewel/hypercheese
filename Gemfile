@@ -45,6 +45,8 @@ gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 
 gem 'devise'
+gem 'omniauth'
+gem 'omniauth-facebook'
 
 # To use debugger
 # gem 'debugger'

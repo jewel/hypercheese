@@ -243,4 +243,15 @@ Devise.setup do |config|
   # When using omniauth, Devise cannot automatically set Omniauth path,
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = "/my_engine/users/auth"
+
+  def cheese_env name
+    File.read("/etc/cheese/#{name}").chomp
+  end
+
+  if File.exists? "/etc/cheese"
+    config.omniauth :facebook, cheese_env('fb.id'), cheese_env('fb.secret')
+    Rails.application.config.use_omniauth = true
+  else
+    Rails.application.config.use_omniauth = false
+  end
 end
