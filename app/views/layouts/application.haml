@@ -11,7 +11,7 @@
     = stylesheet_link_tag "application", :media => "all"
     = csrf_meta_tags
   %body
-    -if current_user
+    -if current_user && current_user.approved?
       .navbar.navbar-fluid-top
         .navbar-inner
           .container-fluid

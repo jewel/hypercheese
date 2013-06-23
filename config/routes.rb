@@ -1,8 +1,13 @@
 HyperCheese::Application.routes.draw do
   devise_for :users, controllers: {
     sessions: 'User::Sessions',
-    passwords: 'User::Passwords'
+    passwords: 'User::Passwords',
+    registrations: 'User::Registrations'
   }
+
+  devise_scope :user do
+    get "/users/pending", to: "user/registrations#pending"
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -30,7 +35,6 @@ HyperCheese::Application.routes.draw do
     resources :comments
   end
 
-  match 'search/advanced' => 'search#advanced'
   match 'search/results' => 'search#results'
   match 'search/events' => 'search#events'
   match 'search' => 'search#index'

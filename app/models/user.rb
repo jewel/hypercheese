@@ -9,6 +9,16 @@ class User < ActiveRecord::Base
     devise :omniauthable, :omniauth_providers => [:facebook]
   end
 
+  def role
+    val = read_attribute(:role)
+    val = :stranger unless val && !val.empty?
+    val.to_sym
+  end
+
+  def approved?
+    role != :stranger
+  end
+
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :provider, :uid, :name
 end
