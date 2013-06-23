@@ -24,13 +24,8 @@
 
 
 .info
-  -if params[:e]
-    %a{ :href => event_path( params[:e] ) + "#item_#{@item.id}" }
-      Back to search results
-  -else
-    %a{ :href => search_path( :q => @query,
-        :page => ((@index+1).to_f  / 200 ).ceil ) + "#item_#{@item.id}" }
-      Back to search results
+  %a{ :href => search_path(q: @query) + "#item_#{@item.id}" }
+    Back to search results
 
   %h3 Tags
   %ul

@@ -20,7 +20,7 @@ class SearchController < ApplicationController
     @events = {}
 
     if @search.sort_by == :taken
-      @events = Rails.cache.fetch( "events-#@query-#{@count}" ) do
+      @events = Rails.cache.fetch( "events-#@search" ) do
         events = {}
         prev_event_id = nil
         @search.items.all.each_with_index do |item,index|

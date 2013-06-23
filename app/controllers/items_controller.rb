@@ -8,8 +8,7 @@ class ItemsController < ApplicationController
   # GET /items/:id
   def show
     @start_time = Time.new
-    @item = Item.find params[:id]
-    raise "No such item" unless @item
+    @item = Item.find params[:id].to_i
 
     if @item.variety == 'photo'
       @view_count = @item.view_count ||= 0
@@ -18,24 +17,31 @@ class ItemsController < ApplicationController
     end
 
     @query = params[:q] || ''
-    @index = params[:i].to_i
 
-    search = Search.new( @query ).items
+    item_ids = Rails.cache.fetch( "items-#@query" ) do
+      Search.new( @query ).items.pluck :id
+    end
 
-    # FIXME If the search results change and someone has an old URL, the index
-    # will be wrong.  In order to avoid this the index parameter shouldn't be
-    # used at all and this should be done some other way.
-    @next = search.first :offset => @index + 1
+    index = item_ids.index( @item.id  )
+
+    @next = nil
+    if index && index < item_ids.size
+      next_id = item_ids[index+1]
+      @next = Item.find next_id
+    end
+
     @prev = nil
-    if @index > 0
-      @prev = search.first :offset => @index - 1
+    if index && index > 0
+      prev_id = item_ids[index-1]
+      @prev = Item.find prev_id
     end
 
     if @prev
-      @prev_url = item_path :id => @prev.id, :q => @query, :e => params[:e], :i => @index - 1
+      @prev_url = item_path :id => @prev.id, :q => @query
     end
+
     if @next
-      @next_url = item_path :id => @next.id, :q => @query, :e => params[:e], :i => @index + 1
+      @next_url = item_path :id => @next.id, :q => @query
       @next_image_url = @next.resized_url 'large'
     end
 
