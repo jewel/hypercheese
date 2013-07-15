@@ -31,7 +31,8 @@ def table old, new=nil
   puts "#{old} -> #{new} (#{results.count})" if $stdout.tty?
   results.each( :symbolize_keys => true ) do |row|
     print "#{row[:id]}\r" if $stdout.tty?
-    yield row if block_given?
+    res = yield row if block_given?
+    next if res == false
     keys = row.keys.join  ", "
     values = row.values.map do |_|
       "'" + @new.escape(_.to_s) + "'"
@@ -39,6 +40,15 @@ def table old, new=nil
     @new.query( "INSERT INTO `#{new}` (#{keys}) VALUES (#{values})" )
   end
   @new.query "COMMIT"
+end
+
+table :accounts, :users do |row|
+  next false unless row[:email]
+  row[:encrypted_password] = row.delete :password_hash
+  row[:role] = 'user'
+  %w{first_name last_name image gender}.each do |field|
+    row.delete field.to_sym
+  end
 end
 
 table :tags do |row|

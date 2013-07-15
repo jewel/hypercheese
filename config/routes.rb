@@ -1,8 +1,9 @@
 HyperCheese::Application.routes.draw do
   devise_for :users, controllers: {
-    sessions: 'User::Sessions',
-    passwords: 'User::Passwords',
-    registrations: 'User::Registrations'
+    sessions: 'user/sessions',
+    passwords: 'user/passwords',
+    registrations: 'user/registrations',
+    omniauth_callbacks: 'user/omniauth_callbacks',
   }
 
   devise_scope :user do
@@ -35,12 +36,12 @@ HyperCheese::Application.routes.draw do
     resources :comments
   end
 
-  match 'search/results' => 'search#results'
-  match 'search/events' => 'search#events'
-  match 'search' => 'search#index'
+  get 'search/results' => 'search#results'
+  get 'search/events' => 'search#events'
+  get 'search' => 'search#index'
 
-  match 'upcheese/check' => 'upcheese#check', via: 'put'
-  match 'upcheese/upload' => 'upcheese#upload', via: 'put'
+  put 'upcheese/check' => 'upcheese#check'
+  put 'upcheese/upload' => 'upcheese#upload'
 
   # Sample resource route with options:
   #   resources :products do

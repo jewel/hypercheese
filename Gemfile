@@ -16,11 +16,9 @@ group :assets do
 
   gem 'uglifier'
   gem 'spine-rails'
-  gem 'compass-rails'
   gem 'haml_coffee_assets'
 end
 
-gem 'turbo-sprockets-rails3'
 gem 'haml-rails'
 gem 'twitter-bootstrap-rails'
 gem 'annotate'
@@ -29,7 +27,7 @@ gem 'andand'
 gem 'exifr'
 gem 'mimetype-fu', :require => 'mimetype_fu'
 gem 'rubyzip'
-gem 'memcache-client'
+gem 'dalli'
 
 group :production do
   gem 'mysql2'
@@ -44,7 +42,7 @@ gem 'jquery-rails'
 gem 'kaminari'
 gem 'bootstrap-kaminari-views'
 
-gem 'devise'
+gem 'devise', github: 'plataformatec/devise', branch: 'rails4'
 gem 'omniauth'
 gem 'omniauth-facebook'
 
