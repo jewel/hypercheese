@@ -58,8 +58,7 @@ module Import
       event ||= Event.create({
         name: nil,
         start: item.taken.strftime( "%Y-%m-%d" ),
-        finish: item.taken.strftime( "%Y-%m-%d" )
-      }, without_protection: true)
+        finish: item.taken.strftime( "%Y-%m-%d" ),})
 
       item.event = event
 
@@ -106,7 +105,7 @@ module Import
         item.width = exif.width
       end
     rescue
-      Padrino.logger.error "Import EXIF problem: #$!"
+      warn "Import EXIF problem: #$!"
     end
   end
 
