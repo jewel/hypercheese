@@ -13,6 +13,11 @@ module Import
     'mpg' => 'video',
   }
 
+  def self.check_dependencies
+    check_prog 'identify', 'imagemagick'
+    check_prog 'jpegtran', 'libjpeg-turbo-progs'
+  end
+
   def self.by_path path
     path = File.absolute_path( path )
 
@@ -114,6 +119,11 @@ module Import
     puts "[import] " + a.join( ' ' )
     system( *a ) or raise "Could not run #{a.join( ' ' )}"
     $? == 0 or raise "Failed command"
+  end
+
+  def self.check_prog executable, package
+    `command -v #{executable}`
+    raise "The program '#{executable}' is currently not installed.\n Run 'sudo apt-get install #{package}'" unless $?.success?
   end
 
   def self.generate_video_stills item
