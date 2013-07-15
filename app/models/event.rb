@@ -41,6 +41,7 @@ class Event < ActiveRecord::Base
   # Get the most representative images in the set in a deterministic manner
   def best_items count
     pool = self.items.to_a
+    return [] if pool.empty?
     res = []
     count.times do |i|
       pos = i * (pool.size.to_f/count)
