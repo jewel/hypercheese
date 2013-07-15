@@ -13,6 +13,11 @@ module Import
     'mpg' => 'video',
   }
 
+  def self.check_dependencies
+    check_prog 'identify', 'imagemagick'
+    check_prog 'jpegtran', 'libjpeg-turbo-progs'
+  end
+
   def self.by_path path
     path = File.absolute_path( path )
 
@@ -58,8 +63,7 @@ module Import
       event ||= Event.create({
         name: nil,
         start: item.taken.strftime( "%Y-%m-%d" ),
-        finish: item.taken.strftime( "%Y-%m-%d" )
-      }, without_protection: true)
+        finish: item.taken.strftime( "%Y-%m-%d" ),})
 
       item.event = event
 
@@ -106,7 +110,7 @@ module Import
         item.width = exif.width
       end
     rescue
-      Padrino.logger.error "Import EXIF problem: #$!"
+      warn "Import EXIF problem: #$!"
     end
   end
 
@@ -115,6 +119,11 @@ module Import
     puts "[import] " + a.join( ' ' )
     system( *a ) or raise "Could not run #{a.join( ' ' )}"
     $? == 0 or raise "Failed command"
+  end
+
+  def self.check_prog executable, package
+    `command -v #{executable}`
+    raise "The program '#{executable}' is currently not installed.\n Run 'sudo apt-get install #{package}'" unless $?.success?
   end
 
   def self.generate_video_stills item
