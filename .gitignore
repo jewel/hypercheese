@@ -27,4 +27,4 @@
 # Ignore original photos
 /originals
 
-/config/initializers/secret_token.rb
+/.secret_key_base
