@@ -7,8 +7,10 @@
 #= require_self
 #= require jquery
 #= require jquery_ujs
+#= require underscore
 #= require hamlcoffee
 #= require twitter/bootstrap
+#= require item
 #= require_tree .
 
 @App = {}

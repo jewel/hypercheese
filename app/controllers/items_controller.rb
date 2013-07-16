@@ -52,6 +52,15 @@ class ItemsController < ApplicationController
 
     @title = "HyperCheese"
     @title = @tags + " - HyperCheese" unless @tags.empty?
+
+    respond_to do |format|
+      format.html
+      format.json do
+        item = @item.as_json
+        item[:tags] = @item.tags.map &:id
+        render json: item
+      end
+    end
   end
 
   # GET /items/:id/download
@@ -113,6 +122,25 @@ class ItemsController < ApplicationController
         item.save
       end
     end
+    render text: "OK"
+  end
+
+  # PUT /items/:item_id/tags/:tag_id
+  def add_tag
+    item = Item.find params[:item_id]
+    tag = Tag.find params[:tag_id]
+    item.tags.push tag unless item.tags.member? tag
+    item.save!
+
+    render text: "OK"
+  end
+
+  def remove_tag
+    item = Item.find params[:item_id]
+    tag = Tag.find params[:tag_id]
+    item.tags.delete tag
+    item.save!
+
     render text: "OK"
   end
 end

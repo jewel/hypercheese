@@ -6,6 +6,7 @@
   $next_image = #{@next_image_url.to_json};
   $ogv_url = #{@item.video_stream_url( 'ogv' ).to_json};
   $mp4_url = #{@item.video_stream_url( 'mp4' ).to_json};
+  $item_id = #{@item.id.to_json};
 
 #background{ :href => @next_url }
   %img#item{ :src => @item.resized_url( 'large' ) }
@@ -28,15 +29,7 @@
     Back to search results
 
   %h3 Tags
-  %ul
-    - for tag in @item.tags
-      %li
-        = tag.label
-        - if tag.birthday
-          - if tag.birthday > @item.taken
-            %em(style="color:red")= " (#{distance_of_time_in_words(tag.birthday.to_time, @item.taken.to_time)} before birth!?)"
-          - else
-            %em= " (#{distance_of_time_in_words(tag.birthday.to_time, @item.taken.to_time)} old)"
+  #tags
   %br
 
   Taken:

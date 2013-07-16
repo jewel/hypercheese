@@ -17,6 +17,7 @@ group :assets do
   gem 'uglifier'
   gem 'spine-rails'
   gem 'haml_coffee_assets'
+  gem 'underscore-rails'
 end
 
 gem 'haml-rails'

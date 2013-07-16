@@ -33,8 +33,13 @@ HyperCheese::Application.routes.draw do
       post :tags
     end
 
+    put 'tags/:tag_id' => 'items#add_tag'
+    delete 'tags/:tag_id' => 'items#remove_tag'
+
     resources :comments
   end
+
+  resources :tags
 
   get 'search/results' => 'search#results'
   get 'search/events' => 'search#events'
