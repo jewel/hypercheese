@@ -46,6 +46,7 @@ table :accounts, :users do |row|
   next false unless row[:email]
   row[:encrypted_password] = row.delete :password_hash
   row[:role] = 'user'
+  row[:email] += '@hypercheese.com' unless row[:email] =~ /@/
   %w{first_name last_name image gender}.each do |field|
     row.delete field.to_sym
   end
