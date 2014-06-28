@@ -15,12 +15,8 @@ group :assets do
   gem 'coffee-rails'
 
   gem 'uglifier'
-  gem 'spine-rails'
-  gem 'haml_coffee_assets'
-  gem 'underscore-rails'
 end
 
-gem 'haml-rails'
 gem 'twitter-bootstrap-rails'
 gem 'annotate'
 gem 'mini_magick'
@@ -37,11 +33,6 @@ end
 group :development do
   gem 'thin'
 end
-
-gem 'jquery-rails'
-
-gem 'kaminari'
-gem 'bootstrap-kaminari-views'
 
 gem 'devise', github: 'plataformatec/devise', branch: 'rails4'
 gem 'omniauth'
