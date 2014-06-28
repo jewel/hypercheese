@@ -123,7 +123,7 @@ module Import
 
   def self.check_prog executable, package
     `command -v #{executable}`
-    raise "The program '#{executable}' is currently not installed.\n Run 'sudo apt-get install #{package}'" unless $?.success?
+    raise "The program '#{executable}' is missing.  Install the #{package} package" unless $?.success?
   end
 
   def self.generate_video_stills item
@@ -218,7 +218,7 @@ module Import
     image.format 'jpeg'
     image.write temp
     if size == :large
-      system( "jpegtran -progressive #{temp} > #{temp}P" )
+      run( "jpegtran -progressive #{temp} > #{temp}P" )
       File.unlink temp
       File.rename temp + "P", dest
     else

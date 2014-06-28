@@ -10,6 +10,8 @@ raise "Need path to file or directory" unless path
 
 require_dependency 'import'
 
+Import.check_dependencies
+
 def import path
   # begin
     Import.by_path path
