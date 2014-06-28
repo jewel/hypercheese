@@ -122,8 +122,8 @@ module Import
   end
 
   def self.check_prog executable, package
-    `command -v #{executable}`
-    raise "The program '#{executable}' is missing.  Install the #{package} package" unless $?.success?
+    `which #{executable}`
+    abort "The program '#{executable}' is missing.  Install the #{package} package" unless $?.success?
   end
 
   def self.generate_video_stills item
