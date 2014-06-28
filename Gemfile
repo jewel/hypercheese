@@ -25,6 +25,8 @@ gem 'exifr'
 gem 'mimetype-fu', :require => 'mimetype_fu'
 gem 'rubyzip'
 gem 'dalli'
+gem 'ember-rails'
+gem 'emblem-rails'
 
 group :production do
   gem 'mysql2'
@@ -34,7 +36,7 @@ group :development do
   gem 'thin'
 end
 
-gem 'devise', github: 'plataformatec/devise', branch: 'rails4'
+gem 'devise'
 gem 'omniauth'
 gem 'omniauth-facebook'
 
