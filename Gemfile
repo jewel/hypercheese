@@ -25,8 +25,10 @@ gem 'exifr'
 gem 'mimetype-fu', :require => 'mimetype_fu'
 gem 'rubyzip'
 gem 'dalli'
+gem 'jquery-rails'
 gem 'ember-rails'
 gem 'emblem-rails'
+gem 'haml-rails'
 
 group :production do
   gem 'mysql2'

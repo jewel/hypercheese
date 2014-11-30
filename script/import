@@ -13,11 +13,11 @@ require_dependency 'import'
 Import.check_dependencies
 
 def import path
-  # begin
+  begin
     Import.by_path path
-  # rescue
-  #  puts "FAILED #{path}: #$!"
-  # end
+  rescue
+    puts "FAILED #{path}: #$!"
+  end
 end
 
 if File.directory? path
