@@ -1,3 +1,5 @@
 h1 Item
 
 p = width
+#background
+  img src=largeImage
