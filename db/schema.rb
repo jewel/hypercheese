@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130623043946) do
+ActiveRecord::Schema.define(version: 20141220210337) do
 
   create_table "comments", force: true do |t|
     t.text     "text"
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20130623043946) do
     t.datetime "updated_at", null: false
   end
 
-  add_index "comments", ["item_id"], name: "index_comments_on_item_id"
+  add_index "comments", ["item_id"], name: "index_comments_on_item_id", using: :btree
 
   create_table "events", force: true do |t|
     t.string   "name"
@@ -38,18 +38,22 @@ ActiveRecord::Schema.define(version: 20130623043946) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "item_paths", force: true do |t|
+    t.string  "path"
+    t.integer "item_id"
+  end
+
   create_table "item_tags", force: true do |t|
     t.integer "item_id"
     t.integer "tag_id"
   end
 
-  add_index "item_tags", ["item_id"], name: "index_item_tags_on_item_id"
-  add_index "item_tags", ["tag_id"], name: "index_item_tags_on_tag_id"
+  add_index "item_tags", ["item_id"], name: "index_item_tags_on_item_id", using: :btree
+  add_index "item_tags", ["tag_id"], name: "index_item_tags_on_tag_id", using: :btree
 
   create_table "items", force: true do |t|
     t.datetime "taken"
     t.text     "description"
-    t.string   "path"
     t.string   "md5"
     t.integer  "width"
     t.integer  "height"
@@ -62,8 +66,8 @@ ActiveRecord::Schema.define(version: 20130623043946) do
     t.string   "variety"
   end
 
-  add_index "items", ["md5"], name: "index_items_on_md5", unique: true
-  add_index "items", ["taken"], name: "index_items_on_taken"
+  add_index "items", ["md5"], name: "index_items_on_md5", unique: true, using: :btree
+  add_index "items", ["taken"], name: "index_items_on_taken", using: :btree
 
   create_table "locations", force: true do |t|
     t.string   "name"
@@ -81,7 +85,7 @@ ActiveRecord::Schema.define(version: 20130623043946) do
     t.datetime "updated_at",    null: false
   end
 
-  add_index "tags", ["label"], name: "index_tags_on_label"
+  add_index "tags", ["label"], name: "index_tags_on_label", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -94,15 +98,15 @@ ActiveRecord::Schema.define(version: 20130623043946) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.string   "role"
     t.string   "provider"
     t.string   "uid"
     t.string   "name"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
 end

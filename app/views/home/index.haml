@@ -1,5 +1,7 @@
 .event-list
-  - @events.each do |event,items|
+  - @events.each do |event|
+    - items = event.best_items 10
+    - next if items.empty?
     %h3
       = event.name || event.subtitle
       %span.subtitle
@@ -7,7 +9,6 @@
         = surround '(', ')' do
           = pluralize event.items.size, 'item'
     .event-line
-      - items = event.best_items 10
       - items.each do |item|
         %a{ :href => url_for(item) }
           = image_tag item.resized_url('square')

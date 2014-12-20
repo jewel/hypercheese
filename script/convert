@@ -68,3 +68,5 @@ table :items do |row|
   row[:variety] = row.delete :type
   row[:created_at] = row[:updated_at] = row.delete(:added)
 end
+
+table :item_paths
