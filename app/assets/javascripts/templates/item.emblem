@@ -1,5 +1,4 @@
 h1 Item
 
 p = width
-#background
-  img src=largeImage
+item-display width=model.width height=model.height itemId=model.id
