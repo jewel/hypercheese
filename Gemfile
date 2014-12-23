@@ -44,4 +44,4 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 
 # To use debugger
-# gem 'debugger'
+gem 'debugger'

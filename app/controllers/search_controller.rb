@@ -12,6 +12,7 @@ class SearchController < ApplicationController
     @count = @items.count
 
     @title = "#@query - HyperCheese Search" unless @query.empty?
+    render json: @items
   end
 
   # GET /search/events
@@ -40,7 +41,7 @@ class SearchController < ApplicationController
   # GET /search/results
   def results
     @items = Search.new(params[:q]).items
-    @items = @items.all :limit => params[:limit], :offset => params[:offset]
+    @items = @items.limit(params[:limit]).offset(params[:offset])
     @res = @items.map { |item|
       item.id
     }

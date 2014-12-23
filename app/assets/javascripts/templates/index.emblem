@@ -1,3 +1,8 @@
 p Welcome to hypercheese
 
-outlet
+ul
+each item in model
+  .col-sm-4
+    item.id
+  
+/outlet
