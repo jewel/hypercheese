@@ -1,8 +1,14 @@
-p Welcome to hypercheese
+.container
+  p Welcome to hypercheese
 
-ul
-each item in model
-  .col-sm-4
-    item.id
+  .row
+    each item in model
+      .col-sm-4
+        item.id
+
+  .row
+    pagination-base action='previousPage' enabled=hasPreviousPage | Previous
+    pagination-base action='nextPage' enabled=hasNextPage | Next
+
   
 /outlet

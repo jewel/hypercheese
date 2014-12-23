@@ -1,4 +1,6 @@
-App.Paginated = Ember.Mixin.create 
+# EmberRails or something does not find the mixin when its in the mixin directory so its
+# include here for now
+App.PaginatedMixin = Ember.Mixin.create 
   queryParams: ['page']
   page: 1
   offset: 0
@@ -23,15 +25,12 @@ App.Paginated = Ember.Mixin.create
       })
 
     nextPage: ->
-      @transistionToRoute( queryParams: {
+      @transitionToRoute( queryParams: {
         page: @incrementProperty('page')
       })
 
-
-App.IndexController = Ember.ArrayController.extend App.Paginated,
-
+App.IndexController = Ember.ArrayController.extend App.PaginatedMixin,
   total: (->
-    console.log @store.metadataFor('item').total
     @store.metadataFor('item').total
   ).property('model')
 

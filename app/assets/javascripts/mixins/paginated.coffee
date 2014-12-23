@@ -1,4 +1,4 @@
-Paginated = Ember.Mixin.create 
+App.PaginatedMixin = Ember.Mixin.create 
   queryParams: ['page']
   page: 1
   offset: 0
@@ -23,7 +23,7 @@ Paginated = Ember.Mixin.create
       })
 
     nextPage: ->
-      @transistionToRoute( queryParams: {
+      @transitionToRoute( queryParams: {
         page: @incrementProperty('page')
       })
 
