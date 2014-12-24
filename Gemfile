@@ -29,6 +29,7 @@ gem 'jquery-rails'
 gem 'ember-rails'
 gem 'emblem-rails'
 gem 'haml-rails'
+gem 'rb-readline'
 
 group :production do
   gem 'mysql2'
@@ -43,4 +44,4 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 
 # To use debugger
-# gem 'debugger'
+gem 'debugger'

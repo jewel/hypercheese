@@ -2,4 +2,5 @@
 
 App.Router.map ()->
   @resource 'search', path: '/search/:query'
-  @resource 'item', path: '/v/:item_id'
+  @resource 'items', path: '/v', ->
+    @resource 'item', path: '/:item_id'

@@ -7,4 +7,11 @@ App.ApplicationStore = DS.Store.extend()
 # is built to work nicely with the ActiveModel::Serializers gem.
 App.ApplicationAdapter = DS.ActiveModelAdapter.extend()
 
+Ember.View.reopen({
+  didInsertElement: ->
+    @_super()
+    Ember.run.scheduleOnce "afterRender", @, @afterRenderEvent
+    return
 
+  afterRenderEvent: ->
+})

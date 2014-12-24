@@ -1,3 +1,8 @@
 h1 Item
 
-p = width
+item-large-display width=model.width height=model.height itemId=model.id
+
+.info
+  | Taken: 
+  strong
+    model.taken

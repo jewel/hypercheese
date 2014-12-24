@@ -52,5 +52,6 @@ module HyperCheese
     config.assets.version = '1.0'
 
     config.template_engine = :haml
+
   end
 end
