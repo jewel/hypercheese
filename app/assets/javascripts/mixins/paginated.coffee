@@ -1,4 +1,4 @@
-App.PaginatedMixin = Ember.Mixin.create 
+App.PaginatedMixin = Ember.Mixin.create
   queryParams: ['page']
   page: 1
   offset: 0
@@ -10,7 +10,7 @@ App.PaginatedMixin = Ember.Mixin.create
     (@get('offset') + @get('limit')) < @get('total')
   ).property('offset', 'limit', 'total')
 
-  actions: 
+  actions:
     previousPage: ->
       # has a page that is higher than the actual total pages (this is only possible manually)
       # get the last possible page number
@@ -26,7 +26,3 @@ App.PaginatedMixin = Ember.Mixin.create
       @transitionToRoute( queryParams: {
         page: @incrementProperty('page')
       })
-
-
-
-
