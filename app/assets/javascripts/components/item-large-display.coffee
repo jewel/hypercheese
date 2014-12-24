@@ -1,4 +1,4 @@
-App.ItemDisplayComponent = Ember.Component.extend
+App.ItemLargeDisplayComponent = Ember.Component.extend
   afterRenderEvent: (->
     $(window).scrollTop( $('#background').position().top )
     console.log("scroll")

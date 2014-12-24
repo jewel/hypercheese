@@ -34,3 +34,8 @@ App.IndexController = Ember.ArrayController.extend App.PaginatedMixin,
     @store.metadataFor('item').total
   ).property('model')
 
+  actions:
+    imageClick: (itemId)->
+      @transitionToRoute 'item', itemId
+
+

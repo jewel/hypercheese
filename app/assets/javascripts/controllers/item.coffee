@@ -1,3 +1,3 @@
-App.ItemController = Ember.ArrayController.extend App.PaginatedMixin,
+App.ItemController = Ember.Controller.extend
   foo: null
 

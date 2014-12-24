@@ -1,6 +1,6 @@
 h1 Item
 
-item-display width=model.width height=model.height itemId=model.id
+item-large-display width=model.width height=model.height itemId=model.id
 
 .info
   | Taken: 
