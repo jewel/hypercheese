@@ -42,6 +42,3 @@ end
 gem 'devise'
 gem 'omniauth'
 gem 'omniauth-facebook'
-
-# To use debugger
-gem 'debugger'
