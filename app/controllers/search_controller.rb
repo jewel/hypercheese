@@ -7,10 +7,19 @@ class SearchController < ApplicationController
 
     search = Search.new query
 
-    render json: search.items, each_serializer: ItemSerializer, meta: {
-      count: search.items.count
-    }
+    items_as_json = search.items.map do |item|
+      ItemSerializer.new(item).as_json['item']
+    end
+
+    render( json: {
+      search: {
+        count: search.items.count,
+        item_ids: search.items.map( &:id ),
+      },
+      items: items_as_json
+    })
   end
+
 
   # GET /search/events
   def events

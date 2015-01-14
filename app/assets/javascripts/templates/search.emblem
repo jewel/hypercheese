@@ -1,5 +1,5 @@
 = input value=q placeholder="Search"
 
 .results
-  = each id in model
-    = item-square-display itemId=id imageClick="imageClick"
+  = each item in model.items
+    = item-square-display itemId=item.id imageClick="imageClick"

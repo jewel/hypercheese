@@ -4,9 +4,4 @@ App.SearchRoute = Ember.Route.extend
       refreshModel: true
 
   model: (params) ->
-    App.Item.search(params.q).then (res) =>
-      # Not yet supported:
-      # @store.setMetadataFor 'item', res.meta
-      res.search.map (item) =>
-        @store.push 'item', item
-        item.id
+    @store.find 'search', params.q

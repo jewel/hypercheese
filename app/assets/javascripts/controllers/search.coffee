@@ -1,4 +1,4 @@
-App.SearchController = Ember.ArrayController.extend
+App.SearchController = Ember.Controller.extend
   queryParams: ['q']
   q: ''
 
