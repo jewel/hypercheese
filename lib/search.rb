@@ -87,11 +87,21 @@ class Search
       ''
     end
 
-
-    invalid = []
+    raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
+    @sort_by = (opts[:by] || :taken).to_sym
+    @items = []
+    @invalid = []
+    @tags = []
 
     unless query.empty?
       tags, invalid = TagParser.parse query
+      @tags = tags
+      @invalid = @invalid
+
+      unless invalid.empty?
+        @executed = true
+        return
+      end
 
       if opts[:any]
         items = items.where 'id in ( select item_id from item_tags where tag_id IN ? )', tags.map { |t| t.id }
@@ -126,18 +136,13 @@ class Search
       items = items.where 'year(taken) in ?', opts[:year]
     end
 
-    raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
-    @sort_by = (opts[:by] || :taken).to_sym
-
     if opts[:reverse]
       items = items.order @sort_by
     else
       items = items.order "#@sort_by desc"
     end
 
-    @tags = tags
     @items = items
-    @invalid = invalid
     @executed = true
   end
 end

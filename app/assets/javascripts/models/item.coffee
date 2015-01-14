@@ -5,3 +5,14 @@ App.Item = DS.Model.extend
   width: attr('number')
   height: attr('number')
   tags: DS.hasMany('tag')
+
+App.Item.reopenClass
+  search: (query) ->
+    $.ajax(
+      cache: false
+      url: '/search'
+      data:
+        q: query
+      type: 'GET'
+      dataType: 'json'
+    )

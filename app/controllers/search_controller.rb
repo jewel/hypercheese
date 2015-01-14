@@ -3,16 +3,13 @@ require_dependency 'search'
 class SearchController < ApplicationController
   # GET /
   def index
-    @start_time = Time.new
-    @query = params[:q] || ''
+    query = params[:q] || ''
 
-    @search = Search.new @query
-    @items = @search.items
-    @invalid = @search.invalid
-    @count = @items.count
+    search = Search.new query
 
-    @title = "#@query - HyperCheese Search" unless @query.empty?
-    render json: @items
+    render json: search.items, each_serializer: ItemSerializer, meta: {
+      count: search.items.count
+    }
   end
 
   # GET /search/events

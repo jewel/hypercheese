@@ -1,1 +1,2 @@
-img.img-responsive src=squareImage click="imageClick"
+.item
+  img.thumb src=squareImage click="imageClick"

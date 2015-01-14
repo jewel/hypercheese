@@ -3,6 +3,11 @@ h1 Item
 item-large-display width=model.width height=model.height itemId=model.id
 
 .info
-  | Taken: 
+  | Taken:
   strong
     model.taken
+
+.info
+  | Tags:
+  strong
+    model.tags
