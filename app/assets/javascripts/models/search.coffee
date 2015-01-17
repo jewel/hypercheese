@@ -20,7 +20,5 @@ App.SearchAdapter = App.ApplicationAdapter.extend
       )
 
 App.Search = DS.Model.extend
-  adapter: App.SearchAdapter
-
   items: DS.hasMany('item')
   count: DS.attr('number')
