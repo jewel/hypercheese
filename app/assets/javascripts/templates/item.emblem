@@ -2,6 +2,10 @@ h1 Item
 
 item-large-display width=model.width height=model.height itemId=model.id
 
+a click="getPrevItem" Prev
+| |
+a click="getNextItem" Next
+
 .info
   | Taken:
   strong
@@ -10,4 +14,5 @@ item-large-display width=model.width height=model.height itemId=model.id
 .info
   | Tags:
   strong
-    model.tags
+    each tag in model.tags
+      tag.label

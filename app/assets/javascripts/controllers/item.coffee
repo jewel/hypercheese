@@ -1,3 +1,13 @@
 App.ItemController = Ember.Controller.extend
-  foo: null
+  needs: ['search']
+
+  actions:
+    getNextItem: ->
+      @get('controllers.search').nextItem(@get('model'))
+    getPrevItem: ->
+      @get('controllers.search').previousItem(@get('model'))
+
+
+
+
 
