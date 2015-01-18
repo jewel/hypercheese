@@ -5,5 +5,5 @@ p
   = model.count
 
 .results
-  = each item in model.items
+  = each item in controller
     = item-square-display itemId=item.id imageClick="imageClick"

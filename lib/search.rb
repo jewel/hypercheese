@@ -89,7 +89,7 @@ class Search
 
     raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
     @sort_by = (opts[:by] || :taken).to_sym
-    @items = []
+    @items = Item.none
     @invalid = []
     @tags = []
 

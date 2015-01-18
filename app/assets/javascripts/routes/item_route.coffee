@@ -6,5 +6,5 @@ App.ItemRoute = Ember.Route.extend
     @_super controller, model
 
     search = @controllerFor 'search'
-    unless search.get('model')
-      search.set 'model', @store.find( 'search', '' )
+    if search.get('model').length == 0
+      search.set 'model', @store.find( 'item', { query: '' } )

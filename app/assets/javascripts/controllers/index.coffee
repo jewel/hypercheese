@@ -6,5 +6,3 @@ App.IndexController = Ember.ArrayController.extend App.PaginatedMixin,
   actions:
     imageClick: (itemId)->
       @transitionToRoute 'item', itemId
-
-

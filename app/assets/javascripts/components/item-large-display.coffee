@@ -36,7 +36,7 @@ App.ItemLargeDisplayComponent = Ember.Component.extend
       margin = Math.floor (target_height-height)/2
 
     "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px;"
-  ).property('window_width', 'window_height')
+  ).property('window_width', 'window_height', 'height', 'width')
 
   window_width: $(window).width()
 
