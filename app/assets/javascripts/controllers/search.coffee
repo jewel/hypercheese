@@ -11,7 +11,6 @@ App.SearchController = Ember.Controller.extend
     next = items.objectAt(nextIndex)
     @transitionToRoute 'item', next.id
 
-
   previousItem: (item) ->
     items = @get('model.items.content')
     index = items.indexOf(item)
@@ -20,10 +19,6 @@ App.SearchController = Ember.Controller.extend
       prevIndex = items.length - 1
     prev = items.objectAt(prevIndex)
     @transitionToRoute 'item', prev.id
-
-  all: ( ->
-    @model.all()
-  ).property('model')
 
   actions:
     imageClick: (itemId)->
