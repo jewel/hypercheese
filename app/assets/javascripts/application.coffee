@@ -1,7 +1,9 @@
 #= require jquery
+#= require jquery_ujs
 #= require handlebars
 #= require ember
 #= require ember-data
+#= require ic-autocomplete
 #= require_self
 #= require ./store
 #= require_tree ./misc
