@@ -8,4 +8,8 @@ class ApplicationController < ActionController::Base
     return if current_user.approved?
     redirect_to "/users/pending"
   end
+
+  def handle_unverified_request
+    raise "CSRF Failure"
+  end
 end

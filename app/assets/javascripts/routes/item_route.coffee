@@ -4,6 +4,7 @@ App.ItemRoute = Ember.Route.extend
 
   setupController: (controller, model) ->
     @_super controller, model
+    controller.setupTags()
 
     search = @controllerFor 'search'
     if search.get('model').length == 0
