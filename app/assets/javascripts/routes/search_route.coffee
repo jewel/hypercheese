@@ -4,5 +4,4 @@ App.SearchRoute = Ember.Route.extend
       refreshModel: true
 
   model: (params) ->
-    App.SearchResult.create
-      query: params.q
+    @store.find 'search', params.q
