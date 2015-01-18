@@ -21,6 +21,10 @@ App.SearchController = Ember.Controller.extend
     prev = items.objectAt(prevIndex)
     @transitionToRoute 'item', prev.id
 
+  all: ( ->
+    @model.all()
+  ).property('model')
+
   actions:
     imageClick: (itemId)->
       @transitionToRoute 'item', itemId

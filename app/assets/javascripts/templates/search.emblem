@@ -1,5 +1,16 @@
 = input value=q placeholder="Search"
 
+
+p
+  | Query:
+  = model.query
+
+p
+  | Count:
+  = model.count
+
+
 .results
-  = each item in model.items
-    = item-square-display itemId=item.id imageClick="imageClick"
+  = if all.isFullfilled
+    = each item in all.content
+      = item-square-display itemId=item.id imageClick="imageClick"
