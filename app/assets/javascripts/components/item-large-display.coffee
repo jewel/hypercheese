@@ -44,4 +44,4 @@ App.ItemLargeDisplayComponent = Ember.Component.extend
 
   largeImage: (->
     "data/resized/large/#{@itemId}.jpg"
-  ).property()
+  ).property('itemId')
