@@ -12,7 +12,7 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
     _data: null,
 
     _loadedIndexes: null,
-    
+
     load: null,
 
     init: function() {
@@ -25,6 +25,8 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
 
     objectAt: function(index) {
         var length = this.get('length');
+        if (index < 0)
+          return null;
         if (index >= length) {
             return null;
         }
@@ -66,14 +68,14 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
 
         var promise = self.load(startOffset, endOffset - startOffset + 1);
         Em.assert('`load` for SparseArray must return a thenable', promise && typeof promise.then === 'function');
-        
+
         promise.then(function(payload) {
             Em.assert('The promise returned from `load` for SparseArray must resolve with an object', typeof payload === 'object');
             Em.assert('The promise returned from `load` for SparseArray must resolve with an object with an array named `items`', Em.isArray(payload.items));
             Em.assert('The promise returned from `load` for SparseArray must resolve with an object with an integer named `total`', typeof payload.total === 'number');
 
             self._ignoreLastObject = true;
-            
+
             var oldLength = self.get('length'),
                 newLength = payload.total,
                 items = payload.items,
@@ -113,7 +115,7 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
             if (!self.get('isLoaded')) {
                 self.set('isLoaded', true);
             }
-            
+
             self._ignoreLastObject = false;
         }, function(e) {
             console.error('SparseArray load error', e);

@@ -15,7 +15,7 @@ ic-autocomplete value=tag on-input="filterTags" on-select="resetTags" placeholde
       tag.label
 
 
-item-large-display width=model.width height=model.height itemId=model.id
+item-large-display width=model.width height=model.height itemId=model.id load=imageLoad
 
 a click="getPrevItem" Prev
 | |

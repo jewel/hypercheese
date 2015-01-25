@@ -1,2 +1,2 @@
 #background style=backgroundStyle
-  img#item src=largeImage style=itemStyle
+  img#item src=largeImage style=itemStyle onload=imageLoad

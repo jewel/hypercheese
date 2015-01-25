@@ -5,29 +5,43 @@ App.ItemController = Ember.Controller.extend
   tag: null
   tags: null
 
-  filterTagsBy: (term) -> 
+  filterTagsBy: (term) ->
     tags = @tags
-    return tags if (!term) 
+    return tags if (!term)
     filter = new RegExp('^'+term, 'i')
-    return tags.filter((tag) -> 
+    return tags.filter((tag) ->
       return filter.test(tag.get('label')) #|| filter.test(tag.id)
     )
 
-
-   
   setupTags: ->
     @store.find('tag').then (tags) =>
       @set('tags', tags.content)
       @set('filteredTags', tags.content)
-      
+
+  nextItem: Ember.computed 'model', ->
+    @get('controllers.search').nextItem @get('model')
+
+  prevItem: Ember.computed 'model', ->
+    @get('controllers.search').prevItem @get('model')
+
+  _preload: (id) ->
+    return unless id
+    new Image().src = "/data/resized/large/#{id}.jpg"
+    false
+
+  itemDidChange: (->
+    @_preload( @get('nextItem.id') )
+    @_preload( @get('prevItem.id') )
+  ).observes('nextItem', 'prevItem')
+
   actions:
     getNextItem: ->
-      @get('controllers.search').nextItem(@get('model'))
+      @get('nextItem')
     getPrevItem: ->
-      @get('controllers.search').previousItem(@get('model'))
+      @get('prevItem')
 
     filterTags: (autocomplete, term) ->
       @set('filteredTags', @filterTagsBy(term))
 
     resetTags: ->
-      @set('filteredTags', @tags) 
+      @set('filteredTags', @tags)

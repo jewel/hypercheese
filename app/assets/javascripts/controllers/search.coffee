@@ -1,40 +1,56 @@
-App.SearchController = Ember.ArrayController.extend
+App.SearchController = Ember.Controller.extend
   queryParams: ['q']
   q: ''
 
-  init: ->
-    @_scroll_callback = => @send('scroll')
-    $(window).bind 'scroll', @_scroll_callback
+  imageSize: 200
+  margin: 1
+  overdraw: 3
 
-    @_super()
+  window: App.Window
 
-  willDestroy: ->
-    $(window).unbind 'scroll', @_scroll_callback
+  columnWidth: Ember.computed 'imageSize', 'margin', ->
+    @get('imageSize') + @get('margin') * 2
 
-  nextItem: (item) ->
-    items = @get('model')
-    console.log items
-    index = items.indexOf(item)
-    nextIndex = index + 1
-    if nextIndex >= items.length
-      nextIndex = 0
-    next = items.objectAt(nextIndex)
-    @transitionToRoute 'item', next.id
+  rowHeight: Ember.computed 'imageSize', 'margin', ->
+    @get('imageSize') + @get('margin') * 2
 
-  previousItem: (item) ->
-    items = @get('model')
-    index = items.indexOf(item)
-    prevIndex = index - 1
-    if prevIndex < 0
-      prevIndex = items.length - 1
-    prev = items.objectAt(prevIndex)
-    @transitionToRoute 'item', prev.id
+  imagesPerRow: Ember.computed 'window.width', 'rowHeight', ->
+    Math.floor @get('window.width') / @get('rowHeight')
+
+  rowCount: Ember.computed 'content.length', 'imagesPerRow', ->
+    Math.ceil @get('content.length') / @get('imagesPerRow') + @overdraw * 2
+
+  resultsStyle: Ember.computed 'rowHeight', 'rowCount', ->
+    "height: #{@get('rowHeight') * @get('rowCount')}px"
+
+  viewPortStartRow: Ember.computed 'window.scrollTop', 'rowHeight', ->
+    val = Math.floor @get('window.scrollTop') / @get('rowHeight') - @overdraw
+    val = 0 if val < 0
+    val
+
+  viewPortStyle: Ember.computed 'viewPortStartRow', 'rowHeight', ->
+    "top: #{@get('viewPortStartRow') * @get('rowHeight')}px"
+
+  viewPortRowCount: Ember.computed 'window.height', 'rowHeight', ->
+    Math.ceil @get('window.height') / @get('rowHeight') + @overdraw
+
+  # Return items that are within visible viewport
+  viewPortItems: Ember.computed 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
+    startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
+    endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
+
+    console.log "Should show #{startIndex} to #{endIndex}"
+
+    items = []
+    len = @get('model.length')
+    for i in [startIndex...endIndex]
+      if i > 0 && i < len
+        items.pushObject @get('model').objectAt(i)
+    items
+
+    Ember.ArrayProxy.create
+      content: items
 
   actions:
-    scroll: ->
-      func = ->
-        console.log "Scroll to #{$(window).scrollTop()}"
-      Ember.run.debounce @, func, 1000
-
     imageClick: (itemId)->
       @transitionToRoute 'item', itemId

@@ -4,6 +4,7 @@ p
   | Count:
   = model.count
 
-.results
-  = each item in controller
-    = item-square-display itemId=item.id imageClick="imageClick"
+.results style=resultsStyle
+  .viewport style=viewPortStyle
+    = each item in viewPortItems
+      = item-square-display itemId=item.id imageClick="imageClick"

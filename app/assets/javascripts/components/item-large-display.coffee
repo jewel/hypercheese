@@ -1,27 +1,20 @@
 App.ItemLargeDisplayComponent = Ember.Component.extend
   afterRenderEvent: (->
-    $(window).scrollTop( $('#background').position().top )
+    $(window).scrollTop $('#background').position().top
   )
 
-  handleResize: (->
-    @set 'window_height', $(window).height()
-    @set 'window_width', $(window).width()
-  )
-
-  bindResizeEvent: (->
-    # FIXME We need to unbind this on willDestroy
-    $(window).on 'resize', Ember.run.bind(@, @handleResize)
-  ).on('init')
+  window: App.Window
 
   backgroundStyle: (->
-    "height: #{@window_height}px"
-  ).property('window_height')
+    "height: #{@get('window.height')}px"
+  ).property('window.height')
 
   itemStyle: (->
-    target_width = @window_width
-    target_height = @window_height
-    width = @width
-    height = @height
+    window = @get('window')
+    target_width = window.get 'width'
+    target_height = window.get 'height'
+    width = @get 'width'
+    height = @get 'height'
 
     if width > target_width
       height *= target_width / width
@@ -36,12 +29,8 @@ App.ItemLargeDisplayComponent = Ember.Component.extend
       margin = Math.floor (target_height-height)/2
 
     "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px;"
-  ).property('window_width', 'window_height', 'height', 'width')
-
-  window_width: $(window).width()
-
-  window_height: $(window).height()
+  ).property('window.width', 'window.height', 'height', 'width')
 
   largeImage: (->
-    "data/resized/large/#{@itemId}.jpg"
+    "/data/resized/large/#{@itemId}.jpg"
   ).property('itemId')
