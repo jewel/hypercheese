@@ -11,7 +11,7 @@ class ItemsController < ApplicationController
 
     res = search.items.limit( limit ).offset( offset )
 
-    respond_with res, each_serializer: ItemSerializer, meta: { count: search.items.count }
+    respond_with res, each_serializer: ItemSerializer, meta: { total: search.items.count }
   end
 
   def show
