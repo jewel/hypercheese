@@ -12,4 +12,4 @@ p
 .results style=resultsStyle
   .viewport style=viewPortStyle
     = each item in viewPortItems
-      = item-square-display itemId=item.model.id selected=item.selected imageClick="imageClick"
+      = item-square-display itemId=item.id selected=item.isSelected imageClick="imageClick"

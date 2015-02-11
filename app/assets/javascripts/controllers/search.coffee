@@ -35,7 +35,7 @@ App.SearchController = Ember.Controller.extend
     Math.ceil @get('window.height') / @get('rowHeight') + @overdraw
 
   # Return items that are within visible viewport
-  viewPortItems: Ember.computed 'model.loadCount', 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', 'selected', ->
+  viewPortItems: Ember.computed 'model.loadCount', 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
     startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
     endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
 
@@ -46,22 +46,20 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i > 0 && i < len
         item = @get('model').objectAt(i)
-        items.pushObject
-          model: item
-          selected: @get('selected')[item.id]
+        items.pushObject item
     items
 
     Ember.ArrayProxy.create
       content: items
 
-  selected: {}
   selecting: true
 
   actions:
     imageClick: (itemId) ->
       if @get('selecting')
-        @get('selected')[itemId] = true
-        @set 'selected', @get('selected')
+        @store.find('item', itemId).then (item) =>
+          console.log item
+          item.set('isSelected', true)
         false
       else
         @transitionToRoute 'item', itemId

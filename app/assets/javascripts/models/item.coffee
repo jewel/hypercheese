@@ -5,3 +5,5 @@ App.Item = DS.Model.extend
   width: attr('number')
   height: attr('number')
   tags: DS.hasMany('tag')
+
+	isSelected: false
