@@ -35,7 +35,7 @@ App.SearchController = Ember.Controller.extend
     Math.ceil @get('window.height') / @get('rowHeight') + @overdraw
 
   # Return items that are within visible viewport
-  viewPortItems: Ember.computed 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
+  viewPortItems: Ember.computed 'model.loadCount', 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
     startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
     endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
 

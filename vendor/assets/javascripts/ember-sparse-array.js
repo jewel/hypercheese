@@ -9,6 +9,8 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
 
     isLoaded: false,
 
+    loadCount: 0,
+
     _data: null,
 
     _loadedIndexes: null,
@@ -115,6 +117,8 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
             if (!self.get('isLoaded')) {
                 self.set('isLoaded', true);
             }
+
+            self.set( 'loadCount', self.get( 'loadCount' ) + 1 );
 
             self._ignoreLastObject = false;
         }, function(e) {
