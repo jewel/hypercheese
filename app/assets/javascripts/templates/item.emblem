@@ -1,6 +1,6 @@
 h1 Item
 
-ic-autocomplete value=tag on-input="filterTags" on-select="resetTags" placeholder="Pick a tag"
+ic-autocomplete value=selectedTagId on-input="filterTags" on-select="resetTags" placeholder="Pick a tag"
   each filteredTags
     ic-autocomplete-option value=id label=label
       =label
@@ -9,17 +9,17 @@ ic-autocomplete value=tag on-input="filterTags" on-select="resetTags" placeholde
     | No Results
 
 .info
-  | Tags:
+  | Tags: 
   strong
     each tag in model.tags
-      tag.label
-
-
-item-large-display width=model.width height=model.height itemId=model.id
+      | #{tag.label}, 
 
 a click="getPrevItem" Prev
 | |
 a click="getNextItem" Next
+
+item-large-display width=model.width height=model.height itemId=model.id
+
 
 
 .info

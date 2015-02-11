@@ -1,4 +1,4 @@
-App.TagsNewController = Ember.ArrayController.extend
+App.TagsNewController = Ember.Controller.extend
   label: null
 
   sortProperties: ['label']
