@@ -45,12 +45,21 @@ App.SearchController = Ember.Controller.extend
     len = @get('model.length')
     for i in [startIndex...endIndex]
       if i > 0 && i < len
-        items.pushObject @get('model').objectAt(i)
+        item = @get('model').objectAt(i)
+        items.pushObject item
     items
 
     Ember.ArrayProxy.create
       content: items
 
+  selecting: true
+
   actions:
-    imageClick: (itemId)->
-      @transitionToRoute 'item', itemId
+    imageClick: (itemId) ->
+      if @get('selecting')
+        @store.find('item', itemId).then (item) =>
+          console.log item
+          item.set('isSelected', true)
+        false
+      else
+        @transitionToRoute 'item', itemId
