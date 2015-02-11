@@ -6,5 +6,3 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
   actions:
     imageClick: ->
       @sendAction(@imageClick, @itemId)
-
-
