@@ -1,25 +1,7 @@
 require_dependency 'search'
 
 class SearchController < ApplicationController
-  # GET /
-  def index
-    query = params[:q] || ''
-
-    search = Search.new query
-
-    items_as_json = search.items.map do |item|
-      ItemSerializer.new(item).as_json['item']
-    end
-
-    render( json: {
-      search: {
-        count: search.items.count,
-        item_ids: search.items.map( &:id ),
-      },
-      items: items_as_json
-    })
-  end
-
+  respond_to :json
 
   # GET /search/events
   def events

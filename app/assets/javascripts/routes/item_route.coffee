@@ -7,5 +7,8 @@ App.ItemRoute = Ember.Route.extend
     controller.setupTags()
 
     search = @controllerFor 'search'
-    unless search.get('model')
-      search.set 'model', @store.find( 'search', '' )
+    if search.get('model').length == 0
+      results = App.SearchResults.create
+        query: params.q
+        store: @store
+      search.set 'model', results

@@ -14,6 +14,9 @@ ic-autocomplete value=selectedTagId on-input="filterTags" on-select="resetTags" 
     each tag in model.tags
       | #{tag.label}, 
 
+
+item-large-display width=model.width height=model.height itemId=model.id load=imageLoad
+
 a click="getPrevItem" Prev
 | |
 a click="getNextItem" Next

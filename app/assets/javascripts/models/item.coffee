@@ -19,3 +19,4 @@ App.Item = DS.Model.extend
       type: "POST"
       dataType: "json"
 
+	isSelected: false

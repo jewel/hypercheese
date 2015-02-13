@@ -4,6 +4,12 @@ p
   | Count:
   = model.count
 
-.results
-  = each item in model.items
-    = item-square-display itemId=item.id imageClick="imageClick"
+p
+  label
+    input type="checkbox" checked=selecting class="toggle"
+    | Selection Mode
+
+.results style=resultsStyle
+  .viewport style=viewPortStyle
+    = each item in viewPortItems
+      = item-square-display itemId=item.id selected=item.isSelected imageClick="imageClick"

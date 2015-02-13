@@ -31,7 +31,3 @@ App.PaginatedBaseRoute = Ember.Route.extend
       offset: @get('offset')
       limit: @get('limit')
     )
-
-
-
-

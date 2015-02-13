@@ -1,18 +1,17 @@
+require_dependency 'search'
+
 class ItemsController < ApplicationController
   respond_to :json
 
   def index
-    limit = params[:limit]
-    offset = params[:offset]
+    search = Search.new params[:query] || ''
 
-    if !limit
-      limit = 2
-    end
-    if !offset 
-      offset = 0
-    end
+    limit = params[:limit] || 1000
+    offset = params[:offset] || 0
 
-    respond_with Item.all.limit(limit).offset(offset), meta: { total:Item.all.count}
+    res = search.items.limit( limit ).offset( offset )
+
+    respond_with res, each_serializer: ItemSerializer, meta: { total: search.items.count }
   end
 
   def show

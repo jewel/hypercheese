@@ -6,6 +6,7 @@ App.PaginatedMixin = Ember.Mixin.create
   hasPreviousPage: (->
     @get('offset') != 0
   ).property('offset')
+
   hasNextPage: (->
     (@get('offset') + @get('limit')) < @get('total')
   ).property('offset', 'limit', 'total')
