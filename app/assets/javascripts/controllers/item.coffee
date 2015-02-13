@@ -2,8 +2,9 @@ App.ItemController = Ember.Controller.extend
   needs: ['search']
 
   filteredTags: @tags
-  tag: null
   tags: null
+  selectedTagId: null
+
 
   filterTagsBy: (term) ->
     tags = @tags
@@ -13,10 +14,25 @@ App.ItemController = Ember.Controller.extend
       return filter.test(tag.get('label')) #|| filter.test(tag.id)
     )
 
+  setTag: (->
+    selectedTagId = @get('selectedTagId')
+    return if selectedTagId == null
+
+    @store.find('tag', selectedTagId).then (tag)=>
+      @get('model.tags').addObject(tag)
+      @get('model').saveTags()
+  ).observes('selectedTagId')
+
+  clearSelected: (->
+    $(".ic-autocomplete-input").val("")
+    console.log "clear"
+  ).observes('model')
+   
   setupTags: ->
     @store.find('tag').then (tags) =>
-      @set('tags', tags.content)
-      @set('filteredTags', tags.content)
+      sortedTags = tags.content.sortBy('label')
+      @set('tags', sortedTags)
+      @set('filteredTags', sortedTags)
 
   nextItem: Ember.computed 'model', ->
     @get('controllers.search').nextItem @get('model')

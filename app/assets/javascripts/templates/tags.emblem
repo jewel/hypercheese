@@ -7,7 +7,7 @@
       br  
       br
       ul.list-group
-        each tag in model
+        each tag in controller
           link-to 'tag' tag tagName="li" classNames="list-group-item"
             tag.label
         

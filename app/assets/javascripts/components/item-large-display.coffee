@@ -29,7 +29,7 @@ App.ItemLargeDisplayComponent = Ember.Component.extend
       margin = Math.floor (target_height-height)/2
 
     "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px;"
-  ).property('window.width', 'window.height', 'height', 'width')
+  ).property('itemId', 'window.width', 'window.height', 'height', 'width')
 
   largeImage: (->
     "/data/resized/large/#{@itemId}.jpg"
