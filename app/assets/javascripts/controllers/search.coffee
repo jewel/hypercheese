@@ -52,14 +52,24 @@ App.SearchController = Ember.Controller.extend
     Ember.ArrayProxy.create
       content: items
 
-  selecting: true
+  selected: 0
+
+  toggleSelection: (itemId) ->
+    @store.find('item', itemId).then (item) =>
+      if item.get('isSelected')
+        item.set 'isSelected', false
+        @set 'selected', @get('selected') - 1
+      else
+        item.set 'isSelected', true
+        @set 'selected', @get('selected') + 1
 
   actions:
     imageClick: (itemId) ->
-      if @get('selecting')
-        @store.find('item', itemId).then (item) =>
-          console.log item
-          item.set('isSelected', true)
-        false
+      if @get('selected') > 0
+        @toggleSelection itemId
       else
         @transitionToRoute 'item', itemId
+
+    imageLongPress: (itemId) ->
+      console.log 'controller long press'
+      @toggleSelection itemId
