@@ -1,0 +1,17 @@
+.container
+  h1.text-center.jumbotron Tags
+
+  .row
+    .col-sm-4
+      link-to "tags.new" classNames="new btn btn-primary" | New Tag
+      br  
+      br
+      ul.list-group
+        each tag in controller
+          link-to 'tag' tag tagName="li" classNames="list-group-item"
+            tag.label
+        
+    .col-sm-8
+      outlet
+
+

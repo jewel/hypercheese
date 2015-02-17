@@ -1,0 +1,14 @@
+.container
+  p Welcome to hypercheese
+
+  .row
+    each item in model
+      .col-xs-4
+        item-square-display itemId=item.id imageClick="imageClick"
+
+  .row
+    br
+    pagination-base action='previousPage' enabled=hasPreviousPage | Previous
+    pagination-base action='nextPage' enabled=hasNextPage | Next
+
+  

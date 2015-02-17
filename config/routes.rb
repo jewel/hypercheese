@@ -1,10 +1,15 @@
 HyperCheese::Application.routes.draw do
-  devise_for :users, controllers: {
+  devise_controllers = {
     sessions: 'user/sessions',
     passwords: 'user/passwords',
     registrations: 'user/registrations',
-    omniauth_callbacks: 'user/omniauth_callbacks',
   }
+
+  if Rails.application.config.use_omniauth
+    devise_controllers[:omniauth_callbacks] = 'user/omniauth_callbacks'
+  end
+
+  devise_for :users, controllers: devise_controllers
 
   devise_scope :user do
     get "/users/pending", to: "user/registrations#pending"

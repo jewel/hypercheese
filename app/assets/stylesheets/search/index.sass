@@ -1,4 +1,10 @@
 .results
+  :background black
+  :min-height 100vh
+
+  .ember-view
+    :display inline-block
+
   .item
     :display inline-block
     :vertical-align top
@@ -11,11 +17,28 @@
       :height 200px
       :margin 0px
       :border 1px solid black
+      :box-sizing content-box
 
-  .selected img.thumb, .active img.thumb
-    :border 4px solid black
-    :opacity 0.8
-    :margin 0
+      &.selected
+        :border 4px solid blue
+        :opacity 0.8
+        :margin 0
+
+    @media screen and (max-width: 1000px)
+      :width 20vw
+      :height 20vw
+
+      img.thumb
+        :width 20vw
+        :height 20vw
+
+    @media screen and (max-width: 400px)
+      :width 33.33vw
+      :height 33.33vw
+
+      img.thumb
+        :width 33.33vw
+        :height 33.33vw
 
   .active img.thumb
     :border 4px dotted black

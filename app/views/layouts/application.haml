@@ -11,36 +11,5 @@
     = stylesheet_link_tag "application", :media => "all"
     = csrf_meta_tags
   %body
-    -if current_user && current_user.approved?
-      .navbar.navbar-fluid-top
-        .navbar-inner
-          .container-fluid
-            %a.btn.btn-navbar(data-target=".nav-collapse" data-toggle="collapse")
-              %span.icon-bar
-              %span.icon-bar
-              %span.icon-bar
-            %a.brand(href="/") HyperCheese
-            .container.nav-collapse
-              %ul.nav
-                %li= link_to "All Photos", "/search"
-              %ul.nav
-                %li= link_to "Tags", "/tags"
-              %ul.nav
-                %li= link_to "Admin", "/admin"
-              %form.navbar-search.pull-right(method="get" action="/search")
-                %input.search-query(type="text" name="q" placeholder="Search")
-
-    .container-fluid
-      #spinner
-        %img{:src => image_path('spinner.gif')}
-      = bootstrap_flash
-
-      = yield
-
-      %footer
-        - if @start_time
-          %p
-            Execution time:
-            = sprintf( "%0.3f", Time.new - @start_time)
-      = javascript_include_tag "application"
-      = yield :javascript
+    = yield
+    = javascript_include_tag "application"

@@ -1,0 +1,2 @@
+.item
+  img.thumb src=squareImage click="imageClick" class=selected

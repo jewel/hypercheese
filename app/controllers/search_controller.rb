@@ -1,18 +1,7 @@
 require_dependency 'search'
 
 class SearchController < ApplicationController
-  # GET /
-  def index
-    @start_time = Time.new
-    @query = params[:q] || ''
-
-    @search = Search.new @query
-    @items = @search.items
-    @invalid = @search.invalid
-    @count = @items.count
-
-    @title = "#@query - HyperCheese Search" unless @query.empty?
-  end
+  respond_to :json
 
   # GET /search/events
   def events
@@ -40,7 +29,7 @@ class SearchController < ApplicationController
   # GET /search/results
   def results
     @items = Search.new(params[:q]).items
-    @items = @items.all :limit => params[:limit], :offset => params[:offset]
+    @items = @items.limit(params[:limit]).offset(params[:offset])
     @res = @items.map { |item|
       item.id
     }

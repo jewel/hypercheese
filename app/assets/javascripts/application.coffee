@@ -1,16 +1,23 @@
-# This is a manifest file that'll be compiled into application.js, which will include all the files
-# listed below.
-#
-# Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
-# or vendor/assets/javascripts of plugins, if any, can be referenced here using a relative path.
-#
-#= require_self
 #= require jquery
 #= require jquery_ujs
-#= require underscore
-#= require hamlcoffee
-#= require twitter/bootstrap
-#= require item
-#= require_tree .
+#= require handlebars
+#= require ember
+#= require ember-data
+#= require ic-autocomplete
+#= require_self
+#= require ./store
+#= require_tree ./misc
+#= require_tree ./models
+#= require_tree ./mixins
+#= require_tree ./controllers
+#= require_tree ./views
+#= require_tree ./helpers
+#= require_tree ./components
+#= require_tree ./templates
+#= require_tree ./routes
+#= require ./router
 
-@App = {}
+# for more details see: http://emberjs.com/guides/application/
+window.App = Ember.Application.create()
+
+
