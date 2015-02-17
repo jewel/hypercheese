@@ -29,7 +29,6 @@ gem 'jquery-rails'
 gem 'ember-rails'
 gem 'emblem-rails'
 gem 'haml-rails'
-gem 'rb-readline'
 
 group :production do
   gem 'mysql2'
@@ -37,6 +36,7 @@ end
 
 group :development do
   gem 'thin'
+  gem 'rb-readline'
 end
 
 gem 'devise'
