@@ -1,2 +1,6 @@
-.item
-  img.thumb src=squareImage class=selected
+if itemId
+  .item
+    img.thumb src=squareImage class=selected
+else
+  .item style="background: green"
+    |loading metadata
