@@ -52,7 +52,7 @@ class Search
       filter << [:type, opts[:type].downcase]
     end
 
-    items = Item.where *filter
+    items = Item.includes(:tags).where *filter
 
     query.gsub! /^\s+/, ''
     query.gsub! /\s+$/, ''

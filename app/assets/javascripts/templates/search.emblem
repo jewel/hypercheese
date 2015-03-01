@@ -6,19 +6,25 @@ p
 
 p
   | Selected:
-  = selected
+  = selected.length
 
 if selected
   p
     | Tags:
     = input value=newTags placeholder="Tags"
+    button click=saveNewTags Save
 
   p
     | Matches:
     ul
-      = each tag in tagMatches
+      = each tag in tagsOfSelected
         li
           = tag.label
+
+      = each tag in tagMatches
+        li
+          em
+            = tag.label
 
 .results style=resultsStyle
   .viewport style=viewPortStyle

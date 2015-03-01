@@ -27,7 +27,7 @@ App.ItemController = Ember.Controller.extend
     $(".ic-autocomplete-input").val("")
     console.log "clear"
   ).observes('model')
-   
+
   setupTags: ->
     @store.find('tag').then (tags) =>
       sortedTags = tags.content.sortBy('label')

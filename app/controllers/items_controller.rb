@@ -11,18 +11,30 @@ class ItemsController < ApplicationController
 
     res = search.items.limit( limit ).offset( offset )
 
-    respond_with res, each_serializer: ItemSerializer, meta: { total: search.items.count }
+    render json: res, each_serializer: ItemSerializer, meta: { total: search.items.count }
   end
 
   def show
-    respond_with item
+    render json: item
   end
 
   def tags
-    i = Item.find item_tag_params[:id].to_i
-    i.tag_ids = item_tag_params[:tags]
-    i.save
-    respond_with i
+    items = nil
+
+    Item.transaction do
+      tags = Tag.find item_tag_params[:tags]
+      items = Item.includes(:tags).find item_tag_params[:items]
+
+      items.each do |item|
+        tags.each do |tag|
+          next if item.tags.member? tag
+          item.tags.push tag
+        end
+        item.save
+      end
+    end
+
+    render json: items, each_serializer: ItemSerializer
   end
 
   private
@@ -31,7 +43,6 @@ class ItemsController < ApplicationController
   end
 
   def item_tag_params
-    params.require(:item).permit(:id, tags: [])
+    params.permit( items: [], tags: [] )
   end
-
 end

@@ -5,18 +5,15 @@ App.Item = DS.Model.extend
   width: attr('number')
   height: attr('number')
   tags: DS.hasMany('tag')
+  isSelected: false
 
-  saveTags: ->
-    tagIds = @get('tags').map (tag)->
-      tag.id
-
-    App.Ajax
+App.Item.reopenClass
+  saveTags: (itemIds, tagIds) ->
+    App.Ajax(
       url: "/items/tags"
-      data: 
-        item:
-          tags: tagIds
-          id: @get('id')
+      data:
+        items: itemIds
+        tags: tagIds
       type: "POST"
-      dataType: "json"
-
-	isSelected: false
+    ).then (res) ->
+      App.Item.store.pushPayload res

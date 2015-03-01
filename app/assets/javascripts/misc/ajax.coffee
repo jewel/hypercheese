@@ -1,5 +1,7 @@
 # Wrap the jquery ajax call with an RSVP promise instead of a jquery one
 App.Ajax = (opts) ->
+  opts.dataType = "json"
+
   new Ember.RSVP.Promise (resolve, reject) ->
     $.ajax( opts ).then(
       (data) ->
