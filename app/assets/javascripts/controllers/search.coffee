@@ -8,6 +8,12 @@ App.SearchController = Ember.Controller.extend
 
   window: App.Window
 
+  newTags: ''
+  tags: []
+  init: ->
+    @store.find('tag').then (tags) =>
+      @set 'tags', tags.sortBy('count').toArray().reverse()
+
   columnWidth: Ember.computed 'imageSize', 'margin', ->
     @get('imageSize') + @get('margin') * 2
 
@@ -62,6 +68,48 @@ App.SearchController = Ember.Controller.extend
       else
         item.set 'isSelected', true
         @set 'selected', @get('selected') + 1
+
+  matchOne: (str) ->
+    return null if str == ''
+
+    for tag in @get('tags')
+      continue unless tag.get('label').toLowerCase().indexOf( str.toLowerCase() ) == 0
+      return tag
+
+    return null
+
+  matchMany: (str) ->
+    if !str? || str == ''
+      return []
+
+    # check for exact match
+    tags = @get('tags')
+
+    for tag in tags
+      continue unless tag.get('label').toLowerCase() == str.toLowerCase()
+      return [tag]
+
+    # attempt to split by comma
+    matches = []
+    for part in str.split( /,\ */ )
+      res = @matchOne part
+      matches.push res if res
+
+    return matches if matches.length > 0
+
+    # attempt to split by whitespace
+    for part in str.split( /\ +/ )
+      res = @matchOne part
+      matches.push res if res
+
+    return matches if matches.length > 0
+
+    return []
+
+
+  tagMatches: Ember.computed 'tags', 'newTags', ->
+    Ember.ArrayProxy.create
+      content: @matchMany( @get('newTags') )
 
   actions:
     imageClick: (itemId) ->

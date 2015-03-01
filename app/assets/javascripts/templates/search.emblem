@@ -8,6 +8,18 @@ p
   | Selected:
   = selected
 
+if selected
+  p
+    | Tags:
+    = input value=newTags placeholder="Tags"
+
+  p
+    | Matches:
+    ul
+      = each tag in tagMatches
+        li
+          = tag.label
+
 .results style=resultsStyle
   .viewport style=viewPortStyle
     = each item in viewPortItems
