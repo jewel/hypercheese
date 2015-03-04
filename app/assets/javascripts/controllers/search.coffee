@@ -13,6 +13,7 @@ App.SearchController = Ember.Controller.extend
   init: ->
     @store.find('tag').then (tags) =>
       @set 'tags', tags.sortBy('count').toArray().reverse()
+    @_super()
 
   columnWidth: Ember.computed 'imageSize', 'margin', ->
     @get('imageSize') + @get('margin') * 2
