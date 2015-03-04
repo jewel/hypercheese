@@ -10,8 +10,9 @@ App.Window = Ember.Object.create
 
   init: ->
     resize = =>
-      @set 'width', win.width()
-      @set 'height', win.height()
+      @setProperties
+        width: win.width()
+        height: win.height()
 
     win.bind 'resize', =>
       Ember.run.throttle @, resize, 1000, false

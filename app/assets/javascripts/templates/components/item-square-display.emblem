@@ -1,6 +1,6 @@
 if itemId
   .item
-    img.thumb src=squareImage class=selected
+    img.thumb style=imageStyle src=squareImage class=selected
 else
   .item style="background: green"
     |loading metadata

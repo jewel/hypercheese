@@ -2,11 +2,9 @@ App.SearchController = Ember.Controller.extend
   queryParams: ['q']
   q: ''
 
-  imageSize: 200
-  margin: 1
-  overdraw: 3
 
   window: App.Window
+
 
   newTags: ''
   tags: []
@@ -15,14 +13,22 @@ App.SearchController = Ember.Controller.extend
       @set 'tags', tags.sortBy('count').toArray().reverse()
     @_super()
 
-  columnWidth: Ember.computed 'imageSize', 'margin', ->
-    @get('imageSize') + @get('margin') * 2
+  margin: 1
+  overdraw: 3
 
-  rowHeight: Ember.computed 'imageSize', 'margin', ->
-    @get('imageSize') + @get('margin') * 2
+  imageSizeText: "200"
+  imageSize: Ember.computed 'imageSizeText', ->
+    Math.round @get('imageSizeText')
 
-  imagesPerRow: Ember.computed 'window.width', 'rowHeight', ->
-    Math.floor @get('window.width') / @get('rowHeight')
+  columnWidth: Ember.computed 'imageSize', ->
+    @get('imageSize') + @margin * 2
+
+  rowHeight: Ember.computed 'imageSize', ->
+    @get('imageSize') + @margin * 2
+
+  imagesPerRow: Ember.computed 'window.width', 'columnWidth', ->
+    console.log "#{@get('window.width')} / #{@get('columnWidth')}"
+    Math.floor @get('window.width') / @get('columnWidth')
 
   rowCount: Ember.computed 'content.length', 'imagesPerRow', ->
     Math.ceil @get('content.length') / @get('imagesPerRow')
@@ -49,6 +55,9 @@ App.SearchController = Ember.Controller.extend
   viewPortItems: Ember.computed 'model.loadCount', 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
     startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
     endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
+
+    console.log "#{@get('viewPortStartRow')} * #{@get('imagesPerRow')} = #{startIndex}"
+    console.log "#{startIndex} + #{@get('viewPortRowCount')} * #{@get('imagesPerRow')} = #{endIndex}"
 
     items = []
     len = @get('model.length')
@@ -110,7 +119,6 @@ App.SearchController = Ember.Controller.extend
     return matches if matches.length > 0
 
     return []
-
 
   tagMatches: Ember.computed 'tags', 'newTags', ->
     Ember.ArrayProxy.create
