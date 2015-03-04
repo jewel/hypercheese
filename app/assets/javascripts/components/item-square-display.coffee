@@ -3,6 +3,9 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
     "/data/resized/square/#{@itemId}.jpg"
   ).property()
 
+  imageStyle: Ember.computed 'imageSize', ->
+    "width: #{@get('imageSize')}px; height: #{@get('imageSize')}px"
+
   mouseDown: ->
     @wasLongPress = false
     console.log 'down'

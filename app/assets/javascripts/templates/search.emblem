@@ -1,6 +1,11 @@
 = input value=q placeholder="Search"
 
 p
+  label
+    |Size
+    = input type="number" min="10" value=imageSizeText
+
+p
   | Count:
   = model.count
 
@@ -29,4 +34,4 @@ if selected
 .results style=resultsStyle
   .viewport style=viewPortStyle
     = each item in viewPortItems
-      = item-square-display itemId=item.id selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress"
+      = item-square-display itemId=item.id selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize
