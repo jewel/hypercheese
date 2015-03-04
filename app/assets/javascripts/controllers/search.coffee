@@ -13,7 +13,7 @@ App.SearchController = Ember.Controller.extend
       @set 'tags', tags.sortBy('count').toArray().reverse()
     @_super()
 
-  margin: 1
+  margin: 2
   overdraw: 3
 
   imageSizeText: "200"
@@ -27,7 +27,6 @@ App.SearchController = Ember.Controller.extend
     @get('imageSize') + @margin * 2
 
   imagesPerRow: Ember.computed 'window.width', 'columnWidth', ->
-    console.log "#{@get('window.width')} / #{@get('columnWidth')}"
     Math.floor @get('window.width') / @get('columnWidth')
 
   rowCount: Ember.computed 'content.length', 'imagesPerRow', ->
