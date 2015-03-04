@@ -71,16 +71,17 @@ App.SearchController = Ember.Controller.extend
     Ember.ArrayProxy.create
       content: items
 
-  selected: Ember.Set.create()
+  selected: []
+
 
   toggleSelection: (itemId) ->
     @store.find('item', itemId).then (item) =>
       if item.get('isSelected')
         item.set 'isSelected', false
-        @get('selected').remove item
+        @get('selected').removeObject item
       else
         item.set 'isSelected', true
-        @get('selected').add item
+        @get('selected').addObject item
 
   matchOne: (str) ->
     return null if str == ''
@@ -123,11 +124,13 @@ App.SearchController = Ember.Controller.extend
     Ember.ArrayProxy.create
       content: @matchMany( @get('newTags') )
 
-  tagsOfSelected: Ember.computed 'selected.length', ->
-    tags = Ember.Set.create()
+  tagsOfSelected: Ember.computed.uniq('selectedTags')
+
+  selectedTags: Ember.computed 'selected.@each.tags', ->
+    tags = []
     @get('selected').forEach (item) ->
-      tags.addEach item.get('tags')
-    tags.toArray()
+      tags.addObjects item.get('tags')
+    tags
 
   actions:
     imageClick: (itemId) ->
