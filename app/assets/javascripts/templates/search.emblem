@@ -34,4 +34,4 @@ if selected
 .results style=resultsStyle
   .viewport style=viewPortStyle
     = each item in viewPortItems
-      = item-square-display itemId=item.id selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize
+      = item-square-display item=item selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize

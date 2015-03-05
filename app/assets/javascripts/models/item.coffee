@@ -6,6 +6,8 @@ App.Item = DS.Model.extend
   height: attr('number')
   tags: DS.hasMany('tag')
   isSelected: false
+  bgcolor: Ember.computed ->
+    '#' + ('000000' + Math.floor(Math.random() * 16777216).toString(16)).slice(-6)
 
 App.Item.reopenClass
   saveTags: (itemIds, tagIds) ->
