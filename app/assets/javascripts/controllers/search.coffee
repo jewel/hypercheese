@@ -124,12 +124,19 @@ App.SearchController = Ember.Controller.extend
     Ember.ArrayProxy.create
       content: @matchMany( @get('newTags') )
 
-  tagsOfSelected: Ember.computed.uniq('selectedTags')
-
   selectedTags: Ember.computed 'selected.@each.tags', ->
+    index = {}
     tags = []
     @get('selected').forEach (item) ->
-      tags.addObjects item.get('tags')
+      item.get('tags').forEach (tag) ->
+        obj = index[tag.id]
+        if !obj
+          obj = index[tag.id] = Ember.Object.create
+            tag: tag
+            count: 0
+          tags.push obj
+        obj.incrementProperty('count')
+
     tags
 
   actions:

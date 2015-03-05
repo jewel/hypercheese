@@ -1,4 +1,4 @@
 App.TagMatchComponent = Ember.Component.extend
   actions:
     removeTag: ->
-      @sendAction @removeTag, @tag
+      @sendAction @removeTag, @tagCount.tag

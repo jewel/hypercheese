@@ -23,8 +23,8 @@ if selected
   p
     | Matches:
     ul
-      = each tag in tagsOfSelected
-        = tag-match tag=tag removeTag="removeTag"
+      = each tagCount in selectedTags
+        = tag-match tagCount=tagCount removeTag="removeTag"
 
       = each tag in tagMatches
         li
