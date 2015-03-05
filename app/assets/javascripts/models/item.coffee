@@ -10,10 +10,20 @@ App.Item = DS.Model.extend
 App.Item.reopenClass
   saveTags: (itemIds, tagIds) ->
     App.Ajax(
-      url: "/items/tags"
+      url: "/items/add_tags"
       data:
         items: itemIds
         tags: tagIds
+      type: "POST"
+    ).then (res) ->
+      App.Item.store.pushPayload res
+
+  removeTag: (itemIds, tagId) ->
+    App.Ajax(
+      url: "/items/remove_tag"
+      data:
+        items: itemIds
+        tag: tagId
       type: "POST"
     ).then (res) ->
       App.Item.store.pushPayload res

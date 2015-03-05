@@ -147,4 +147,11 @@ App.SearchController = Ember.Controller.extend
       itemIds = @get('selected').mapBy 'id'
       tagIds = @matchMany( @get('newTags') ).mapBy 'id'
 
-      App.Item.saveTags itemIds, tagIds
+      if tagIds.length > 0
+        App.Item.saveTags itemIds, tagIds
+        @set 'newTags', ''
+
+    removeTag: (tag) ->
+      itemIds = @get('selected').mapBy 'id'
+
+      App.Item.removeTag itemIds, tag.id

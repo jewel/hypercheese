@@ -18,7 +18,7 @@ class ItemsController < ApplicationController
     render json: item
   end
 
-  def tags
+  def add_tags
     items = nil
 
     Item.transaction do
@@ -30,7 +30,21 @@ class ItemsController < ApplicationController
           next if item.tags.member? tag
           item.tags.push tag
         end
-        item.save
+      end
+    end
+
+    render json: items, each_serializer: ItemSerializer
+  end
+
+  def remove_tag
+    items = nil
+    Item.transaction do
+      tag = Tag.find params[:tag].to_i
+      items = Item.includes(:tags).find item_tag_params[:items]
+
+      items.each do |item|
+        next unless item.tags.member? tag
+        item.tags.delete tag
       end
     end
 

@@ -35,7 +35,8 @@ HyperCheese::Application.routes.draw do
     end
 
     collection do
-      post :tags
+      post :add_tags
+      post :remove_tag
     end
 
     put 'tags/:tag_id' => 'items#add_tag'

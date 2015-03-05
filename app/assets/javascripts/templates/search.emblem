@@ -16,15 +16,15 @@ p
 if selected
   p
     | Tags:
-    = input value=newTags placeholder="Tags"
-    button click=saveNewTags Save
+    form
+      = input value=newTags placeholder="Tags"
+      button click=saveNewTags class="btn btn-default" Save
 
   p
     | Matches:
     ul
       = each tag in tagsOfSelected
-        li
-          = tag.label
+        = tag-match tag=tag removeTag="removeTag"
 
       = each tag in tagMatches
         li
