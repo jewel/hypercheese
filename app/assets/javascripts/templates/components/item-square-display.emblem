@@ -1,4 +1,4 @@
-if item
+if item.isLoaded
   .item style=bgStyle
     img.thumb style=imageStyle src=squareImage class=selected
 else
