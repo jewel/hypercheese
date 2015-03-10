@@ -43,12 +43,12 @@ class Item < ActiveRecord::Base
     "#{Rails.root}/public/data/resized/#{size}/#{id}.jpg"
   end
 
-  def video_stream_path type
-    "#{Rails.root}/public/data/resized/stream/#{id}.#{variety}"
+  def video_stream_path
+    "#{Rails.root}/public/data/resized/stream/#{id}.mp4"
   end
 
-  def video_stream_url type
-    "/data/resized/stream/#{id}.#{variety}"
+  def video_stream_url
+    "/data/resized/stream/#{id}.mp4"
   end
 
   def resized_url size
