@@ -1,6 +1,9 @@
 require 'exifr'
 require 'digest/md5'
+require 'pathname'
 require 'shellwords'
+require_relative 'avprobe'
+require_relative 'scaler'
 
 module Import
   EXTS = {
@@ -11,6 +14,8 @@ module Import
     'avi' => 'video',
     'mov' => 'video',
     'mpg' => 'video',
+    'mts' => 'video',
+    'mp4' => 'video',
   }
 
   def self.check_dependencies
@@ -19,43 +24,66 @@ module Import
   end
 
   def self.by_path path
-    path = File.absolute_path( path )
+    path = Pathname.new( path ).cleanpath.to_s
+    path = File.join Dir.pwd, path unless path =~ /\A\//
 
     if Object.const_defined? :EXCLUDE_REGEX
       EXCLUDE_REGEX.each do |regex|
-        return nil if path =~ regex
+        if path =~ regex
+          warn "Excluding #{path.inspect} due to #{regex.inspect}"
+          return nil
+        end
       end
+    else
+      warn "Not excluding private files, no EXCLUDE REGEX defined" unless @warned
+      @warned = true
     end
 
-    raise "Strange path #{path.inspect}" unless path =~ /\.(\w+)\Z/
+    raise "Strange path" unless path =~ /\.(\w+)\Z/
     ext = $1.downcase
 
-    variety = EXTS[ext]
-    raise "File extension not supported" unless variety
+    type = EXTS[ext]
+    raise "File extension not supported" unless type
+    raise "Empty file" unless File.size(path) > 0
 
-    partial_path = path.sub "#{File.absolute_path(Item::BASE_PATH)}/", ''
-    raise "File is not in #{Item::BASE_PATH}" unless partial_path != path
+    partial_path = path.sub "#{ItemPath::BASE_PATH}/", ''
 
-    old = Item.where( :path => partial_path ).first
+    old = ItemPath.where( path: partial_path ).first
     if old
-      item = old
+      item = old.item
+      warn "Item already imported: #{partial_path}"
+      if partial_path != old.path
+        # MySQL case sensitivity issues
+        warn "Unexpected mismatch  #{old.path.inspect} -> #{partial_path.inspect}"
+      end
+
+      load_metadata item, path, type
+      item.save
     else
       md5 = Digest::MD5.file( path ).hexdigest
 
       old = Item.where( :md5 => md5 ).first
-      raise "Already exists by md5:  #{old.id}" if old
-
-      puts "Creating #{partial_path}"
+      if old
+        old.paths.each do |item_path|
+          next if File.exists? item_path.full_path
+          warn "Alternate path #{item_path.path} no longer exists!"
+          item_path.destroy
+        end
+        warn "#{partial_path} has same MD5 as #{old.paths.size} other files"
+        item_path = ItemPath.new item: old, path: partial_path
+        item_path.save
+        return
+      end
+      warn "Creating #{partial_path}"
 
       item = Item.new
 
-      item.path = partial_path
-
       item.md5 = md5
 
-      item.variety = variety
+      item.variety = type
 
-      load_exif_data item
+      load_metadata item, path, type
+      item.taken ||= File.mtime path
 
       date = item.taken.to_date
       event = Event.where( [ "DATE( start ) = ?", date ] ).first
@@ -63,17 +91,28 @@ module Import
       event ||= Event.create({
         name: nil,
         start: item.taken.strftime( "%Y-%m-%d" ),
-        finish: item.taken.strftime( "%Y-%m-%d" ),})
+        finish: item.taken.strftime( "%Y-%m-%d" ),
+      })
 
       item.event = event
 
       item.save
+
+      item_path = ItemPath.new( item: item, path: partial_path )
+      item_path.save
     end
 
-    if variety == 'photo'
-      generate_resized item
+    generate_resized item
+
+    item
+  end
+
+  def self.generate_resized item
+    if item.variety == 'photo'
+      generate_thumbs item
     else
       generate_video_stills item
+      generate_video_exploded item
       generate_video_stream item
     end
 
@@ -81,12 +120,11 @@ module Import
   end
 
   SIZES = {
-    # :small => "250x250",
     :square => "200",
     :large => "1850x1000"
   }
 
-  def self.generate_resized item
+  def self.generate_thumbs item
     SIZES.each do |size,dim|
       dest = item.resized_path size
       next if File.exist?( dest )
@@ -97,10 +135,9 @@ module Import
     end
   end
 
-  def self.load_exif_data item
-    item.taken = File.mtime item.full_path
+  def self.load_metadata item, path, type
     begin
-      exif = EXIFR::JPEG.new item.full_path
+      exif = EXIFR::JPEG.new path
       item.taken = exif.date_time if exif.date_time
       if exif.orientation.to_i > 4
         item.height = exif.width
@@ -111,6 +148,23 @@ module Import
       end
     rescue
       warn "Import EXIF problem: #$!"
+      metadata = read_exiftool path
+      date = metadata['Create Date'] || metadata['Date/Time Original']
+
+      if date !~ /^0000:/ && date =~ /^(\d\d\d\d):(\d\d):(\d\d) (.*)$/
+        item.taken = DateTime.parse "#$1-#$2-#$3 #$4"
+      end
+    end
+    if !item.height
+      if type == 'photo'
+        image = Magick::Image.ping path
+        item.width = image.first.columns
+        item.height = image.first.rows
+      else
+        data = Probe.video path
+        item.width = data[:width]
+        item.height = data[:height]
+      end
     end
   end
 
@@ -121,10 +175,49 @@ module Import
     $? == 0 or raise "Failed command"
   end
 
-  def self.check_prog executable, package
-    `which #{executable}`
-    abort "The program '#{executable}' is missing.  Install the #{package} package" unless $?.success?
+  def self.read_exiftool path
+    data = `exiftool -t #{se path}`
+    raise "exiftool failed for #{path.inspect}" unless $? == 0
+    metadata = {}
+    data.split( /\n/ ).each do |line|
+      row = line.split( /\t/, 2 )
+      metadata[row.first] = row.last
+    end
+    metadata
   end
+
+  def self.generate_video_exploded item
+    dest = item.resized_path :exploded
+    return if File.exists? dest
+
+    puts "Generated Exploded for #{item.full_path}"
+    tmp = "/tmp/make-exploded.#$$"
+
+    Dir.mkdir tmp
+    info = Probe.video item.full_path
+    total_w, total_h = Scaler.scale info[:width], info[:height], 1920, 1080
+
+    # Have a frame about every three seconds
+    target_frame_count = info[:duration] / 3
+
+    # But round to the nearest square
+    grid_w = Math.sqrt(target_frame_count).round
+    grid_w = 1 if grid_w < 1
+    grid_h = grid_w
+
+    thumb_w = (total_w / grid_w).round
+    thumb_h = (total_h / grid_h).round
+
+    total = grid_w * grid_h
+    gap = info[:duration] / total
+
+    run "avconv -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{tmp}/out%03d.bmp"
+
+    run "montage #{tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{tmp}/grid.jpg"
+    File.rename "#{tmp}/grid.jpg", dest
+    run "rm -r #{tmp}"
+  end
+
 
   def self.generate_video_stills item
     need_generation = false
@@ -138,19 +231,17 @@ module Import
 
     puts "Generating stills for #{item.full_path}"
 
-    tmp = "/tmp/make-thumbs.#$$"
+    tmp = "/tmp/make-thumbs.#$$.#{rand(1_000_000)}"
 
     Dir.mkdir( tmp )
+    tmp_file = "#{tmp}/snapshot.bmp"
 
-    run( "mplayer",
-           "-ao", "null",
-           "-vo", "png:outdir=#{tmp}",
-           "-ss", "2",
-           "-frames", "1",
-           "-really-quiet",
-           item.full_path )
+    run "avconv -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 2 -y #{se tmp_file}"
+    if !File.exists?(tmp_file)
+      warn "Error making thumbnail for #{item.full_path}, trying at zero second mark"
+      run "avconv -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 0 -y #{se tmp_file}"
+    end
 
-    tmp_file = "#{tmp}/00000001.png"
     raise "Error making thumbnail for #{item.full_path}" unless File.exists? tmp_file
 
     rotation = read_rotation item.full_path
@@ -213,7 +304,7 @@ module Import
         # The '>' flag means to never enlarge
         c.thumbnail size_spec
       end
-      c.quality "88"
+      c.quality 88
     end
     image.format 'jpeg'
     image.write temp
@@ -234,7 +325,7 @@ module Import
     nil
   end
 
-  VIDEO_TYPES = [ 'ogv', 'mp4' ]
+  VIDEO_TYPES = [ 'mp4' ]
 
   def self.generate_video_stream item
     path = item.full_path
@@ -274,35 +365,21 @@ module Import
       tmp = "#{dest}.tmp"
       if type == 'mp4'
         cmd = %w{
-          HandBrakeCLI -v -O -e x264 -b 2000 -E faac -6 mono -B 128
+          HandBrakeCLI -O -e x264 -b 2000 -E faac -6 mono -B 128
           -R Auto -f mp4 -2 -T -x ref=3:bframes=2:me=umh
         }
         cmd += [ "--#{dimension}", size.to_s ]
         cmd += [ '-i', path, '-o', tmp ]
         run( *cmd )
-      elsif type =='ogv'
-        tmp2 = "#{tmp}.mkv"
-        cmd = %w{
-          HandBrakeCLI -v -O -e theora -b 2000 -E vorbis -6 mono -B 128 -R 22050 -f mkv -2 -T
-        }
-        cmd += [ "--#{dimension}", size.to_s ]
-        cmd += [ '-i', path, '-o', tmp2 ]
-        run( *cmd )
 
-        # Put into ogg container instead of mkv
-
-        video = "#{tmp}.video"
-        audio = "#{tmp}.audio"
-        run( "mkvextract", "tracks", tmp2, "1:#{video}", "2:#{audio}" )
-
-        run( "oggz-merge", "-o", tmp, video, audio )
-        File.unlink audio
-        File.unlink video
+        File.rename tmp, dest
       end
 
-      File.rename tmp, dest
+      File.unlink tmp_rotated if File.exist?( tmp_rotated )
     end
+  end
 
-    File.unlink tmp_rotated if File.exist?( tmp_rotated )
+  def self.se str
+    Shellwords.shellescape str
   end
 end

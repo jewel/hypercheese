@@ -28,7 +28,15 @@ class Item < ActiveRecord::Base
 
   BASE_PATH = File.join Rails.root, "originals"
   def full_path
-    "#{BASE_PATH}/#{path}"
+    item_paths.first.full_path
+  end
+
+  def paths
+    item_paths
+  end
+
+  def path
+    item_paths.first.path
   end
 
   def resized_path size
@@ -36,11 +44,11 @@ class Item < ActiveRecord::Base
   end
 
   def video_stream_path type
-    "#{Rails.root}/public/data/resized/stream/#{id}.#{type}"
+    "#{Rails.root}/public/data/resized/stream/#{id}.#{variety}"
   end
 
   def video_stream_url type
-    "/data/resized/stream/#{id}.#{type}"
+    "/data/resized/stream/#{id}.#{variety}"
   end
 
   def resized_url size
@@ -53,10 +61,6 @@ class Item < ActiveRecord::Base
       hash[t.id] = true
     end
     hash
-  end
-
-  def path
-    item_paths.first.path
   end
 
   def source

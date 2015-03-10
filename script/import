@@ -5,28 +5,83 @@ require File.expand_path('../../config/boot',  __FILE__)
 require APP_PATH
 Rails.application.require_environment!
 
-path = ARGV.shift
-raise "Need path to file or directory" unless path
-
 require_dependency 'import'
 
-Import.check_dependencies
+require 'find'
 
-def import path
+candidates = {}
+
+raise "No directory passed" if ARGV.empty?
+
+def update_deleted
+  DataMapper.repository.adapter.execute "UPDATE items SET deleted = 1 WHERE id NOT IN ( SELECT item_id FROM item_paths)"
+  DataMapper.repository.adapter.execute "UPDATE items SET deleted = 0 WHERE id IN ( SELECT item_id FROM item_paths)"
+end
+
+dir = ARGV.first
+dir += "/" unless dir =~ /\/\Z/
+basepath = dir.sub /\Aoriginals\//, ''
+
+@warned = false
+def check_exclude_regex path
+  if Object.const_defined? :EXCLUDE_REGEX
+    EXCLUDE_REGEX.each do |regex|
+      return true if path =~ regex
+    end
+  else
+    warn "Not excluding private files, no EXCLUDE_REGEX defined" unless @warned
+    @warned = true
+  end
+  false
+end
+
+Find.find( "#{dir}" ) do |path|
+  if File.basename( path ) =~ /\A\./
+    Find.prune
+    next
+  end
+
+  if File.basename( path ) == 'rdiff-backup-data'
+    Find.prune
+    next
+  end
+
+  next unless path =~ /\.(JPE?G|MOV|AVI|TIFF?|MTS|MP4)\Z/i
+
+  next if check_exclude_regex(path)
+
+  path.sub! /\Aoriginals\//, ''
+  candidates[path] = true
+end
+
+warn "Total of #{candidates.size} items" if $stderr.tty?
+
+should_update_deleted = false
+
+paths = ItemPath.where( ["path LIKE ?", "#{basepath}%"] )
+
+paths.each do |item_path|
+  if candidates[item_path.path]
+    candidates.delete item_path.path unless ENV['IMPORT_ALL']
+  else
+    warn "#{item_path.path} no longer exists"
+    item_path.destroy
+    should_update_deleted = true
+  end
+end
+
+update_deleted if should_update_deleted
+
+exit if candidates.empty?
+
+warn "There are #{candidates.size} new items"
+
+candidates.keys.sort.each do |path|
   begin
-    Import.by_path path
+    Import.by_path "originals/#{path}"
   rescue
-    puts "FAILED #{path}: #$!"
+    warn "FAILED #{path}: #$!"
   end
 end
 
-if File.directory? path
-  require 'find'
-  Find.find( path ) do |file|
-    # next unless file =~ /\.(JPG|MOV|AVI|TIF|TIFF|JPEG)\Z/i
-    next unless file =~ /\.(JPG)\Z/i
-    import file
-  end
-else
-  import path
-end
+update_deleted
