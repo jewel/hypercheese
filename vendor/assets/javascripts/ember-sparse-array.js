@@ -25,6 +25,19 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
         this._loadIndex(0);
     },
 
+    findLoadedObjectIndex: function(object) {
+      var len = this.get('length');
+      for( var i = 0; i < len; i++ ) {
+        if( !this._loadedIndexes[i] )
+          continue;
+
+        if( this._data[i] === object )
+          return i;
+      }
+
+      return null;
+    },
+
     objectAt: function(index) {
         var length = this.get('length');
         if (index < 0)

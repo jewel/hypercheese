@@ -1,11 +1,6 @@
 = input value=q placeholder="Search"
 
 p
-  label
-    |Size
-    = input type="number" min="10" value=imageSizeText
-
-p
   | Count:
   = model.count
 

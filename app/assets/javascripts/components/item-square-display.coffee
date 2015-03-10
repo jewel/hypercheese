@@ -10,11 +10,9 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
 
   mouseDown: ->
     @wasLongPress = false
-    console.log 'down'
     func = =>
-      console.log 'long press'
       @wasLongPress = true
-      @sendAction @imageLongPress, @get('item.id')
+      @sendAction @imageLongPress, @get('item')
 
     run = Ember.run.later @, func, 1000
     @longPress = run
@@ -22,9 +20,7 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
 
   mouseUp: ->
     if !@wasLongPress
-      console.log 'click'
       Ember.run.cancel @longPress
-      @sendAction @imageClick, @get('item.id')
+      @sendAction @imageClick, @get('item')
     else
-      console.log 'click canceled'
       false

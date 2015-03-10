@@ -15,10 +15,13 @@ App.SearchController = Ember.Controller.extend
 
   margin: 2
   overdraw: 3
+  zoomed: false
 
-  imageSizeText: "200"
-  imageSize: Ember.computed 'imageSizeText', ->
-    Math.round @get('imageSizeText')
+  imageSize: Ember.computed 'zoomed', 'window.height', ->
+    if @get('zoomed')
+      @get('window.height')
+    else
+      200
 
   columnWidth: Ember.computed 'imageSize', ->
     @get('imageSize') + @margin * 2
@@ -35,9 +38,10 @@ App.SearchController = Ember.Controller.extend
   resultsStyle: Ember.computed 'rowHeight', 'rowCount', ->
     "height: #{@get('rowHeight') * @get('rowCount')}px"
 
+  toolbarHeight: 72
+
   scrollPos: Ember.computed 'window.scrollTop', ->
-    # FIXME 72px is hard-coded but should be the height of the toolbar
-    @get('window.scrollTop') - 72
+    @get('window.scrollTop') - @get('toolbarHeight')
 
   viewPortStartRow: Ember.computed 'scrollPos', 'rowHeight', ->
     val = Math.floor @get('scrollPos') / @get('rowHeight') - @overdraw
@@ -74,14 +78,13 @@ App.SearchController = Ember.Controller.extend
   selected: []
 
 
-  toggleSelection: (itemId) ->
-    @store.find('item', itemId).then (item) =>
-      if item.get('isSelected')
-        item.set 'isSelected', false
-        @get('selected').removeObject item
-      else
-        item.set 'isSelected', true
-        @get('selected').addObject item
+  toggleSelection: (item) ->
+    if item.get('isSelected')
+      item.set 'isSelected', false
+      @get('selected').removeObject item
+    else
+      item.set 'isSelected', true
+      @get('selected').addObject item
 
   matchOne: (str) ->
     return null if str == ''
@@ -140,15 +143,19 @@ App.SearchController = Ember.Controller.extend
     tags
 
   actions:
-    imageClick: (itemId) ->
+    imageClick: (item) ->
       if @get('selected.length') > 0
-        @toggleSelection itemId
+        @toggleSelection item
       else
-        @transitionToRoute 'item', itemId
+        @set 'zoomed', !@get('zoomed')
+        index = @get('content').findLoadedObjectIndex item
+        if index?
+          Ember.run.scheduleOnce 'afterRender', @, ->
+            console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')} + #{@get('toolbarHeight')}"
+            $(window).scrollTop index / @get('imagesPerRow') * @get('rowHeight') + @get('toolbarHeight')
 
-    imageLongPress: (itemId) ->
-      console.log 'controller long press'
-      @toggleSelection itemId
+    imageLongPress: (item) ->
+      @toggleSelection item
 
     saveNewTags: ->
       itemIds = @get('selected').mapBy 'id'
