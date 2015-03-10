@@ -14,8 +14,8 @@ candidates = {}
 raise "No directory passed" if ARGV.empty?
 
 def update_deleted
-  DataMapper.repository.adapter.execute "UPDATE items SET deleted = 1 WHERE id NOT IN ( SELECT item_id FROM item_paths)"
-  DataMapper.repository.adapter.execute "UPDATE items SET deleted = 0 WHERE id IN ( SELECT item_id FROM item_paths)"
+  Item.where("id NOT IN ( SELECT item_id FROM item_paths )").update_all deleted: true
+  Item.where("id IN ( SELECT item_id FROM item_paths )").update_all deleted: false
 end
 
 dir = ARGV.first
