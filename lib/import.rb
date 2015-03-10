@@ -169,9 +169,9 @@ module Import
   end
 
   private
-  def self.run( *a )
-    puts "[import] " + a.join( ' ' )
-    system( *a ) or raise "Could not run #{a.join( ' ' )}"
+  def self.run cmd
+    puts "[import] " + cmd
+    system( cmd ) or raise "Could not run #{cmd}"
     $? == 0 or raise "Failed command"
   end
 
@@ -211,11 +211,12 @@ module Import
     total = grid_w * grid_h
     gap = info[:duration] / total
 
-    run "avconv -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{tmp}/out%03d.bmp"
+    run "avconv -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%03d.bmp"
 
-    run "montage #{tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{tmp}/grid.jpg"
-    File.rename "#{tmp}/grid.jpg", dest
-    run "rm -r #{tmp}"
+    run "montage #{se tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{se tmp}/grid.jpg"
+    FileUtils.mkdir_p File.dirname( dest )
+    FileUtils.move "#{tmp}/grid.jpg", dest
+    run "rm -r #{se tmp}"
   end
 
 
@@ -270,7 +271,7 @@ module Import
       dim = "#{dim}x#{dim}" unless dim =~ /x/
 
       # Minimagick doesn't do composite very well
-      run( "composite", "-resize", "#{dim}!", filmstrip, temp, dest )
+      run "composite -resize #{se dim}! #{se filmstrip} #{se temp} #{se dest}"
 
       File.unlink temp
 
@@ -309,7 +310,7 @@ module Import
     image.format 'jpeg'
     image.write temp
     if size == :large
-      run( "jpegtran -progressive #{temp} > #{temp}P" )
+      run "jpegtran -progressive #{se temp} > #{se temp}P"
       File.unlink temp
       File.rename temp + "P", dest
     else
@@ -325,58 +326,30 @@ module Import
     nil
   end
 
-  VIDEO_TYPES = [ 'mp4' ]
-
   def self.generate_video_stream item
     path = item.full_path
 
-    need_encoding = false
-    VIDEO_TYPES.each do |type|
-      next if File.exists?( item.video_stream_path type )
-      need_encoding = true
-    end
-
-    return unless need_encoding
+    dest = item.video_stream_path
+    return if File.exists? dest
 
     rotation = read_rotation path
-
-    tmp_rotated = "/tmp/#{item.id}.rotated.avi"
 
     dimension = "height"
     size = 480
 
-    if rotation
-      raise "Not yet supported" if rotation == 180
-
-      dimension = "width"
-
-      r = 1
-      r = 2 if rotation == 270
-
-      run( "mencoder", "-vf", "rotate=#{r}", "-oac", "copy", "-ovc", "lavc", "-lavcopts", "vcodec=ljpeg", "-o", tmp_rotated, path )
-
-      path = tmp_rotated
+    if rotation && rotation != 0
+      raise "Rotation not yet supported"
     end
 
-    VIDEO_TYPES.each do |type|
-      dest = item.video_stream_path type
-      next if File.exist? dest
-      FileUtils.mkdir_p File.dirname( dest )
-      tmp = "#{dest}.tmp"
-      if type == 'mp4'
-        cmd = %w{
-          HandBrakeCLI -O -e x264 -b 2000 -E faac -6 mono -B 128
-          -R Auto -f mp4 -2 -T -x ref=3:bframes=2:me=umh
-        }
-        cmd += [ "--#{dimension}", size.to_s ]
-        cmd += [ '-i', path, '-o', tmp ]
-        run( *cmd )
+    FileUtils.mkdir_p File.dirname( dest )
+    tmp = "#{dest}.tmp"
 
-        File.rename tmp, dest
-      end
+    res = "1280x720"
 
-      File.unlink tmp_rotated if File.exist?( tmp_rotated )
-    end
+    run "avconv -i #{se path} -pass 1 -pre:v slower_firstpass -b:v 3000k -strict experimental -s #{res} -an -vcodec libx264 -f mp4 -y /dev/null"
+    run "avconv -i #{se path} -pass 2 -pre:v slower -b:v 3000k -b:a 128k -ar 48000 -strict experimental -s #{res} -acodec aac -vcodec libx264 -f mp4 -y #{se tmp}"
+
+    File.rename tmp, dest
   end
 
   def self.se str
