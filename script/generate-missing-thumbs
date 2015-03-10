@@ -1,0 +1,71 @@
+#!/usr/bin/ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require_dependency 'import'
+
+items = Item.where( deleted: false ).select([:id, :variety]).to_a
+
+puts "#{items.count} items"
+
+Dir.chdir Rails.root
+
+def read_assets name, ext
+  files = Dir.glob "public/data/resized/#{name}/*#{ext}"
+  puts "#{files.count} #{name}"
+  has_file = {}
+  files.each do |path|
+    id = File.basename(path, ext).to_i
+    has_file[id] = true
+  end
+  has_file
+end
+
+square = read_assets :square, '.jpg'
+large = read_assets :large, '.jpg'
+mp4 = read_assets :stream, '.mp4'
+exploded = read_assets :exploded, '.jpg'
+
+missing_square = []
+missing_large = []
+missing_mp4 = []
+missing_exploded = []
+
+items.each do |item|
+  missing_square << item.id unless square[item.id]
+  missing_large << item.id unless large[item.id]
+  next unless item.variety == 'video'
+  missing_mp4 << item.id unless mp4[item.id]
+  missing_exploded << item.id unless exploded[item.id]
+end
+
+puts "Missing square: #{missing_square.size}"
+puts "Missing large: #{missing_large.size}"
+puts "Missing mp4: #{missing_mp4.size}"
+puts "Missing exploded: #{missing_exploded.size}"
+
+errors = {}
+
+(missing_square + missing_large + missing_mp4 + missing_exploded).sort.uniq.reverse.each do |item_id|
+  puts "Fixing http://hypercheese.com/item/view/#{item_id}"
+
+  item = Item.find item_id
+  begin
+    Import.generate_resized item
+  rescue
+    warn "Error for #{item.path}: #$!"
+    errors[item_id] = item.paths
+  end
+end
+
+warn ""
+warn "#{errors.size} errors"
+errors.each do |item_id,paths|
+  warn "http://hypercheese.com/item/view/#{item_id}"
+  paths.each do |path|
+    warn "  originals/#{path.path}"
+  end
+end
