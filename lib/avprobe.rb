@@ -23,7 +23,7 @@ module Probe
 
   def self.avprobe path
     # Probe the video dimensions to determine the ideal final size
-    if avprobe_version.first == 9
+    if avprobe_version.first > 9
       data = `avprobe -of old -v error -show_format -show_streams #{se path}`
     else
       data = `avprobe -v error -show_format -show_streams #{se path}`
@@ -41,7 +41,7 @@ module Probe
   def self.avprobe_version
     return @avprobe_version if @avprobe_version
     version = `avprobe -v error -version | head -n 1`
-    version =~ /\Aavprobe (\d+)\.(\d+)/ or raise "Can't parse avprobe version: #{version.inspect}"
+    version =~ /\Aavprobe (\d+)/ or raise "Can't parse avprobe version: #{version.inspect}"
     major = $1.to_i
     minor = $2.to_i
     @avprobe_version = [major, minor]
