@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141220210337) do
+ActiveRecord::Schema.define(version: 20150310162115) do
 
   create_table "comments", force: true do |t|
     t.text     "text"
@@ -60,10 +60,11 @@ ActiveRecord::Schema.define(version: 20141220210337) do
     t.integer  "view_count"
     t.integer  "event_id"
     t.integer  "group_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.datetime "deleted_at"
     t.string   "variety"
+    t.boolean  "deleted",     default: false, null: false
   end
 
   add_index "items", ["md5"], name: "index_items_on_md5", unique: true
