@@ -112,14 +112,14 @@ class Search
       end
     end
 
-    hidden_tag = Tag.first( label: 'Hidden' )
+    hidden_tag = Tag.where( label: 'Hidden' ).first
     if hidden_tag
-      items = items.all :conditions => [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
+      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
     end
 
-    delete_tag = Tag.first( label: 'delete' )
+    delete_tag = Tag.where( label: 'delete' ).first
     if delete_tag && query !~ /\bdelete\b/
-      items = items.all :conditions => [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
+      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
     end
 
     raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
@@ -134,7 +134,7 @@ class Search
     unless query.empty?
       tags, invalid = TagParser.parse query
       @tags = tags
-      @invalid = @invalid
+      @invalid = invalid
 
       unless invalid.empty?
         @executed = true
@@ -172,7 +172,7 @@ class Search
       if source
         items = items.all :conditions => [ 'id in ( select item_id from item_paths where path like ?)', "#{source.path}/%" ]
       else
-        @invalid << "source:#{opts[:source}"
+        @invalid << "source:#{opts[:source]}"
       end
     end
 
