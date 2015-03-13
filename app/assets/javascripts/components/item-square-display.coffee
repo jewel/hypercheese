@@ -1,6 +1,10 @@
 App.ItemSquareDisplayComponent = Ember.Component.extend
-  squareImage: Ember.computed 'item.id', ->
-    "/data/resized/square/#{@get('item.id')}.jpg"
+  squareImage: Ember.computed 'item.id', 'zoomed', ->
+    size = if @get('zoomed')
+      'large'
+    else
+      'square'
+    "/data/resized/#{size}/#{@get('item.id')}.jpg"
 
   imageStyle: Ember.computed 'imageSize', ->
     "width: #{@get('imageSize')}px; height: #{@get('imageSize')}px"
