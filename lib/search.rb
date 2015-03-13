@@ -28,23 +28,23 @@ class Search
   def execute
     return if @executed
 
-    filter = [ '1=1' ]
+    filter = { deleted: false }
 
     query = @query.dup
 
     opts = {}
-    query.gsub! /\s?\b(\w+):(\w*)\b/ do
+    query.gsub! /\s?\b(\w+):([-\w]*)\b/ do
       opts[$1.downcase.to_sym] = $2.downcase
       ''
     end
 
     case opts[:orientation] || opts[:orient]
     when /^land/
-      filter = [ 'height < width' ]
+      filter << [ 'height < width' ]
     when /^port/
-      filter = [ 'height > width' ]
+      filter << [ 'height > width' ]
     when /^square/
-      filter = [ 'height = width' ]
+      filter << [ 'height = width' ]
     else
     end
 
@@ -52,7 +52,7 @@ class Search
       filter << [:type, opts[:type].downcase]
     end
 
-    items = Item.includes(:tags).where *filter
+    items = Item.includes(:tags).where filter
 
     query.gsub! /^\s+/, ''
     query.gsub! /\s+$/, ''
@@ -65,7 +65,7 @@ class Search
       opts[:any] = true
     end
 
-    [ :reverse, :untagged, :comments ].each do |keyword|
+    [ :reverse, :untagged, :has_comments ].each do |keyword|
       if query.sub! /\b#{keyword}\b/i, ''
         opts[keyword] = true
       end
@@ -87,7 +87,45 @@ class Search
       ''
     end
 
+    months = %w{
+      jan feb mar apr may jun jul aug sep oct nov dec
+      january
+      february
+      march
+      april
+      may
+      june
+      july
+      august
+      september
+      october
+      november
+      december
+    }
+
+    months.each_with_index do |month,index|
+      month_num = (index % 12) + 1
+      query.gsub! /\b#{month}\b/ do
+        opts[:month] ||= []
+        opts[:month] << month_num
+        ''
+      end
+    end
+
+    hidden_tag = Tag.first( label: 'Hidden' )
+    if hidden_tag
+      items = items.all :conditions => [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
+    end
+
+    delete_tag = Tag.first( label: 'delete' )
+    if delete_tag && query !~ /\bdelete\b/
+      items = items.all :conditions => [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
+    end
+
     raise "Invalid 'by'" if opts[:by] && opts[:by] !~ /\A\w+\Z/
+    if opts[:by]
+      opts[:by] = 'md5' if opts[:by] =~ /^rand/i
+    end
     @sort_by = (opts[:by] || :taken).to_sym
     @items = Item.none
     @invalid = []
@@ -116,8 +154,12 @@ class Search
       end
     end
 
-    if opts[:comments]
+    if opts[:has_comments]
       items = items.where 'id in ( select item_id from comments )'
+    end
+
+    if opts[:comment]
+      items = items.where ['id in ( select item_id from comments where text like ? )', "%#{opts[:comment]}%" ]
     end
 
     if opts[:untagged]
@@ -125,15 +167,25 @@ class Search
     end
 
     if opts[:source]
-      items = items.where 'path like ?', opts[:source] + "/%"
+      source = Source.where( label: opts[:source] ).first
+      source ||= Source.where( path: opts[:source] ).first
+      if source
+        items = items.all :conditions => [ 'id in ( select item_id from item_paths where path like ?)', "#{source.path}/%" ]
+      else
+        @invalid << "source:#{opts[:source}"
+      end
     end
 
     if opts[:path]
-      items = items.where 'path like ?', "%#{opts[:path]}%"
+      items = items.where [ 'id in ( select item_id from item_paths where path collate utf8_general_ci like ? )', "%#{opts[:path]}%" ]
     end
 
     if opts[:year]
       items = items.where 'year(taken) in ?', opts[:year]
+    end
+
+    if opts[:month]
+      items = items.all :conditions => [ 'month(taken) in ?', opts[:month] ]
     end
 
     if opts[:reverse]
