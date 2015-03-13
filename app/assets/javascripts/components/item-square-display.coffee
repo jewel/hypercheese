@@ -8,7 +8,10 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
   bgStyle: Ember.computed 'item.bgcolor', ->
     "background-color: #{@get('item.bgcolor')}"
 
-  mouseDown: ->
+  mouseDown: (e) ->
+    if e.which != 1
+      return false
+
     @wasLongPress = false
     func = =>
       @wasLongPress = true
@@ -18,9 +21,13 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
     @longPress = run
     true
 
-  mouseUp: ->
+  mouseUp: (e) ->
+    if e.which != 1
+      return false
+
     if !@wasLongPress
       Ember.run.cancel @longPress
       @sendAction @imageClick, @get('item')
+      true
     else
       false

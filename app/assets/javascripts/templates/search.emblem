@@ -26,7 +26,7 @@ if selected
           em
             = tag.label
 
-.results style=resultsStyle
+div style=resultsStyle class=resultsClass
   .viewport style=viewPortStyle
     = each item in viewPortItems
       = item-square-display item=item selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize
