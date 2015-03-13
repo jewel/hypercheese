@@ -29,4 +29,4 @@ if selected
 div style=resultsStyle class=resultsClass
   .viewport style=viewPortStyle
     = each item in viewPortItems
-      = item-square-display item=item selected=item.isSelected imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize
+      = item-square-display item=item imageClick="imageClick" imageLongPress="imageLongPress" imageSize=imageSize

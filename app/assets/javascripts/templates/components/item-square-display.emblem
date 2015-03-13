@@ -1,6 +1,6 @@
 if item.isLoaded
   .item style=bgStyle
-    img.thumb style=imageStyle src=squareImage class=selected
+    img.thumb style=imageStyle src=squareImage class=item.isSelected
 else
-  .item style="background: green"
+  .item style=imageStyle
     |loading metadata

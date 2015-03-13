@@ -5,8 +5,13 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
   imageStyle: Ember.computed 'imageSize', ->
     "width: #{@get('imageSize')}px; height: #{@get('imageSize')}px"
 
-  bgStyle: Ember.computed 'item.bgcolor', ->
-    "background-color: #{@get('item.bgcolor')}"
+  bgStyle: Ember.computed 'item.bgcolor', 'item.isSelected', ->
+    # The background color shines through when an item is selected
+    color = if @get('item.isSelected')
+      "blue"
+    else
+      @get('item.bgcolor')
+    "background-color: #{color}"
 
   mouseDown: (e) ->
     if e.which != 1
