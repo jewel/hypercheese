@@ -1,4 +1,7 @@
 App.ItemSquareDisplayComponent = Ember.Component.extend
+  classNames: ['item']
+  attributeBindings: ['bgStyle:style']
+
   squareImage: Ember.computed 'item.id', 'zoomed', ->
     size = if @get('zoomed')
       'large'

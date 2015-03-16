@@ -1,8 +1,9 @@
-li
+p.navbar-text
   = tagCount.tag.label
+  '
   | (
   = tagCount.count
   | )
-  |
+  '
   a href="javascript:void(0)" click=removeTag
     | &times;

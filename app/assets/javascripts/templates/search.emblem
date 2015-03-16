@@ -1,30 +1,49 @@
-= input value=q placeholder="Search"
+div style="height: 52px"
 
-p
-  | Count:
-  = model.count
+nav.navbar.navbar-default.navbar-fixed-top
+  .container-fluid
+  .navbar-header
+    button.navbar-toggle.collapsed type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1"
+      span.sr-only
+        | Toggle Navigation
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+    a.navbar-brand
+      | Hypercheese
 
-p
-  | Selected:
-  = selected.length
+  .collapse.navbar-collapse#hypercheese-navbar-collapse-1
+    ul.nav.navbar-nav
 
-if selected
-  p
-    | Tags:
-    form
-      = input value=newTags placeholder="Tags"
-      button click=saveNewTags class="btn btn-default" Save
-
-  p
-    | Matches:
-    ul
-      = each tagCount in selectedTags
-        = tag-match tagCount=tagCount removeTag="removeTag"
-
-      = each tag in tagMatches
+    if selected
+      ul.nav.navbar-nav
         li
-          em
-            = tag.label
+          p.navbar-text
+            ' Selected:
+            = selected.length
+
+        = each tagCount in selectedTags
+          = tag-match tagCount=tagCount removeTag="removeTag"
+      form.navbar-form.navbar-left submit=saveNewTags
+        = input value=newTags placeholder="Add tags"
+      ul.nav.navbar-nav
+        = each tag in tagMatches
+          li
+            p.navbar-text
+              = tag.label
+    else
+      ul.nav.navbar-nav
+        li
+          a href="#/tags"
+            | Tags
+        li
+      form.navbar-form.navbar-left role="Search"
+        .form-group
+          input.form-control type="text" placeholder="Search" value=q
+          '
+      p.navbar-text
+        ' Count:
+        = model.length
 
 div style=resultsStyle class=resultsClass
   .viewport style=viewPortStyle
