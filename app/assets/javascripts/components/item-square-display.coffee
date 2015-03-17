@@ -9,15 +9,38 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       'square'
     "/data/resized/#{size}/#{@get('item.id')}.jpg"
 
-  imageStyle: Ember.computed 'imageSize', ->
-    "width: #{@get('imageSize')}px; height: #{@get('imageSize')}px"
 
-  bgStyle: Ember.computed 'item.bgcolor', 'item.isSelected', ->
+  imageStyle: Ember.computed 'maxImageHeight', 'maxImageWidth', 'zoomed', 'item.width', 'item.height', ->
+    if @get('zoomed')
+      target_width = @get 'maxImageWidth'
+      target_height = @get 'maxImageHeight'
+      width = @get 'item.width'
+      height = @get 'item.height'
+
+      if width > target_width
+        height *= target_width / width
+        width *= target_width / width
+
+      if height > target_height
+        width *= target_height / height
+        height *= target_height / height
+
+      margin = 0
+      if target_height > height
+        margin = Math.floor( (target_height - height) / 2)
+      "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
+    else
+      "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px"
+
+  bgStyle: Ember.computed 'item.bgcolor', 'item.isSelected', 'zoomed', ->
     # The background color shines through when an item is selected
     color = if @get('item.isSelected')
       "blue"
     else
-      @get('item.bgcolor')
+      if @get('zoomed')
+        "black"
+      else
+        @get 'item.bgcolor'
     "background-color: #{color}"
 
   mouseDown: (e) ->

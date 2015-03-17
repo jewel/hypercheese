@@ -16,23 +16,26 @@ App.SearchController = Ember.Controller.extend
   margin: 2
   overdraw: 3
   # FIXME Can we detect how much space the scrollbars are taking?
-  scrollbarWidth: 13
+  scrollbarWidth: 14
   zoomed: false
 
-  imageSize: Ember.computed 'zoomed', 'window.height', 'window.width', ->
+  maxImageWidth: Ember.computed 'zoomed', 'window.height', 'window.width', ->
     if @get('zoomed')
-      if @get('window.height') > @get('window.width')
-        @get('window.width') - @margin*2 - @scrollbarWidth
-      else
-        @get('window.height') - @margin*2
+      @get('window.width') - @margin*2 - @scrollbarWidth
     else
       200
 
-  columnWidth: Ember.computed 'imageSize', ->
-    @get('imageSize') + @margin * 2
+  maxImageHeight: Ember.computed 'zoomed', 'window.height', 'window.width', ->
+    if @get('zoomed')
+      @get('window.height') - @margin*2
+    else
+      200
 
-  rowHeight: Ember.computed 'imageSize', ->
-    @get('imageSize') + @margin * 2
+  columnWidth: Ember.computed 'maxImageWidth', ->
+    @get('maxImageWidth') + @margin * 2
+
+  rowHeight: Ember.computed 'maxImageHeight', ->
+    @get('maxImageHeight') + @margin * 2
 
   imagesPerRow: Ember.computed 'window.width', 'columnWidth', 'zoomed', ->
     unless @get('zoomed')
@@ -52,7 +55,7 @@ App.SearchController = Ember.Controller.extend
   resultsStyle: Ember.computed 'rowHeight', 'rowCount', ->
     "height: #{@get('rowHeight') * @get('rowCount')}px"
 
-  toolbarHeight: 72
+  toolbarHeight: 52
 
   scrollPos: Ember.computed 'window.scrollTop', ->
     @get('window.scrollTop') - @get('toolbarHeight')
