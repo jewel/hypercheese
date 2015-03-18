@@ -22,6 +22,10 @@ nav.navbar.navbar-default.navbar-fixed-top
             ' Selected:
             = selected.length
 
+        li
+          p.navbar-text click="clearSelected"
+            | Clear
+
         = each tagCount in selectedTags
           = tag-match tagCount=tagCount removeTag="removeTag"
       form.navbar-form.navbar-left submit=saveNewTags

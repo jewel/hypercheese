@@ -174,6 +174,11 @@ App.SearchController = Ember.Controller.extend
     imageLongPress: (item) ->
       @toggleSelection item
 
+    clearSelected: ->
+      @get('selected').forEach (item) ->
+        item.set 'isSelected', false
+      @set('selected', [])
+
     saveNewTags: ->
       itemIds = @get('selected').mapBy 'id'
       tagIds = @matchMany( @get('newTags') ).mapBy 'id'
