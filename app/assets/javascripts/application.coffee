@@ -4,6 +4,7 @@
 #= require ember
 #= require ember-data
 #= require ic-autocomplete
+#= require twitter/bootstrap
 #= require_self
 #= require ./store
 #= require_tree ./misc
