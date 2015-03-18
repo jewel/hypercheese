@@ -13,23 +13,33 @@ App.SearchController = Ember.Controller.extend
       @set 'tags', tags.sortBy('count').toArray().reverse()
     @_super()
 
+  minColumns: 3
+  maxSquareSize: 200
   margin: 2
   overdraw: 3
   # FIXME Can we detect how much space the scrollbars are taking?
   scrollbarWidth: 14
   zoomed: false
 
-  maxImageWidth: Ember.computed 'zoomed', 'window.height', 'window.width', ->
+  imageSquareSize: Ember.computed 'window.width', ->
+    width = @get 'window.width'
+    columnSize = ( @maxSquareSize + @margin * 2 ) * @minColumns
+    if width >= columnSize
+      @maxSquareSize
+    else
+      width / @minColumns - @margin * 2
+
+  maxImageWidth: Ember.computed 'imageSquareSize', 'zoomed', 'window.height', 'window.width', ->
     if @get('zoomed')
       @get('window.width') - @margin*2 - @scrollbarWidth
     else
-      200
+      @get 'imageSquareSize'
 
-  maxImageHeight: Ember.computed 'zoomed', 'window.height', 'window.width', ->
+  maxImageHeight: Ember.computed 'imageSquareSize', 'zoomed', 'window.height', 'window.width', ->
     if @get('zoomed')
       @get('window.height') - @margin*2
     else
-      200
+      @get 'imageSquareSize'
 
   columnWidth: Ember.computed 'maxImageWidth', ->
     @get('maxImageWidth') + @margin * 2
