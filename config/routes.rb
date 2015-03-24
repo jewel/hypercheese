@@ -30,13 +30,10 @@ HyperCheese::Application.routes.draw do
   #   resources :products
   #
   resources :items do
-    member do
-      get :download
-    end
-
     collection do
       post :add_tags
       post :remove_tag
+      get :download
     end
 
     put 'tags/:tag_id' => 'items#add_tag'

@@ -28,6 +28,11 @@ nav.navbar.navbar-default.navbar-fixed-top
 
         = each tagCount in selectedTags
           = tag-match tagCount=tagCount removeTag="removeTag"
+
+      form.navbar-form.navbar-left
+        a.btn.btn-default href=downloadLink
+          | Download
+
       form.navbar-form.navbar-left submit=saveNewTags
         = input value=newTags placeholder="Add tags"
       ul.nav.navbar-nav

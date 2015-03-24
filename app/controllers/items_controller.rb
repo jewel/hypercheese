@@ -51,6 +51,25 @@ class ItemsController < ApplicationController
     render json: items, each_serializer: ItemSerializer
   end
 
+  include ActionController::Streaming
+  include Zipline
+
+  def download
+    ids = params[:ids].split(/,/).map { |_| _.to_i }
+    items = Item.where id: ids
+
+    if items.size == 1
+      return send_file items.first.full_path
+    end
+
+    files = items.map do |item|
+      path = File.realpath item.full_path
+      [File.open(path, 'rb'), File.basename(item.full_path)]
+    end
+
+    zipline files, "#{files.size}-from-hypercheese.zip"
+  end
+
   private
   def item
     Item.find params[:id].to_i

@@ -169,6 +169,10 @@ App.SearchController = Ember.Controller.extend
 
     tags
 
+  downloadLink: Ember.computed 'selected.@each', ->
+    itemIds = @get('selected').mapBy('id').join(",")
+    "/items/download?ids=#{itemIds}"
+
   actions:
     imageClick: (item) ->
       if @get('selected.length') > 0
