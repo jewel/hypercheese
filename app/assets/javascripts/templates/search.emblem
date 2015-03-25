@@ -23,8 +23,9 @@ nav.navbar.navbar-default.navbar-fixed-top
             = selected.length
 
         li
-          p.navbar-text click="clearSelected"
-            | Clear
+          form.navbar-form.navbar-left click=clearSelected
+            a.btn.btn-default
+              | Clear
 
         = each tagCount in selectedTags
           = tag-match tagCount=tagCount removeTag="removeTag"
