@@ -1,7 +1,8 @@
 # For more information see: http://emberjs.com/guides/routing/
 
 App.Router.map ()->
-  @resource 'search', path: '/search'
+  @resource 'search', path: '/search', ->
+    @route 'zoomed'
   @resource 'item', path: '/v/:item_id'
   @resource 'tags', ->
     @resource 'tag', path: '/:tag_id'

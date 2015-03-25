@@ -23,8 +23,9 @@ nav.navbar.navbar-default.navbar-fixed-top
             = selected.length
 
         li
-          p.navbar-text click="clearSelected"
-            | Clear
+          form.navbar-form.navbar-left click=clearSelected
+            a.btn.btn-default
+              | Clear
 
         = each tagCount in selectedTags
           = tag-match tagCount=tagCount removeTag="removeTag"
@@ -54,7 +55,10 @@ nav.navbar.navbar-default.navbar-fixed-top
         ' Count:
         = model.length
 
+
 div style=resultsStyle class=resultsClass
   .viewport style=viewPortStyle
     = each item in viewPortItems
       = item-square-display item=item imageClick="imageClick" imageLongPress="imageLongPress" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed
+if zoomed
+  outlet
