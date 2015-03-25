@@ -5,4 +5,7 @@ App.SearchZoomedRoute = Ember.Route.extend
 
   deactivate: -> 
     controller = @controllerFor('search')
-    controller.set 'zoomed', false
+    if controller.get 'zoomed'
+      index = controller.get 'getZoomedIndex'
+      controller.scrollToIndex(index)
+      controller.set 'zoomed', false

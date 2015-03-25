@@ -173,11 +173,22 @@ App.SearchController = Ember.Controller.extend
     itemIds = @get('selected').mapBy('id').join(",")
     "/items/download?ids=#{itemIds}"
 
+  getZoomedIndex: Ember.computed 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
+    startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
+    endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
+
+  scrollToIndex: (index) ->
+    if index?
+      Ember.run.scheduleOnce 'afterRender', @, ->
+        console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')} + #{@get('toolbarHeight')}"
+        $(window).scrollTop index / @get('imagesPerRow') * @get('rowHeight') + @get('toolbarHeight')
+
   actions:
     imageClick: (item) ->
       if @get('selected.length') > 0
         @toggleSelection item
       else
+        console.log @get 'getZoomedItem'
         @set 'zoomed', !@get('zoomed')
         if @get 'zoomed' 
           @transitionToRoute('search.zoomed')
@@ -185,10 +196,7 @@ App.SearchController = Ember.Controller.extend
           @transitionToRoute('search')
 
         index = @get('content').findLoadedObjectIndex item
-        if index?
-          Ember.run.scheduleOnce 'afterRender', @, ->
-            console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')} + #{@get('toolbarHeight')}"
-            $(window).scrollTop index / @get('imagesPerRow') * @get('rowHeight') + @get('toolbarHeight')
+        @scrollToIndex(index)
 
     imageLongPress: (item) ->
       @toggleSelection item
