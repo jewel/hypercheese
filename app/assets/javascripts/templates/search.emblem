@@ -54,7 +54,10 @@ nav.navbar.navbar-default.navbar-fixed-top
         ' Count:
         = model.length
 
+
 div style=resultsStyle class=resultsClass
   .viewport style=viewPortStyle
     = each item in viewPortItems
       = item-square-display item=item imageClick="imageClick" imageLongPress="imageLongPress" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed
+if zoomed
+  outlet

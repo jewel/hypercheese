@@ -179,6 +179,11 @@ App.SearchController = Ember.Controller.extend
         @toggleSelection item
       else
         @set 'zoomed', !@get('zoomed')
+        if @get 'zoomed' 
+          @transitionToRoute('search.zoomed')
+        else 
+          @transitionToRoute('search')
+
         index = @get('content').findLoadedObjectIndex item
         if index?
           Ember.run.scheduleOnce 'afterRender', @, ->
