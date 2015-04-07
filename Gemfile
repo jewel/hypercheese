@@ -15,6 +15,7 @@ group :assets do
   gem 'coffee-rails'
 
   gem 'uglifier'
+  gem 'lightbox2-rails'
 end
 
 gem 'twitter-bootstrap-rails'
