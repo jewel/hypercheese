@@ -53,5 +53,7 @@ module HyperCheese
 
     config.template_engine = :haml
 
+    config.handlebars.templates_root = "ember/templates"
+
   end
 end

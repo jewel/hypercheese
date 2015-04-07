@@ -1,0 +1,4 @@
+%h1 Shared Pictures
+
+- @items.each do |item|
+  %img{:src => item.resized_url(:square)}

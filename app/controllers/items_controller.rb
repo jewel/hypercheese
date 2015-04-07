@@ -76,6 +76,6 @@ class ItemsController < ApplicationController
   end
 
   def item_tag_params
-    params.permit( items: [], tags: [] )
+    params.permit items: [], tags: []
   end
 end

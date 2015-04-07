@@ -34,6 +34,9 @@ nav.navbar.navbar-default.navbar-fixed-top
         a.btn.btn-default href=downloadLink
           | Download
 
+        a.btn.btn-default href="javascript:void(0)" click=shareSelection
+          | Share
+
       form.navbar-form.navbar-left submit=saveNewTags
         = input value=newTags placeholder="Add tags"
       ul.nav.navbar-nav

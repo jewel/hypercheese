@@ -3,3 +3,4 @@ if item.isLoaded
 else
   .thumb style=imageStyle
     |loading
+

@@ -44,6 +44,8 @@ HyperCheese::Application.routes.draw do
 
   resources :tags
 
+  resources :shares
+
   get 'search/results' => 'search#results'
   get 'search/events' => 'search#events'
   get 'search' => 'search#index'

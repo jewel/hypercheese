@@ -206,6 +206,11 @@ App.SearchController = Ember.Controller.extend
         item.set 'isSelected', false
       @set('selected', [])
 
+    shareSelection: ->
+      itemIds = @get('selected').mapBy 'id'
+      App.Item.share(itemIds).then (url) ->
+        window.prompt "The items are available at this link:", url
+
     saveNewTags: ->
       itemIds = @get('selected').mapBy 'id'
       tagIds = @matchMany( @get('newTags') ).mapBy 'id'

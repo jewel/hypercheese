@@ -29,3 +29,12 @@ App.Item.reopenClass
       type: "POST"
     ).then (res) ->
       App.Item.store.pushPayload res
+
+  share: (itemIds) ->
+    App.Ajax(
+      url: "/shares"
+      data:
+        items: itemIds
+      type: "POST"
+    ).then (res) ->
+      res.url
