@@ -104,14 +104,22 @@ App.SearchController = Ember.Controller.extend
 
   selected: []
 
+  select: (item) ->
+    unless item.get('isSelected')
+      item.set 'isSelected', true
+      @get('selected').addObject item
 
-  toggleSelection: (item) ->
+  unSelect: (item) ->
     if item.get('isSelected')
       item.set 'isSelected', false
       @get('selected').removeObject item
+
+
+  toggleSelection: (item) ->
+    if item.get('isSelected')
+      @unSelect(item)
     else
-      item.set 'isSelected', true
-      @get('selected').addObject item
+      @select(item)
 
   matchOne: (str) ->
     return null if str == ''
@@ -175,7 +183,10 @@ App.SearchController = Ember.Controller.extend
 
   getZoomedIndex: Ember.computed 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
     startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
-    endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
+    #endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
+
+  getZoomedItem: Ember.computed 'getZoomedIndex', ->
+    @get('model').objectAt @get 'getZoomedIndex'
 
   scrollToIndex: (index) ->
     if index?
@@ -183,8 +194,13 @@ App.SearchController = Ember.Controller.extend
         console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')} + #{@get('toolbarHeight')}"
         $(window).scrollTop index / @get('imagesPerRow') * @get('rowHeight') + @get('toolbarHeight')
 
+  clearSelection: () ->
+    @get('selected').forEach (item) ->
+      item.set 'isSelected', false
+    @set('selected', [])
+
   actions:
-    imageClick: (item) ->
+    imageZoom: (item) ->
       if @get('selected.length') > 0
         @toggleSelection item
       else
@@ -198,13 +214,35 @@ App.SearchController = Ember.Controller.extend
         index = @get('content').findLoadedObjectIndex item
         @scrollToIndex(index)
 
-    imageLongPress: (item) ->
+    lineSelect: (item) ->
+      @clearSelection()
+      start = @get('startSelection')
+      unless start?
+        @select(item)
+        @set('startSelection', item)
+        return
+      startIndex = @get('content').findLoadedObjectIndex start
+      endIndex = @get('content').findLoadedObjectIndex item
+      if startIndex > endIndex
+        [startIndex, endIndex] = [endIndex, startIndex]
+      index = startIndex
+      while index <= endIndex
+        i = @get('content').objectAt(index)
+        console.log(i)
+        @select(i)
+        index += 1
+
+    toggleSelection: (item) ->
+      @toggleSelection item
+
+    imageSelect: (item) ->
+      @clearSelection()
+      @set('startSelection', item)
       @toggleSelection item
 
     clearSelected: ->
-      @get('selected').forEach (item) ->
-        item.set 'isSelected', false
-      @set('selected', [])
+      @set('startSelection', null)
+      @clearSelection()
 
     shareSelection: ->
       itemIds = @get('selected').mapBy 'id'

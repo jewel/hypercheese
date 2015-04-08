@@ -43,26 +43,38 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
         @get 'item.bgcolor'
     "background-color: #{color}"
 
-  mouseDown: (e) ->
-    if e.which != 1
-      return false
-
-    @wasLongPress = false
-    func = =>
-      @wasLongPress = true
-      @sendAction @imageLongPress, @get('item')
-
-    run = Ember.run.later @, func, 1000
-    @longPress = run
-    true
-
-  mouseUp: (e) ->
-    if e.which != 1
-      return false
-
-    if !@wasLongPress
-      Ember.run.cancel @longPress
-      @sendAction @imageClick, @get('item')
-      true
+  click: (e) ->
+    if e.ctrlKey
+      @sendAction @toggleSelection, @get('item')
+    else if e.shiftKey
+      @sendAction @lineSelect, @get('item')
+      console.log 'shiftKey'
     else
-      false
+      @sendAction @imageSelect, @get('item')
+
+  doubleClick: (e) ->
+    @sendAction @imageZoom, @get('item')
+
+#  mouseDown: (e) ->
+#    if e.which != 1
+#      return false
+#
+#    @wasLongPress = false
+#    func = =>
+#      @wasLongPress = true
+#      @sendAction @imageLongPress, @get('item')
+#
+#    run = Ember.run.later @, func, 1000
+#    @longPress = run
+#    true
+#
+#  mouseUp: (e) ->
+#    if e.which != 1
+#      return false
+#
+#    if !@wasLongPress
+#      Ember.run.cancel @longPress
+#      @sendAction @imageClick, @get('item')
+#      true
+#    else
+#      false
