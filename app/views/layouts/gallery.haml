@@ -13,5 +13,7 @@
     = stylesheet_link_tag "application", :media => "all"
     = csrf_meta_tags
   %body
+    #content
+      Loading
     = yield
-    = javascript_include_tag "ember-app"
+    = javascript_include_tag "gallery"
