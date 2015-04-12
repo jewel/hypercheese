@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
   def index
-    render layout: "ember"
+    render layout: "gallery"
   end
 end

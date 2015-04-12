@@ -13,10 +13,8 @@
     = stylesheet_link_tag "application", :media => "all"
     = csrf_meta_tags
   %body
+    #content
+      Loading
     = yield
     = javascript_include_tag "ember-app"
-    - dir = "#{Rails.root}/app/assets/javascripts/ember/templates/"
-    - Dir.glob( "#{dir}**/*.handlebars" ).each do |path|
-      - name = path.sub( dir, "" ).sub( ".handlebars", "" )
-      %script(data-template-name=name type="text/x-handlebars")
-        != File.binread path
+    = javascript_include_tag "gallery"
