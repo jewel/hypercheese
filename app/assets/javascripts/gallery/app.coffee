@@ -17,7 +17,7 @@
         @setState
           tags: res.tags
 
-    @executeSearch(0)
+    @executeSearch(0) 
 
   componentWillUnmount: ->
     window.removeEventListener 'scroll', @onScroll, false
@@ -28,12 +28,15 @@
       scrollTop: $(window).scrollTop()
 
   executeSearch: (position) ->
-    return if @searching
-    @searching = true
-
     limit = 20
+    if @searching?
+      # ignore duplicate requests
+      return unless @searching + limit < position || position + limit < @searching
+      @searchRequest.abort()
 
-    $.ajax
+    @searching = position
+
+    @searchRequest = $.ajax
       url: "/items"
       dataType: "json"
       data:
@@ -41,12 +44,12 @@
         offset: position
         query: @state.searchQuery
       success: (res) =>
-        @searching = false
+        @searching = null
         @setState
           resultCount: res.meta.total
           items: @injectItems( res.items, position )
       complete: =>
-        @searching = false
+        @searching = null
 
   injectItems: (items, pos) ->
     newItems = @shallowCopyItems()
@@ -194,7 +197,7 @@
       if item.id?
         squareImage = "/data/resized/#{imageSize}/#{item.id}.jpg"
       else
-        squareImage = "/assets/loading.png"
+        squareImage = "/images/loading.png"
 
       selected = if item.isSelected then 'selected' else ''
       <div className="item" style={bgStyle} key="item_#{item.id || Math.random()}">
