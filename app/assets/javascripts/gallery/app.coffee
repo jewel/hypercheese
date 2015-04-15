@@ -82,6 +82,11 @@
 
   zoomed: false
 
+  getColor: (index)->
+    someLargePrime = 1103515245
+    rand = (index * someLargePrime + 12345) % 16777216
+    '#' + ('000000' + rand.toString(16)).slice(-6)
+
   render: ->
     console.log "redrawing"
     win = $(window)
@@ -140,12 +145,11 @@
     # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
 
 
-    image = (item) =>
+    image = (item, pos) =>
       unless item?
         item =
           width: 100
           height: 100
-          bgColor: "#808080"
 
       if @zoomed
         target_width = maxImageWidth
@@ -180,10 +184,10 @@
         if @zoomed
           "black"
         else
-          item.bgcolor
+          @getColor(startIndex + pos)
 
       bgStyle =
-        backgroundColor: bgColor
+        "backgroundColor": bgColor
 
       imageSize = if @zoomed then 'large' else 'square'
 
