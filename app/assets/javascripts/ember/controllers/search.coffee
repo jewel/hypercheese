@@ -96,6 +96,11 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i >= 0 && i < len
         item = model.objectAt(i)
+        unless item.get 'isLoaded'
+          console.log "Making new object at #{i}"
+          item = Ember.Object.create
+            isLoaded: false
+        item.set 'position', i
         items.pushObject item
     items
 

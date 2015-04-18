@@ -3,6 +3,9 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
   attributeBindings: ['bgStyle:style']
 
   squareImage: Ember.computed 'item.id', 'zoomed', ->
+    unless @get('item.id')
+      return "/assets/loading.png"
+
     size = if @get('zoomed')
       'large'
     else
@@ -30,9 +33,14 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
         margin = Math.floor( (target_height - height) / 2)
       "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
     else
-      "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px"
+      "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px;"
 
-  bgStyle: Ember.computed 'item.bgcolor', 'item.isSelected', 'zoomed', ->
+  bgcolor: Ember.computed 'item.position', ->
+    largePrime = 1103515245
+    rand = (@get('item.position') * largePrime + 12345) % 16777216
+    '#' + ('000000' + rand.toString(16)).slice(-6)
+
+  bgStyle: Ember.computed 'bgcolor', 'item.isSelected', 'zoomed', ->
     # The background color shines through when an item is selected
     color = if @get('item.isSelected')
       "blue"
@@ -40,8 +48,8 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       if @get('zoomed')
         "black"
       else
-        @get 'item.bgcolor'
-    "background-color: #{color}"
+        @get 'bgcolor'
+    "background-color: #{color}; border: 2px solid #{color}"
 
   click: (e) ->
     if e.ctrlKey
