@@ -1,7 +1,7 @@
 #= require jquery
 #= require jquery_ujs
 #= require handlebars
-#= require ember
+#= require ember.glimmer
 #= require ember-data
 #= require ic-autocomplete
 #= require twitter/bootstrap

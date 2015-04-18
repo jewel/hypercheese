@@ -198,6 +198,7 @@ DEPENDENCIES
   coffee-rails
   dalli
   devise
+  ember-rails
   emblem-rails
   exifr
   haml-rails

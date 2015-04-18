@@ -27,6 +27,7 @@ gem 'zipline'
 gem 'dalli'
 gem 'jquery-rails'
 gem 'emblem-rails'
+gem 'ember-rails'
 gem 'haml-rails'
 
 group :production do
