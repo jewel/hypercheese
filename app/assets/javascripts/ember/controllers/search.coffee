@@ -67,8 +67,23 @@ App.SearchController = Ember.Controller.extend
 
   toolbarHeight: 52
 
-  scrollPos: Ember.computed 'window.scrollTop', ->
-    @get('window.scrollTop') - @get('toolbarHeight')
+  # scrollTop is the same as window.scrollTop, except we only change it when we
+  # want to force a redraw.  otherwise there are too many scroll events
+
+  scrollTopChange: Ember.observer 'window.scrollTop', ->
+    # @set 'scrollTop', @get('window.scrollTop')
+    # Only redraw if we have scrolled outside of what is already there
+    viewPortTop = @get('viewPortStartRow') * @get('rowHeight')
+    viewPortSize = @get('viewPortRowCount') * @get('rowHeight')
+    scrollTop = @get('window.scrollTop')
+    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
+      console.log "redraw"
+      @set 'scrollTop', scrollTop
+
+  scrollTop: 0
+
+  scrollPos: Ember.computed 'scrollTop', ->
+    @get('scrollTop') - @get('toolbarHeight')
 
   viewPortStartRow: Ember.computed 'scrollPos', 'rowHeight', ->
     val = Math.floor @get('scrollPos') / @get('rowHeight') - @overdraw
@@ -96,10 +111,6 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i >= 0 && i < len
         item = model.objectAt(i)
-        unless item.get 'isLoaded'
-          console.log "Making new object at #{i}"
-          item = Ember.Object.create
-            isLoaded: false
         item.set 'position', i
         items.pushObject item
     items

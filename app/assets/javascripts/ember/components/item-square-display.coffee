@@ -49,7 +49,7 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
         "black"
       else
         @get 'bgcolor'
-    "background-color: #{color}; border: 2px solid #{color}"
+    "background-color: #{color}"
 
   click: (e) ->
     if e.ctrlKey

@@ -1,7 +1,3 @@
-var SparseItem = Em.Object.create({
-    isLoaded: false
-});
-
 Ember.SparseArray = Em.Object.extend(Em.Array, {
     length: 0,
 
@@ -45,14 +41,16 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
         if (index >= length) {
             return null;
         }
-        if (typeof this._data[index] === 'undefined') {
+        if (typeof this._data[index] === 'undefined' || !this._data[index].get('isLoaded') ) {
             if (this._loadedIndexes[index] !== true) {
                 //Stop Ember.Array from trying to get the `lastObject` property
                 if (!this._ignoreLastObject || index !== length-1) {
                     this._loadIndex(index);
                 }
             }
-            return SparseItem;
+            return Ember.Object.create({
+              isLoaded: false
+            });
         }
         return this._data[index];
     },
