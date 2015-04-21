@@ -1,6 +1,6 @@
 #= require jquery
 #= require jquery_ujs
-#= require handlebars
+#= require ember.glimmer.template-compiler
 #= require ember.glimmer
 #= require ember-data
 #= require ic-autocomplete

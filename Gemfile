@@ -26,9 +26,8 @@ gem 'exifr'
 gem 'zipline'
 gem 'dalli'
 gem 'jquery-rails'
-gem 'emblem-rails'
-gem 'ember-rails'
 gem 'haml-rails'
+gem 'active_model_serializers'
 
 group :production do
   gem 'mysql2'

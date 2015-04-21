@@ -14,4 +14,8 @@
     = csrf_meta_tags
   %body
     = yield
+    - Dir.glob( "#{Rails.root}/app/assets/javascripts/ember/templates/**.handlebars" ).each do |path|
+      - name = File.basename path, '.handlebars'
+      %script{:id => name, :type => "text/x-handlebars-template"}
+        != File.binread path
     = javascript_include_tag "ember-app"
