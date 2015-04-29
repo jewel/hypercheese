@@ -12,6 +12,11 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       'square'
     "/data/resized/#{size}/#{@get('item.id')}.jpg"
 
+  imageClass: Ember.computed 'item.isSelected', ->
+    if @get("item.isSelected")
+      "thumb is-selected"
+    else
+      "thumb"
 
   imageStyle: Ember.computed 'maxImageHeight', 'maxImageWidth', 'zoomed', 'item.width', 'item.height', ->
     if @get('zoomed')
@@ -31,9 +36,9 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       margin = 0
       if target_height > height
         margin = Math.floor( (target_height - height) / 2)
-      "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
+      Ember.String.htmlSafe "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
     else
-      "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px;"
+      Ember.String.htmlSafe "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px;"
 
   bgcolor: Ember.computed 'item.position', ->
     largePrime = 1103515245
@@ -49,19 +54,20 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
         "black"
       else
         @get 'bgcolor'
-    "background-color: #{color}"
+    Ember.String.htmlSafe "background-color: #{color}"
 
   click: (e) ->
     if e.ctrlKey
       @sendAction @toggleSelection, @get('item')
     else if e.shiftKey
       @sendAction @lineSelect, @get('item')
-      console.log 'shiftKey'
     else
       @sendAction @imageSelect, @get('item')
 
+
   doubleClick: (e) ->
     @sendAction @imageZoom, @get('item')
+    @sendAction @toggleSelection, @get('item')
 
 #  mouseDown: (e) ->
 #    if e.which != 1

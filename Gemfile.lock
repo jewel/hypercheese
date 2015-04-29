@@ -34,6 +34,9 @@ GEM
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
     arel (5.0.1.20140414130214)
+    barber (0.9.0)
+      ember-source (>= 1.0, < 2)
+      execjs (>= 1.2, < 3)
     bcrypt (3.1.9)
     builder (3.2.2)
     coffee-rails (4.1.0)
@@ -53,6 +56,19 @@ GEM
       responders
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
+    ember-data-source (1.0.0.beta.16.1)
+      ember-source (~> 1.8)
+    ember-handlebars-template (0.1.5)
+      barber (>= 0.9.0)
+      sprockets (>= 2.1, < 3.1)
+    ember-rails (0.18.2)
+      active_model_serializers
+      ember-data-source (>= 1.0.0.beta.5)
+      ember-handlebars-template (>= 0.1.1, < 1.0)
+      ember-source (>= 1.1.0)
+      jquery-rails (>= 1.0.17)
+      railties (>= 3.1)
+    ember-source (1.11.3)
     erubis (2.7.0)
     eventmachine (1.0.3)
     execjs (2.5.2)
@@ -80,7 +96,7 @@ GEM
       mime-types (>= 1.16, < 3)
     mime-types (2.4.3)
     mini_magick (4.0.1)
-    minitest (5.6.0)
+    minitest (5.6.1)
     multi_json (1.11.0)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -174,6 +190,7 @@ DEPENDENCIES
   coffee-rails
   dalli
   devise
+  ember-rails
   exifr
   haml-rails
   jquery-rails

@@ -19,6 +19,7 @@ App.SearchController = Ember.Controller.extend
   overdraw: 3
   # FIXME Can we detect how much space the scrollbars are taking?
   scrollbarWidth: 14
+  toolbarHeight: 52
   zoomed: false
 
   imageSquareSize: Ember.computed 'window.width', ->
@@ -37,7 +38,7 @@ App.SearchController = Ember.Controller.extend
 
   maxImageHeight: Ember.computed 'imageSquareSize', 'zoomed', 'window.height', 'window.width', ->
     if @get('zoomed')
-      @get('window.height') - @margin*2
+      @get('window.height') - @margin*2 - @toolbarHeight
     else
       @get 'imageSquareSize'
 
@@ -63,9 +64,8 @@ App.SearchController = Ember.Controller.extend
       "results"
 
   resultsStyle: Ember.computed 'rowHeight', 'rowCount', ->
-    "height: #{@get('rowHeight') * @get('rowCount')}px"
+    Ember.String.htmlSafe "height: #{@get('rowHeight') * @get('rowCount')}px"
 
-  toolbarHeight: 52
 
   # scrollTop is the same as window.scrollTop, except we only change it when we
   # want to force a redraw.  otherwise there are too many scroll events
@@ -91,7 +91,7 @@ App.SearchController = Ember.Controller.extend
     val
 
   viewPortStyle: Ember.computed 'viewPortStartRow', 'rowHeight', ->
-    "top: #{@get('viewPortStartRow') * @get('rowHeight')}px"
+    Ember.String.htmlSafe "top: #{@get('viewPortStartRow') * @get('rowHeight')}px"
 
   viewPortRowCount: Ember.computed 'window.height', 'rowHeight', ->
     Math.ceil @get('window.height') / @get('rowHeight') + @overdraw * 2
@@ -197,18 +197,11 @@ App.SearchController = Ember.Controller.extend
     itemIds = @get('selected').mapBy('id').join(",")
     "/items/download?ids=#{itemIds}"
 
-  getZoomedIndex: Ember.computed 'imagesPerRow', 'viewPortStartRow', 'viewPortRowCount', ->
-    startIndex = @get('viewPortStartRow') * @get('imagesPerRow')
-    #endIndex = startIndex + @get('viewPortRowCount') * @get('imagesPerRow')
-
-  getZoomedItem: Ember.computed 'getZoomedIndex', ->
-    @get('model').objectAt @get 'getZoomedIndex'
-
   scrollToIndex: (index) ->
     if index?
       Ember.run.scheduleOnce 'afterRender', @, ->
-        console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')} + #{@get('toolbarHeight')}"
-        $(window).scrollTop index / @get('imagesPerRow') * @get('rowHeight') + @get('toolbarHeight')
+        console.log "Scrolling to #{index} / #{@get('imagesPerRow')} * #{@get('rowHeight')}"
+        $(window).scrollTop Math.floor(index / @get('imagesPerRow')) * @get('rowHeight')
 
   clearSelection: () ->
     @get('selected').forEach (item) ->
@@ -217,18 +210,14 @@ App.SearchController = Ember.Controller.extend
 
   actions:
     imageZoom: (item) ->
-      if @get('selected.length') > 0
-        @toggleSelection item
-      else
-        console.log @get 'getZoomedItem'
-        @set 'zoomed', !@get('zoomed')
-        if @get 'zoomed' 
-          @transitionToRoute('search.zoomed')
-        else 
-          @transitionToRoute('search')
+      @set 'zoomed', !@get('zoomed')
+      if @get 'zoomed' 
+        @transitionToRoute('search.zoomed')
+      else 
+        @transitionToRoute('search')
 
-        index = @get('content').findLoadedObjectIndex item
-        @scrollToIndex(index)
+      index = @get('content').findLoadedObjectIndex item
+      @scrollToIndex(index)
 
     lineSelect: (item) ->
       @clearSelection()
