@@ -1,9 +1,8 @@
 #= require jquery
 #= require jquery_ujs
-#= require ember.glimmer.template-compiler
-#= require ember.glimmer
+#= require ember-template-compiler
+#= require ember
 #= require ember-data
-#= require ic-autocomplete
 #= require twitter/bootstrap
 #= require_self
 #= require ./store

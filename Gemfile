@@ -13,6 +13,7 @@ gem 'sqlite3'
 group :assets do
   gem 'sass-rails'
   gem 'coffee-rails'
+  gem 'ember-rails'
 
   gem 'uglifier'
   gem 'lightbox2-rails'
