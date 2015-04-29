@@ -12,6 +12,11 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       'square'
     "/data/resized/#{size}/#{@get('item.id')}.jpg"
 
+  imageClass: Ember.computed 'item.isSelected', ->
+    if @get("item.isSelected")
+      "thumb is-selected"
+    else
+      "thumb"
 
   imageStyle: Ember.computed 'maxImageHeight', 'maxImageWidth', 'zoomed', 'item.width', 'item.height', ->
     if @get('zoomed')
@@ -56,12 +61,13 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       @sendAction @toggleSelection, @get('item')
     else if e.shiftKey
       @sendAction @lineSelect, @get('item')
-      console.log 'shiftKey'
     else
       @sendAction @imageSelect, @get('item')
 
+
   doubleClick: (e) ->
     @sendAction @imageZoom, @get('item')
+    @sendAction @toggleSelection, @get('item')
 
 #  mouseDown: (e) ->
 #    if e.which != 1
