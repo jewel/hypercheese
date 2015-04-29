@@ -63,7 +63,7 @@ App.SearchController = Ember.Controller.extend
       "results"
 
   resultsStyle: Ember.computed 'rowHeight', 'rowCount', ->
-    "height: #{@get('rowHeight') * @get('rowCount')}px"
+    Ember.String.htmlSafe "height: #{@get('rowHeight') * @get('rowCount')}px"
 
   toolbarHeight: 52
 
@@ -91,7 +91,7 @@ App.SearchController = Ember.Controller.extend
     val
 
   viewPortStyle: Ember.computed 'viewPortStartRow', 'rowHeight', ->
-    "top: #{@get('viewPortStartRow') * @get('rowHeight')}px"
+    Ember.String.htmlSafe "top: #{@get('viewPortStartRow') * @get('rowHeight')}px"
 
   viewPortRowCount: Ember.computed 'window.height', 'rowHeight', ->
     Math.ceil @get('window.height') / @get('rowHeight') + @overdraw * 2

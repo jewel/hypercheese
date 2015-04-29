@@ -31,9 +31,9 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       margin = 0
       if target_height > height
         margin = Math.floor( (target_height - height) / 2)
-      "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
+      Ember.String.htmlSafe "width: #{Math.floor(width)}px; height: #{Math.floor(height)}px; margin-top: #{margin}px; margin-bottom: #{margin}px"
     else
-      "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px;"
+      Ember.String.htmlSafe "width: #{@get('maxImageWidth')}px; height: #{@get('maxImageHeight')}px;"
 
   bgcolor: Ember.computed 'item.position', ->
     largePrime = 1103515245
@@ -49,7 +49,7 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
         "black"
       else
         @get 'bgcolor'
-    "background-color: #{color}"
+    Ember.String.htmlSafe "background-color: #{color}"
 
   click: (e) ->
     if e.ctrlKey
