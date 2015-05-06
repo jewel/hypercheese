@@ -42,8 +42,10 @@
         <a class="btn btn-default" href="javascript:void(0)" {{action "shareSelection"}}>Share</a>
       </form>
 
-      <form class="navbar-form navbar-left" {{action "saveNewTags"}}>
-        {{input value=newTags placeholder="Add tags"}}
+      <form class="navbar-form navbar-left" {{action "saveNewTags" on="submit"}} >
+        <div class="form-group">
+          {{input class="form-control" value=newTags placeholder="Add tags" type="text"}}
+        </div>
       </form>
 
       <ul class="nav navbar-nav">
