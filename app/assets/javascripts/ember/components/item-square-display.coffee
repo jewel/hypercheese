@@ -67,7 +67,6 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
 
   doubleClick: (e) ->
     @sendAction @imageZoom, @get('item')
-    @sendAction @toggleSelection, @get('item')
 
 #  mouseDown: (e) ->
 #    if e.which != 1

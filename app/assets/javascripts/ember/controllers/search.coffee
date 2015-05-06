@@ -211,9 +211,10 @@ App.SearchController = Ember.Controller.extend
   actions:
     imageZoom: (item) ->
       @set 'zoomed', !@get('zoomed')
-      if @get 'zoomed' 
+      if @get 'zoomed'
+        @toggleSelection item
         @transitionToRoute('search.zoomed')
-      else 
+      else
         @transitionToRoute('search')
 
       index = @get('content').findLoadedObjectIndex item
