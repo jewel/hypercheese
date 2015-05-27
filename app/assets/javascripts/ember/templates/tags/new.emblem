@@ -1,9 +1,0 @@
-h1 New Tag
-
-form 
-  fieldset
-    dl  
-      dt: label Label:
-      dd: =input type="text" value=label
-    input.btn-primary.btn type='submit' value='Create Tag' click='createTag' 
-
