@@ -1,0 +1,15 @@
+<h1 class="text-center jumbotron">
+  Comments for picture
+</h1>
+
+{{#each comment in controller}}
+  <div class="comment">
+    <strong>{{comment.user.name}}</strong>:
+    {{comment.text}}
+  </div>
+{{/each}}
+
+<form {{action 'comment'}}>
+  <textarea name="text"></textarea>
+  <button>Submit</button>
+</form>

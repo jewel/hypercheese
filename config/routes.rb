@@ -35,23 +35,13 @@ HyperCheese::Application.routes.draw do
       post :remove_tag
       get :download
     end
-
-    put 'tags/:tag_id' => 'items#add_tag'
-    delete 'tags/:tag_id' => 'items#remove_tag'
-
-    resources :comments
   end
+
+  resources :comments
 
   resources :tags
 
   resources :shares
-
-  get 'search/results' => 'search#results'
-  get 'search/events' => 'search#events'
-  get 'search' => 'search#index'
-
-  put 'upcheese/check' => 'upcheese#check'
-  put 'upcheese/upload' => 'upcheese#upload'
 
   # Sample resource route with options:
   #   resources :products do

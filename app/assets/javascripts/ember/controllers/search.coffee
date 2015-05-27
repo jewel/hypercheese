@@ -120,6 +120,9 @@ App.SearchController = Ember.Controller.extend
 
   selected: []
 
+  oneSelected: Ember.computed 'selected.length', ->
+    @get('selected.length') == 1
+
   select: (item) ->
     unless item.get('isSelected')
       item.set 'isSelected', true
@@ -267,3 +270,8 @@ App.SearchController = Ember.Controller.extend
       itemIds = @get('selected').mapBy 'id'
 
       App.Item.removeTag itemIds, tag.id
+
+    comment: ->
+      # There should only be one item selected
+      item = @get('selected')[0]
+      @transitionToRoute('comments', item)

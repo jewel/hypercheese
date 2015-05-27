@@ -37,6 +37,10 @@
       </ul>
 
       <form class="navbar-form navbar-left">
+        {{#if oneSelected}}
+          <a class="btn btn-default" {{action "comment"}}>Comment</a>
+        {{/if}}
+
         <a class="btn btn-default" href={{downloadLink}}>Download</a>
 
         <a class="btn btn-default" href="javascript:void(0)" {{action "shareSelection"}}>Share</a>

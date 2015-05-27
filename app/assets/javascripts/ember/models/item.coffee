@@ -5,6 +5,7 @@ App.Item = DS.Model.extend
   width: attr('number')
   height: attr('number')
   tags: DS.hasMany('tag')
+  comments: DS.hasMany('comments')
   isSelected: false
 
 App.Item.reopenClass
