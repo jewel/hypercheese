@@ -1,0 +1,22 @@
+<div class="container">
+  <h1 class="text-center jumbotron">Tags</h1>
+
+  <div class="row">
+    <div class="col-sm-4">
+      {{#link-to 'tags.new' classNames="new btn btn-primary"}}New Tag{{/link-to}}
+      <br/>
+      <br/>
+      <ul class="list-group">
+        {{#each tag in controller}}
+          {{#link-to 'tag' tag tagName="li" classNames="list-group-item"}}{{tag.label}}{{/link-to}}
+        {{/each}}
+      </ul>
+    </div>
+
+        
+    <div class="col-sm-8">
+      {{outlet}}
+    </div>
+  </div>
+</div>
+
