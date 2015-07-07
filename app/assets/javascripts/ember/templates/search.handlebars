@@ -31,7 +31,7 @@
           </form>
         </li>
 
-        {{#each tagCount in selectedTags}}
+        {{#each selectedTags as |tagCount|}}
           {{tag-match tagCount=tagCount removeTag="removeTag"}}
         {{/each}}
       </ul>
@@ -49,7 +49,7 @@
       </form>
 
       <ul class="nav navbar-nav">
-        {{#each tag in tagMatches}}
+        {{#each tagMatches as |tag|}}
           <li>
             <p class="navbar-text">{{tag.label}}</p>
           </li>
@@ -76,7 +76,7 @@
 
 <div style={{resultsStyle}} class={{resultsClass}}>
   <div class="viewport" style={{viewPortStyle}}>
-    {{#each item in viewPortItems}}
+    {{#each viewPortItems as |item|}}
       {{item-square-display item=item imageZoom="imageZoom" lineSelect="lineSelect" toggleSelection="toggleSelection" imageSelect="imageSelect" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed}}
     {{/each}}
   </div>

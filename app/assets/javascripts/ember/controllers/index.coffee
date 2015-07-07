@@ -1,4 +1,4 @@
-App.IndexController = Ember.ArrayController.extend App.PaginatedMixin,
+App.IndexController = Ember.Controller.extend App.PaginatedMixin,
   total: (->
     @store.metadataFor('item').total
   ).property('model')

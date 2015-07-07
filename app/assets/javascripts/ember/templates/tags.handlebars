@@ -7,7 +7,7 @@
       <br/>
       <br/>
       <ul class="list-group">
-        {{#each tag in controller}}
+        {{#each model as |tag|}}
           {{#link-to 'tag' tag tagName="li" classNames="list-group-item"}}{{tag.label}}{{/link-to}}
         {{/each}}
       </ul>

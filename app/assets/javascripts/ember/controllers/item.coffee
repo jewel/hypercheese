@@ -18,7 +18,7 @@ App.ItemController = Ember.Controller.extend
     selectedTagId = @get('selectedTagId')
     return if selectedTagId == null
 
-    @store.find('tag', selectedTagId).then (tag)=>
+    @store.findRecord('tag', selectedTagId).then (tag)=>
       @get('model.tags').addObject(tag)
       @get('model').saveTags()
   ).observes('selectedTagId')
@@ -29,7 +29,7 @@ App.ItemController = Ember.Controller.extend
   ).observes('model')
 
   setupTags: ->
-    @store.find('tag').then (tags) =>
+    @store.findAll('tag').then (tags) =>
       sortedTags = tags.content.sortBy('label')
       @set('tags', sortedTags)
       @set('filteredTags', sortedTags)

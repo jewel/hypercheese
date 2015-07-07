@@ -9,7 +9,7 @@ App.SearchController = Ember.Controller.extend
   newTags: ''
   tags: []
   init: ->
-    @store.find('tag').then (tags) =>
+    @store.findAll('tag').then (tags) =>
       @set 'tags', tags.sortBy('count').toArray().reverse()
     @_super()
 
@@ -76,9 +76,9 @@ App.SearchController = Ember.Controller.extend
     viewPortTop = @get('viewPortStartRow') * @get('rowHeight')
     viewPortSize = @get('viewPortRowCount') * @get('rowHeight')
     scrollTop = @get('window.scrollTop')
-    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
-      console.log "redraw"
-      @set 'scrollTop', scrollTop
+    #if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
+    console.log "redraw"
+    @set 'scrollTop', scrollTop
 
   scrollTop: 0
 
@@ -111,7 +111,7 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i >= 0 && i < len
         item = model.objectAt(i)
-        item.set 'position', i
+        Ember.set(item, 'position', i)
         items.pushObject item
     items
 
