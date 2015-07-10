@@ -76,9 +76,9 @@ App.SearchController = Ember.Controller.extend
     viewPortTop = @get('viewPortStartRow') * @get('rowHeight')
     viewPortSize = @get('viewPortRowCount') * @get('rowHeight')
     scrollTop = @get('window.scrollTop')
-    #if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
-    console.log "redraw"
-    @set 'scrollTop', scrollTop
+    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
+      console.log "redraw"
+      @set 'scrollTop', scrollTop
 
   scrollTop: 0
 
