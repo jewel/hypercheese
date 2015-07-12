@@ -7,6 +7,7 @@
 #= require_self
 #= require ./store
 #= require_tree ./misc
+#= require_tree ./adapters
 #= require_tree ./models
 #= require_tree ./mixins
 #= require_tree ./controllers

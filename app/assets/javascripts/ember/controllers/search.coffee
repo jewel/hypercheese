@@ -9,7 +9,7 @@ App.SearchController = Ember.Controller.extend
   newTags: ''
   tags: []
   init: ->
-    @store.find('tag').then (tags) =>
+    @store.findAll('tag').then (tags) =>
       @set 'tags', tags.sortBy('count').toArray().reverse()
     @_super()
 
@@ -111,7 +111,7 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i >= 0 && i < len
         item = model.objectAt(i)
-        item.set 'position', i
+        Ember.set(item, 'position', i)
         items.pushObject item
     items
 

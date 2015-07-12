@@ -41,7 +41,7 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
         if (index >= length) {
             return null;
         }
-        if (typeof this._data[index] === 'undefined' || !this._data[index].get('isLoaded') ) {
+        if (typeof this._data[index] === 'undefined' || !this._data[index].isLoaded ) {
             if (this._loadedIndexes[index] !== true) {
                 //Stop Ember.Array from trying to get the `lastObject` property
                 if (!this._ignoreLastObject || index !== length-1) {

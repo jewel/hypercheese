@@ -4,7 +4,7 @@ App.SearchResults = Ember.SparseArray.extend
   batchSize: 20
 
   load: (offset, limit) ->
-    promise = @store.find 'item',
+    promise = @store.query 'item',
       query: @query
       offset: offset
       limit: limit
