@@ -2,7 +2,7 @@
   Comments for picture
 </h1>
 
-{{#each comment in controller}}
+{{#each comments as |comment|}}
   <div class="comment">
     <strong>{{comment.user.name}}</strong>:
     {{comment.text}}
