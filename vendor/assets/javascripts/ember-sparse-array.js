@@ -100,7 +100,7 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
                 self.set('length', newLength);
             }
             for (var i = 0; i < itemsLength; i++) {
-                self._data[startOffset + i] = items[i];
+                self._data[startOffset + i] = items[i].getRecord();
             }
             self.arrayContentDidChange(startOffset, itemsRemoved, itemsLength);
 

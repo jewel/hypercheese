@@ -111,7 +111,7 @@ App.SearchController = Ember.Controller.extend
     for i in [startIndex...endIndex]
       if i >= 0 && i < len
         item = model.objectAt(i)
-        Ember.set(item, 'position', i)
+        item.set 'position', i
         items.pushObject item
     items
 
@@ -136,9 +136,9 @@ App.SearchController = Ember.Controller.extend
 
   toggleSelection: (item) ->
     if item.get('isSelected')
-      @unSelect(item)
+      @unSelect item
     else
-      @select(item)
+      @select item
 
   matchOne: (str) ->
     return null if str == ''
@@ -248,11 +248,11 @@ App.SearchController = Ember.Controller.extend
     imageSelect: (item) ->
       console.log 'select'
       @clearSelection()
-      @set('startSelection', item)
+      @set 'startSelection', item
       @toggleSelection item
 
     clearSelected: ->
-      @set('startSelection', null)
+      @set 'startSelection', null
       @clearSelection()
 
     shareSelection: ->
