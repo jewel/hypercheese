@@ -80,8 +80,8 @@
 
 <div style={{resultsStyle}} class={{resultsClass}}>
   <div class="viewport" style={{viewPortStyle}}>
-    {{#each viewPortItems as |item|}}
-      {{item-square-display item=item imageZoom="imageZoom" lineSelect="lineSelect" toggleSelection="toggleSelection" imageSelect="imageSelect" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed}}
+    {{#each viewPortItems as |item| ~}}
+      {{item-square-display item=item imageZoom="imageZoom" lineSelect="lineSelect" toggleSelection="toggleSelection" imageSelect="imageSelect" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed ~}}
     {{/each}}
   </div>
 </div>
