@@ -242,9 +242,11 @@ App.SearchController = Ember.Controller.extend
         index += 1
 
     toggleSelection: (item) ->
+      console.log 'toggle'
       @toggleSelection item
 
     imageSelect: (item) ->
+      console.log 'select'
       @clearSelection()
       @set('startSelection', item)
       @toggleSelection item
