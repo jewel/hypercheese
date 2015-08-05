@@ -2,9 +2,11 @@
   Comments for picture
 </h1>
 
-{{#each comments as |comment|}}
+{{#each model as |comment|}}
   <div class="comment">
     <strong>{{comment.user.name}}</strong>:
+    <strong>{{comment.user}}</strong>:
+    <strong>{{comment.item}}</strong>:
     {{comment.text}}
   </div>
 {{/each}}

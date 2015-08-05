@@ -3,7 +3,7 @@ class CommentsController < ApplicationController
 
   # GET /comments
   def index
-    @comments = Comment.where(item_id: params[:id].to_i).order( :created_at )
+    @comments = Comment.where(item_id: params[:item_id].to_i).order( :created_at )
     render json: @comments
   end
 

@@ -276,4 +276,4 @@ App.SearchController = Ember.Controller.extend
     comment: ->
       # There should only be one item selected
       item = @get('selected')[0]
-      @transitionToRoute('comments', item)
+      @transitionToRoute('comments', item.get('id'))

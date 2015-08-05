@@ -1,4 +1,4 @@
-App.CommentsController = Ember.ArrayController.extend
+App.CommentsController = Ember.Controller.extend
   sortProperties: ['createdAt']
 
   actions:

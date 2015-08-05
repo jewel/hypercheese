@@ -8,7 +8,7 @@ class TagsController < ApplicationController
     render status: :created, json: Tag.create(tag_params)
   end
 
-  private 
+  private
 
   def tag_params
     params.require(:tag).permit(:label)
