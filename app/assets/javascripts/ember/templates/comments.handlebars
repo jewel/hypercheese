@@ -2,16 +2,15 @@
   Comments for picture
 </h1>
 
-{{#each model as |comment|}}
+{{#each model.comments as |comment|}}
   <div class="comment">
+    <em>{{comment.created_at}}</em>
     <strong>{{comment.user.name}}</strong>:
-    <strong>{{comment.user}}</strong>:
-    <strong>{{comment.item}}</strong>:
     {{comment.text}}
   </div>
 {{/each}}
 
-<form {{action 'comment'}}>
-  <textarea name="text"></textarea>
+<form {{action 'comment' on="submit"}}>
+  {{textarea value=text}}
   <button>Submit</button>
 </form>

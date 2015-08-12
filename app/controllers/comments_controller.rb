@@ -7,32 +7,23 @@ class CommentsController < ApplicationController
     render json: @comments
   end
 
+  # GET /comments/:id
+  def show
+    @comment = Comment.find params[:id]
+    render json: @comment
+  end
+
   # POST /comments
   def create
-    @item = Item.get params[:id]
-
-    # If no account, tell user to log in and redirect user to the log in page.
-    if !current_account
-      flash[:error] = "You need to log in to make comments."
-      redirect "/account/login"
-    end
-
-    email do
-      from "cheese@tuxng.com"
-      to "cheese@tuxng.com"
-      subject "[Cheese] Comment on #{@item.id}"
-      body "I hope you enjoy it."
-    end
-
     c = Comment.new
-    c.account = current_account
-    c.item = @item
-    c.created = Time.new
-    c.text = params[:text]
-    c.save
+    c.update_attributes! comment_params
+    c.user = current_user
+    c.save!
 
-    flash[:notice] = "Comment saved"
+    render json: c
+  end
 
-    redirect url_for( :item_view, :id => @item.id )
+  def comment_params
+    params.require(:comment).permit(:text, :item_id)
   end
 end

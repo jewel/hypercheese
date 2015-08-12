@@ -4,8 +4,8 @@ App.Item = DS.Model.extend
   taken: attr('date')
   width: attr('number')
   height: attr('number')
-  tags: DS.hasMany('tag')
-  comments: DS.hasMany('comments')
+  tags: DS.hasMany('tag', async: false)
+  comments: DS.hasMany('comment', async: true)
   isSelected: false
 
 App.Item.reopenClass
