@@ -265,13 +265,14 @@ App.SearchController = Ember.Controller.extend
       tagIds = @matchMany( @get('newTags') ).mapBy 'id'
 
       if tagIds.length > 0
-        App.Item.saveTags itemIds, tagIds
+        App.Item.saveTags @store, itemIds, tagIds
         @set 'newTags', ''
 
     removeTag: (tag) ->
+      console.log("remove tag")
       itemIds = @get('selected').mapBy 'id'
 
-      App.Item.removeTag itemIds, tag.id
+      App.Item.removeTag @store, itemIds, tag.get('id')
 
     comment: ->
       # There should only be one item selected
