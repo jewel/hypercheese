@@ -9,7 +9,7 @@ App.Item = DS.Model.extend
   isSelected: false
 
 App.Item.reopenClass
-  saveTags: (itemIds, tagIds) ->
+  saveTags: (store, itemIds, tagIds) ->
     App.Ajax(
       url: "/items/add_tags"
       data:
@@ -17,9 +17,9 @@ App.Item.reopenClass
         tags: tagIds
       type: "POST"
     ).then (res) ->
-      App.Item.store.pushPayload res
+      store.pushPayload res
 
-  removeTag: (itemIds, tagId) ->
+  removeTag: (store, itemIds, tagId) ->
     App.Ajax(
       url: "/items/remove_tag"
       data:
@@ -27,7 +27,7 @@ App.Item.reopenClass
         tag: tagId
       type: "POST"
     ).then (res) ->
-      App.Item.store.pushPayload res
+      store.pushPayload res
 
   share: (itemIds) ->
     App.Ajax(
