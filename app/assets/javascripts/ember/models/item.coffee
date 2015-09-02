@@ -6,6 +6,7 @@ App.Item = DS.Model.extend
   height: attr('number')
   tags: DS.hasMany('tag', async: false)
   comments: DS.hasMany('comment', async: true)
+  hasComments: attr('boolean')
   isSelected: false
 
 App.Item.reopenClass
