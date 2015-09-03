@@ -236,7 +236,7 @@ Devise.setup do |config|
   end
 
   if File.exists? "/etc/cheese"
-    config.omniauth :facebook, cheese_env('fb.id'), cheese_env('fb.secret')
+    config.omniauth :facebook, cheese_env('fb.id'), cheese_env('fb.secret'), scope: 'public_profile,email', info_fields: 'email,name'
     Rails.application.config.use_omniauth = true
   else
     Rails.application.config.use_omniauth = false
