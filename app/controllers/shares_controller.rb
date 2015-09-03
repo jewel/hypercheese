@@ -1,4 +1,7 @@
 class SharesController < ApplicationController
+  skip_before_filter :authenticate_user!, only: [:show]
+  skip_before_filter :verify_approval!, only: [:show]
+
   def show
     @share = Share.find_by_code( params[:id] )
     @items = @share.items
