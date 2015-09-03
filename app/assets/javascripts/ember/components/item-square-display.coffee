@@ -2,12 +2,15 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
   classNames: ['item']
   attributeBindings: ['bgStyle:style']
 
-  squareImage: Ember.computed 'item.id', 'zoomed', ->
+  squareImage: Ember.computed 'item.id', 'zoomed', 'item.variety', ->
     unless @get('item.id')
       return "/assets/loading.png"
 
     size = if @get('zoomed')
-      'large'
+      if @get('item.variety') == 'video'
+        'exploded'
+      else
+        'large'
     else
       'square'
     "/data/resized/#{size}/#{@get('item.id')}.jpg"
@@ -17,6 +20,15 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
       "thumb is-selected"
     else
       "thumb"
+
+  showVideo: Ember.computed 'item.variety', 'zoomed', ->
+    @get('zoomed') && @get('item.variety') == 'video'
+
+  videoStream: Ember.computed 'item.id', ->
+    unless @get('item.id')
+      return ""
+
+    "/data/resized/stream/#{@get('item.id')}.mp4"
 
   imageStyle: Ember.computed 'maxImageHeight', 'maxImageWidth', 'zoomed', 'item.width', 'item.height', ->
     if @get('zoomed')
