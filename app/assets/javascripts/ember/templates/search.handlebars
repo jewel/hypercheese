@@ -65,9 +65,9 @@
           <a href="#/tags">Tags</a>
         </li>
       </ul>
-      <form class="navbar-form navbar-left" role="Search">
+      <form class="navbar-form navbar-left" role="Search" {{action "search" on="submit"}} >
         <div class="form-group">
-          <input class="form-control" type="text" placeholder="Search" value={{q}} />
+          {{input class="form-control" value=newQuery placeholder="Search" type="text"}}
         </div>
       </form>
       <p class="navbar-text">

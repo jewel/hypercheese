@@ -2,9 +2,7 @@ App.SearchController = Ember.Controller.extend
   queryParams: ['q']
   q: ''
 
-
   window: App.Window
-
 
   newTags: ''
   tags: []
@@ -278,3 +276,8 @@ App.SearchController = Ember.Controller.extend
       # There should only be one item selected
       item = @get('selected')[0]
       @transitionToRoute('comments', item.get('id'))
+
+    search: ->
+      @transitionToRoute 'search',
+        queryParams:
+          q: @get('newQuery')
