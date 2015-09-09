@@ -13,7 +13,9 @@ HyperCheese::Application.routes.draw do
 
   devise_scope :user do
     get "/users/pending", to: "user/registrations#pending"
+    get "/users/choose", to: "user/sessions#choose"
   end
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
