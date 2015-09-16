@@ -4,7 +4,7 @@ App.ItemSquareDisplayComponent = Ember.Component.extend
 
   squareImage: Ember.computed 'item.id', 'zoomed', 'item.variety', ->
     unless @get('item.id')
-      return "/assets/loading.png"
+      return "/images/loading.png"
 
     size = if @get('zoomed')
       if @get('item.variety') == 'video'
