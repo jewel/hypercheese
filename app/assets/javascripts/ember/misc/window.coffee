@@ -15,10 +15,7 @@ App.Window = Ember.Object.create
         height: win.height()
 
     win.bind 'resize', =>
-      Ember.run.throttle @, resize, 1000, false
-
-    scroll = =>
-      @set 'scrollTop', win.scrollTop()
+      Ember.run.throttle @, resize, 100, false
 
     win.bind 'scroll', =>
-      Ember.run.throttle @, scroll, 1000, false
+      @set 'scrollTop', win.scrollTop()
