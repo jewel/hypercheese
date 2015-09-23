@@ -14,7 +14,7 @@ App.SearchController = Ember.Controller.extend
   minColumns: 3
   maxSquareSize: 200
   margin: 2
-  overdraw: 3
+  overdraw: 10
   # FIXME Can we detect how much space the scrollbars are taking?
   scrollbarWidth: 14
   toolbarHeight: 52
