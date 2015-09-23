@@ -69,14 +69,19 @@ App.SearchController = Ember.Controller.extend
   # want to force a redraw.  otherwise there are too many scroll events
 
   scrollTopChange: Ember.observer 'window.scrollTop', ->
-    # @set 'scrollTop', @get('window.scrollTop')
-    # Only redraw if we have scrolled outside of what is already there
-    viewPortTop = @get('viewPortStartRow') * @get('rowHeight')
-    viewPortSize = @get('viewPortRowCount') * @get('rowHeight')
+    # Only redraw once we have scrolled past an entire row
     scrollTop = @get('window.scrollTop')
-    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @get('window.height')
-      console.log "redraw"
+    oldScrollTop = @get('scrollTop')
+    unless scrollTop?
       @set 'scrollTop', scrollTop
+      return
+
+    diff = Math.abs( scrollTop - oldScrollTop )
+    return unless diff > @get('rowHeight')
+
+    console.log "redraw"
+    @set 'scrollTop', scrollTop
+
 
   scrollTop: 0
 
