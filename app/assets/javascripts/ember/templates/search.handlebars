@@ -1,7 +1,4 @@
-<div style="height: 52px"></div>
-
-
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
       <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">
@@ -85,12 +82,13 @@
   </div>
 </nav>
 
-
-<div style={{resultsStyle}} class={{resultsClass}}>
-  <div class="viewport" style={{viewPortStyle}}>
-    {{#each viewPortItems as |item| ~}}
-      {{item-square-display item=item imageZoom="imageZoom" lineSelect="lineSelect" toggleSelection="toggleSelection" imageSelect="imageSelect" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed ~}}
-    {{/each}}
+<div class="scroll-window">
+  <div style={{resultsStyle}} class={{resultsClass}}>
+    <div class="viewport" style={{viewPortStyle}}>
+      {{#each viewPortItems as |item| ~}}
+        {{item-square-display item=item imageZoom="imageZoom" lineSelect="lineSelect" toggleSelection="toggleSelection" imageSelect="imageSelect" maxImageHeight=maxImageHeight maxImageWidth=maxImageWidth zoomed=zoomed ~}}
+      {{/each}}
+    </div>
   </div>
 </div>
 
