@@ -2,13 +2,18 @@ App.SearchController = Ember.Controller.extend
   queryParams: ['q']
   q: ''
 
-  window: App.Window
 
   newTags: ''
   tags: []
   init: ->
     @store.findAll('tag').then (tags) =>
       @set 'tags', tags.sortBy('count').toArray().reverse()
+
+    Ember.run.scheduleOnce 'afterRender', @, ->
+      @set 'window', App.ElementSize.create(
+        element: $('.scroll-window')
+      )
+
     @_super()
 
   minColumns: 3
@@ -17,7 +22,6 @@ App.SearchController = Ember.Controller.extend
   overdraw: 3
   # FIXME Can we detect how much space the scrollbars are taking?
   scrollbarWidth: 14
-  toolbarHeight: 52
   zoomed: false
 
   imageSquareSize: Ember.computed 'window.width', ->
@@ -36,7 +40,7 @@ App.SearchController = Ember.Controller.extend
 
   maxImageHeight: Ember.computed 'imageSquareSize', 'zoomed', 'window.height', 'window.width', ->
     if @get('zoomed')
-      @get('window.height') - @margin*2 - @toolbarHeight
+      @get('window.height') - @margin*2
     else
       @get 'imageSquareSize'
 
@@ -85,11 +89,8 @@ App.SearchController = Ember.Controller.extend
 
   scrollTop: 0
 
-  scrollPos: Ember.computed 'scrollTop', ->
-    @get('scrollTop') - @get('toolbarHeight')
-
-  viewPortStartRow: Ember.computed 'scrollPos', 'rowHeight', ->
-    val = Math.floor @get('scrollPos') / @get('rowHeight') - @overdraw
+  viewPortStartRow: Ember.computed 'scrollTop', 'rowHeight', ->
+    val = Math.floor @get('scrollTop') / @get('rowHeight') - @overdraw
     val = 0 if val < 0
     val
 
