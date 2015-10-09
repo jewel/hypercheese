@@ -2,134 +2,60 @@
 
 @GalleryApp = React.createClass
   getInitialState: ->
-    items: {}
-    tags: {}
+    tags: []
+    items: []
     searchQuery: ""
     resultCount: 0
     scrollTop: $(window).scrollTop()
 
   componentDidMount: ->
     window.addEventListener 'scroll', @onScroll, false
-    $.ajax
-      url: "/tags"
-      dataType: "json"
-      success: (res) =>
-        @setState
-          tags: res.tags
+    window.addEventListener 'resize', @updateViewport, false
 
-    @executeSearch(0) 
+    @window = $(window)
+
+    $ =>
+      Bridge.init()
+      Bridge.onChange (data) =>
+        @setState data
+      @updateViewPort()
 
   componentWillUnmount: ->
     window.removeEventListener 'scroll', @onScroll, false
+    window.removeEventListener 'resize', @updateViewport, false
 
   onScroll: ->
-    # FIXME We need to throttle these events
-    @setState
-      scrollTop: $(window).scrollTop()
+    scrollTop = @window.scrollTop()
+    viewPortTop = @state.viewPortStartRow * @state.rowHeight
+    viewPortSize = @state.viewPortRowCount * @state.rowHeight
+    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @window.height()
+      updateViewPort()
 
-  executeSearch: (position) ->
-    limit = 20
-    if @searching?
-      # ignore duplicate requests
-      return unless @searching + limit < position || position + limit < @searching
-      @searchRequest.abort()
-
-    @searching = position
-
-    @searchRequest = $.ajax
-      url: "/items"
-      dataType: "json"
-      data:
-        limit: limit
-        offset: position
-        query: @state.searchQuery
-      success: (res) =>
-        @searching = null
-        @setState
-          resultCount: res.meta.total
-          items: @injectItems( res.items, position )
-      complete: =>
-        @searching = null
-
-  injectItems: (items, pos) ->
-    newItems = @shallowCopyItems()
-
-    i = 0
-    while i < items.length
-      items[i].position = pos + i
-      newItems[pos + i] = items[i]
-      i++
-
-    newItems
-
-  shallowCopyItems: ->
-    $.extend {}, @state.items
-
-  updateItem: (item) ->
-    newItems = @shallowCopyItems()
-    newItems[item.position] = item
-
-    @setState
-      items: newItems
-
-  viewPortItems: (startIndex, endIndex) ->
-    items = []
-
-    for i in [startIndex...endIndex]
-      continue if i < 0 || i >= @state.resultCount
-      item = @state.items[i]
-      @executeSearch(i) unless item
-      items.push item
-
-    items
-
-  zoomed: false
-
-  getColor: (index)->
-    someLargePrime = 1103515245
-    rand = (index * someLargePrime + 12345) % 16777216
-    '#' + ('000000' + rand.toString(16)).slice(-6)
-
-  render: ->
-    console.log "redrawing"
-    win = $(window)
+  updateViewPort: ->
+    console.log "updating viewport"
+    win = @window
     win_width = win.width()
     win_height = win.height()
 
     margin = 2
     overdraw = 3
     scrollbarWidth = 14
-    maxSquareSize = 200
+    maxSize = 200
     minColumns = 3
 
-    columnSize = ( maxSquareSize + margin * 2 ) * minColumns
+    columnSize = ( maxSize + margin * 2 ) * minColumns
     if win_width >= columnSize
-      imageSquareSize = maxSquareSize
+      imageSize = maxSize
     else
       win_width / minColumns - margin * 2
 
-    if @zoomed
-      maxImageWidth = win_width - margin * 2 - scrollbarWidth
-      maxImageHeight = win_height - margin * 2
-    else
-      maxImageWidth = imageSquareSize
-      maxImageHeight = imageSquareSize
-
-    columnWidth = maxImageWidth + margin * 2
-    rowHeight = maxImageHeight + margin * 2
-
+    columnWidth = imageSize + margin * 2
+    rowHeight = imageSize + margin * 2
 
     imagesPerRow = Math.floor win_width / columnWidth
-    imagesPerRow = 1 if @zoomed
 
     rowCount = Math.ceil @state.resultCount / imagesPerRow
 
-    resultsClass = if @zoomed
-      "results zoomed"
-    else
-      "results"
-    resultsStyle =
-      height: "#{rowHeight * rowCount}px"
     toolbarHeight = 52
     scrollPos = win.scrollTop() - toolbarHeight
     viewPortRowCount = Math.ceil win_height / rowHeight + overdraw * 2
@@ -137,65 +63,44 @@
     viewPortStartRow = Math.floor scrollPos / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
 
-    viewPortStyle =
-      top: "#{viewPortStartRow * rowHeight}px"
-
     startIndex = viewPortStartRow * imagesPerRow
     endIndex = startIndex + viewPortRowCount * imagesPerRow
-    viewPortItems = @viewPortItems startIndex, endIndex
 
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
     # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
 
+    @setState
+      startIndex: startIndex
+      endIndex: endIndex
+      viewPortStartRow: viewPortStartRow
+      rowHeight: rowHeight
+      rowCount: rowCount
+      viewPortRowCount: viewPortRowCount
+      width: imageSize
+      height: imageSize
 
+    Bridge.loadItems @state.searchQuery, startIndex, endIndex
+
+  render: ->
+    console.log 'rendering'
     image = (item, pos) =>
       unless item?
-        item =
-          width: 100
-          height: 100
+        item = {}
 
-      if @zoomed
-        target_width = maxImageWidth
-        target_height = maxImageHeight
-        width = item.width
-        height = item.height
-
-        if width > target_width
-          height *= target_width / width
-          width *= target_width / width
-
-        if height > target_height
-          width *= target_height / height
-          height *= target_height / height
-
-        margin = 0
-        if target_height > height
-          margin = Math.floor( (target_height - height) / 2)
-        imageStyle =
-          width: "#{Math.floor(width)}px"
-          height: "#{Math.floor(height)}px"
-          marginTop: "#{margin}px"
-          marginBottom: "#{margin}px"
-      else
-        imageStyle =
-          width: "#{maxImageWidth}px"
-          height: "#{maxImageHeight}px"
+      imageStyle =
+        width: "#{@state.imageWidth}px"
+        height: "#{@state.imageHeight}px"
 
       bgColor = if item.isSelected
         "blue"
       else
-        if @zoomed
-          "black"
-        else
-          @getColor(startIndex + pos)
+        item.bgcolor
 
       bgStyle =
         "backgroundColor": bgColor
 
-      imageSize = if @zoomed then 'large' else 'square'
-
       if item.id?
-        squareImage = "/data/resized/#{imageSize}/#{item.id}.jpg"
+        squareImage = "/data/resized/square/#{item.id}.jpg"
       else
         squareImage = "/images/loading.png"
 
@@ -204,11 +109,19 @@
         <img className="thumb #{selected}" style={imageStyle} src={squareImage}/>
       </div>
 
+    viewPortStyle =
+      top: "#{@state.viewPortStartRow * @state.rowHeight}px"
+
+    resultsStyle =
+      height: "#{@state.rowHeight * @state.rowCount}px"
+
     <div>
       <NavBar/>
-      <div className={resultsClass} style={resultsStyle}>
-        <div className="viewport" style={viewPortStyle}>
-          {viewPortItems.map(image)}
+      <div className="scroll-window">
+        <div className="results" style={resultsStyle}>
+          <div className="viewport" style={viewPortStyle}>
+            {@state.items.map(image)}
+          </div>
         </div>
       </div>
     </div>

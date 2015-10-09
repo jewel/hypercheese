@@ -4,11 +4,18 @@ class @Bridge
 
     # Initial loads
     @tags = @store.findAll('tag')
+    @results = App.SearchResults.create
+      query: ''
+      store: @store
+
     @tags.addObserver( '@each', @update )
+    @results.addObserver( 'loadCount', @update )
 
   @dump: ->
     state =
-      tags: @toNative( @tags.slice() )
+      tags: @tags.map( @toNative ).slice()
+      items: @itemRange().map( @toNative )
+    console.log state
     state
 
   @update: =>
@@ -16,12 +23,25 @@ class @Bridge
 
   @toNative: (obj) ->
     # FIXME: This is probably not the most efficient way to do this
-    JSON.parse JSON.stringify(obj)
+    res = JSON.parse JSON.stringify(obj)
+    res.id = obj.get 'id'
+    res
 
   @onChange: (callback) ->
     @callback = callback
 
-$ ->
-  Bridge.onChange (data) ->
-    console.log data
-  Bridge.init()
+  @loadItems: (query, startIndex, endIndex) ->
+    console.log "loading: #{startIndex}, #{endIndex}"
+    @startIndex = startIndex
+    @endIndex = endIndex
+    @update()
+
+  @itemRange: ->
+    items = []
+    len = @results.get 'length'
+    for i in [@startIndex...@endIndex]
+      if i >= 0 && i < len
+        item = @results.objectAt i
+        item.set 'position', i
+        items.pushObject item
+    items
