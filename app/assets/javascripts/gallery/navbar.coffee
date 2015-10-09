@@ -1,8 +1,6 @@
 @NavBar = React.createClass
   render: ->
-    <div style={ height: "52px" }/>
-
-    <nav className="navbar navbar-default navbar-fixed-top">
+    <nav className="navbar navbar-default">
       <div className="container-fluid">
         <a className="navbar-brand">HyperCheese</a>
       </div>

@@ -6,36 +6,42 @@
     items: []
     searchQuery: ""
     resultCount: 0
-    scrollTop: $(window).scrollTop()
+    scrollTop: $('.scroll-window').scrollTop()
 
   componentDidMount: ->
-    window.addEventListener 'scroll', @onScroll, false
-    window.addEventListener 'resize', @updateViewport, false
+    @window = $('.scroll-window')
+    @window[0].addEventListener 'scroll', @onScroll, false
+    @window[0].addEventListener 'resize', @updateViewPort, false
 
-    @window = $(window)
-
+    # FIXME we shouldn't need to wait for document.ready, but we don't know how
+    # to get to ember's store until then.
     $ =>
       Bridge.init()
       Bridge.onChange (data) =>
+        oldCount = @state.resultCount
         @setState data
+        if oldCount != data.resultCount
+          # viewport doesn't depend on data EXCEPT this data
+          @updateViewPort()
       @updateViewPort()
 
   componentWillUnmount: ->
-    window.removeEventListener 'scroll', @onScroll, false
-    window.removeEventListener 'resize', @updateViewport, false
+    @window[0].removeEventListener 'scroll', @onScroll, false
+    @window[0].removeEventListener 'resize', @updateViewPort, false
 
   onScroll: ->
+    # Only redraw once we have scrolled past an entire row.
+    # We overdraw so that images will be fetched from the server before we need them, but we don't
+    # want to rebuild our entire screen every scroll event, to save battery
     scrollTop = @window.scrollTop()
-    viewPortTop = @state.viewPortStartRow * @state.rowHeight
-    viewPortSize = @state.viewPortRowCount * @state.rowHeight
-    if scrollTop < viewPortTop || scrollTop > viewPortTop + viewPortSize - @window.height()
-      updateViewPort()
+    if Math.abs( scrollTop - @state.scrollTop ) >= @state.rowHeight
+      @updateViewPort()
 
   updateViewPort: ->
     console.log "updating viewport"
-    win = @window
-    win_width = win.width()
-    win_height = win.height()
+    win_width = @window.width()
+    win_height = @window.height()
+    scrollTop = @window.scrollTop()
 
     margin = 2
     overdraw = 3
@@ -56,11 +62,9 @@
 
     rowCount = Math.ceil @state.resultCount / imagesPerRow
 
-    toolbarHeight = 52
-    scrollPos = win.scrollTop() - toolbarHeight
     viewPortRowCount = Math.ceil win_height / rowHeight + overdraw * 2
 
-    viewPortStartRow = Math.floor scrollPos / rowHeight - overdraw
+    viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
 
     startIndex = viewPortStartRow * imagesPerRow
@@ -69,15 +73,17 @@
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
     # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
 
+
     @setState
       startIndex: startIndex
       endIndex: endIndex
+      scrollTop: scrollTop
       viewPortStartRow: viewPortStartRow
       rowHeight: rowHeight
       rowCount: rowCount
       viewPortRowCount: viewPortRowCount
-      width: imageSize
-      height: imageSize
+      imageWidth: imageSize
+      imageHeight: imageSize
 
     Bridge.loadItems @state.searchQuery, startIndex, endIndex
 
@@ -115,7 +121,7 @@
     resultsStyle =
       height: "#{@state.rowHeight * @state.rowCount}px"
 
-    <div>
+    <div className="react-wrapper">
       <NavBar/>
       <div className="scroll-window">
         <div className="results" style={resultsStyle}>

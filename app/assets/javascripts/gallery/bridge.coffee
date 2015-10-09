@@ -11,11 +11,14 @@ class @Bridge
     @tags.addObserver( '@each', @update )
     @results.addObserver( 'loadCount', @update )
 
+    # FIXME we need to observe all the individual items, too
+
   @dump: ->
     state =
+      # slice() is needed to avoid circular references for ember arrays
       tags: @tags.map( @toNative ).slice()
       items: @itemRange().map( @toNative )
-    console.log state
+      resultCount: @results.get('length')
     state
 
   @update: =>
@@ -31,6 +34,7 @@ class @Bridge
     @callback = callback
 
   @loadItems: (query, startIndex, endIndex) ->
+    return if startIndex == @startIndex && endIndex == @endIndex
     console.log "loading: #{startIndex}, #{endIndex}"
     @startIndex = startIndex
     @endIndex = endIndex
@@ -42,6 +46,5 @@ class @Bridge
     for i in [@startIndex...@endIndex]
       if i >= 0 && i < len
         item = @results.objectAt i
-        item.set 'position', i
         items.pushObject item
     items
