@@ -1,4 +1,5 @@
 #= require ./navbar
+#= require ./item
 
 @GalleryApp = React.createClass
   getInitialState: ->
@@ -87,33 +88,15 @@
 
     Bridge.loadItems @state.searchQuery, startIndex, endIndex
 
+  handleClick: (item) ->
+    Bridge.store.find('item', item.id).then (item) =>
+      item.set('isSelected', !item.get('isSelected'))
+      Bridge.update()
+
+    console.log "item clicked: ", item
+
   render: ->
     console.log 'rendering'
-    image = (item, pos) =>
-      unless item?
-        item = {}
-
-      imageStyle =
-        width: "#{@state.imageWidth}px"
-        height: "#{@state.imageHeight}px"
-
-      bgColor = if item.isSelected
-        "blue"
-      else
-        item.bgcolor
-
-      bgStyle =
-        "backgroundColor": bgColor
-
-      if item.id?
-        squareImage = "/data/resized/square/#{item.id}.jpg"
-      else
-        squareImage = "/images/loading.png"
-
-      selected = if item.isSelected then 'selected' else ''
-      <div className="item" style={bgStyle} key="item_#{item.id || Math.random()}">
-        <img className="thumb #{selected}" style={imageStyle} src={squareImage}/>
-      </div>
 
     viewPortStyle =
       top: "#{@state.viewPortStartRow * @state.rowHeight}px"
@@ -126,7 +109,9 @@
       <div className="scroll-window">
         <div className="results" style={resultsStyle}>
           <div className="viewport" style={viewPortStyle}>
-            {@state.items.map(image)}
+            {@state.items.map((item) =>
+              <Item imageWidth=@state.imageWidth onClick={@handleClick.bind(@, item)} imageHeight=@state.imageHeight item={item}/>)
+            }
           </div>
         </div>
       </div>
