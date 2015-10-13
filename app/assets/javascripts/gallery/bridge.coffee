@@ -28,6 +28,7 @@ class @Bridge
     # FIXME: This is probably not the most efficient way to do this
     res = JSON.parse JSON.stringify(obj)
     res.id = obj.get 'id'
+    res.isSelected = obj.get 'isSelected'
     res
 
   @onChange: (callback) ->
