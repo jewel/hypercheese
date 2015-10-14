@@ -1,33 +1,34 @@
 @Results = React.createClass
   getInitialState: ->
     scrollTop: 0
-    win_width: 100
-    win_height: 100
+    win_width: 1000
+    win_height: 700
 
   componentDidMount: ->
-    @window = $('.scroll-window')
-    @window[0].addEventListener 'scroll', @onScroll, false
-    @window[0].addEventListener 'resize', @onResize, false
+    @window = $('.scroll-window')[0]
+    @window.addEventListener 'scroll', @onScroll, false
+    window.addEventListener 'resize', @onResize, false
     @onResize()
 
   componentWillUnmount: ->
-    @window[0].removeEventListener 'scroll', @onScroll, false
-    @window[0].removeEventListener 'resize', @onResize, false
+    @window.removeEventListener 'scroll', @onScroll, false
+    window.removeEventListener 'resize', @onResize, false
 
   onScroll: ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so
     # that images will be fetched from the server before we need them, but we
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
-    scrollTop = @window.scrollTop()
+    scrollTop = @window.scrollTop
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
       @setState
         scrollTop: scrollTop
 
   onResize: ->
+    # clientWidth excludes the system scrollbar
     @setState
-      win_width: @window.width()
-      win_height: @window.height()
+      win_width: @window.clientWidth
+      win_height: @window.clientHeight
 
   margin: 2
 
