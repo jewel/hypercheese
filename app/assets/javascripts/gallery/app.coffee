@@ -95,9 +95,7 @@
     @setState data
 
   handleClick: (item) ->
-    Bridge.store.find('item', item.id).then (item) =>
-      item.set('isSelected', !item.get('isSelected'))
-      Bridge.update()
+    item.set 'isSelected', !item.get('isSelected')
 
     console.log "item clicked: ", item
 

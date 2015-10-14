@@ -10,6 +10,9 @@ class @Bridge
 
     @tags.addObserver( '@each', @update )
     @results.addObserver( 'loadCount', @update )
+    App.Item.reopen
+      isDirtyObserver: Ember.observer 'attributes,isSelected', =>
+        @update()
 
     # FIXME we need to observe all the individual items, too
 
