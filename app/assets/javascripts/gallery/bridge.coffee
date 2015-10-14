@@ -10,16 +10,27 @@ class @Bridge
 
     @tags.addObserver( '@each', @update )
     @results.addObserver( 'loadCount', @update )
+
+    @selection = selection = Ember.ArrayProxy.create
+      content: []
+
     App.Item.reopen
       isDirtyObserver: Ember.observer 'attributes,isSelected', =>
         @update()
 
-    # FIXME we need to observe all the individual items, too
+      updateSelection: Ember.observer 'isSelected', ->
+        console.log 'updateSelection'
+        if @get('isSelected')
+          selection.addObject @
+        else
+          selection.removeObject @
+        console.log selection
 
   @dump: ->
     state =
       tags: @tags
       results: @results
+      selection: @selection
     state
 
   @update: =>

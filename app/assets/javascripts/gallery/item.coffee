@@ -1,4 +1,8 @@
 @Item = React.createClass
+  onClick: ->
+    console.log 'click on ', @props.item
+    @props.item.set 'isSelected', !@props.item.get('isSelected')
+
   render: ->
     item = @props.item
 
@@ -20,7 +24,7 @@
       squareImage = "/images/loading.png"
 
     selected = if item.get('isSelected') then 'selected' else ''
-    <div className="item" style={bgStyle} onClick={@props.onClick} key="item_#{item.get('id') || Math.random()}">
+    <div className="item" style={bgStyle} onClick={@onClick} key="item_#{item.get('id') || Math.random()}">
       <img className="thumb" style={imageStyle} src={squareImage}/>
       <div className="#{selected}" ></div>
     </div>

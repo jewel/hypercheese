@@ -3,7 +3,6 @@
 #= require jquery
 #= require jquery_ujs
 #= require twitter/bootstrap
-#= require ./app
-#= require ./bridge
+#= require_tree .
 
 React.render <GalleryApp/>, document.getElementById('content')
