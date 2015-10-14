@@ -4,9 +4,9 @@
 @GalleryApp = React.createClass
   getInitialState: ->
     tags: []
-    items: []
+    viewPortItems: []
     searchQuery: ""
-    resultCount: 0
+    results: Ember.Object.create()
     scrollTop: $('.scroll-window').scrollTop()
 
   componentDidMount: ->
@@ -19,11 +19,7 @@
     $ =>
       Bridge.init()
       Bridge.onChange (data) =>
-        oldCount = @state.resultCount
-        @setState data
-        if oldCount != data.resultCount
-          # viewport doesn't depend on data EXCEPT this data
-          @updateViewPort()
+        @updateViewPort(data)
       @updateViewPort()
 
   componentWillUnmount: ->
@@ -31,15 +27,15 @@
     @window[0].removeEventListener 'resize', @updateViewPort, false
 
   onScroll: ->
-    # Only redraw once we have scrolled past an entire row.
-    # We overdraw so that images will be fetched from the server before we need them, but we don't
-    # want to rebuild our entire screen every scroll event, to save battery
+    # Only redraw once we have scrolled past an entire row.  We overdraw so
+    # that images will be fetched from the server before we need them, but we
+    # don't want to rebuild our entire screen every scroll event, to save
+    # battery.
     scrollTop = @window.scrollTop()
     if Math.abs( scrollTop - @state.scrollTop ) >= @state.rowHeight
       @updateViewPort()
 
-  updateViewPort: ->
-    console.log "updating viewport"
+  updateViewPort: (data) ->
     win_width = @window.width()
     win_height = @window.height()
     scrollTop = @window.scrollTop()
@@ -61,7 +57,7 @@
 
     imagesPerRow = Math.floor win_width / columnWidth
 
-    rowCount = Math.ceil @state.resultCount / imagesPerRow
+    rowCount = Math.ceil @state.results.get('length') / imagesPerRow
 
     viewPortRowCount = Math.ceil win_height / rowHeight + overdraw * 2
 
@@ -74,19 +70,29 @@
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
     # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
 
+    # by calling 'objectAt', we will trigger a new AJAX request if the item
+    # and its neighbors aren't already loaded
+    items = []
+    len = @state.results.get 'length'
+    for i in [startIndex...endIndex]
+      if i >= 0 && i < len
+        item = @state.results.objectAt i
+        items.pushObject item
+    items
 
-    @setState
-      startIndex: startIndex
-      endIndex: endIndex
-      scrollTop: scrollTop
-      viewPortStartRow: viewPortStartRow
-      rowHeight: rowHeight
-      rowCount: rowCount
-      viewPortRowCount: viewPortRowCount
-      imageWidth: imageSize
-      imageHeight: imageSize
+    data ||= {}
+    data.startIndex = startIndex
+    data.endIndex = endIndex
+    data.scrollTop = scrollTop
+    data.viewPortStartRow = viewPortStartRow
+    data.rowHeight = rowHeight
+    data.rowCount = rowCount
+    data.viewPortRowCount = viewPortRowCount
+    data.imageWidth = imageSize
+    data.imageHeight = imageSize
+    data.viewPortItems = items
 
-    Bridge.loadItems @state.searchQuery, startIndex, endIndex
+    @setState data
 
   handleClick: (item) ->
     Bridge.store.find('item', item.id).then (item) =>
@@ -109,8 +115,8 @@
       <div className="scroll-window">
         <div className="results" style={resultsStyle}>
           <div className="viewport" style={viewPortStyle}>
-            {@state.items.map((item) =>
-              <Item imageWidth=@state.imageWidth onClick={@handleClick.bind(@, item)} imageHeight=@state.imageHeight item={item}/>)
+            {@state.viewPortItems.map((item) =>
+              <Item imageWidth=@state.imageWidth onClick={@handleClick.bind(@, item)} imageHeight=@state.imageHeight key={item.get('id') || Math.random()} item={item}/>)
             }
           </div>
         </div>

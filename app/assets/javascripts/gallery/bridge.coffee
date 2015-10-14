@@ -15,37 +15,12 @@ class @Bridge
 
   @dump: ->
     state =
-      # slice() is needed to avoid circular references for ember arrays
-      tags: @tags.map( @toNative ).slice()
-      items: @itemRange().map( @toNative )
-      resultCount: @results.get('length')
+      tags: @tags
+      results: @results
     state
 
   @update: =>
     @callback @dump()
 
-  @toNative: (obj) ->
-    # FIXME: This is probably not the most efficient way to do this
-    res = JSON.parse JSON.stringify(obj)
-    res.id = obj.get 'id'
-    res.isSelected = obj.get 'isSelected'
-    res
-
   @onChange: (callback) ->
     @callback = callback
-
-  @loadItems: (query, startIndex, endIndex) ->
-    return if startIndex == @startIndex && endIndex == @endIndex
-    console.log "loading: #{startIndex}, #{endIndex}"
-    @startIndex = startIndex
-    @endIndex = endIndex
-    @update()
-
-  @itemRange: ->
-    items = []
-    len = @results.get 'length'
-    for i in [@startIndex...@endIndex]
-      if i >= 0 && i < len
-        item = @results.objectAt i
-        items.pushObject item
-    items

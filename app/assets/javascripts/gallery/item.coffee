@@ -6,21 +6,21 @@
       width: "#{@props.imageWidth}px"
       height: "#{@props.imageHeight}px"
 
-    bgColor = if item.isSelected
+    bgColor = if item.get('isSelected')
       "blue"
     else
-      item.bgcolor
+      item.get('bgcolor')
 
     bgStyle =
       "backgroundColor": bgColor
 
     if item.id?
-      squareImage = "/data/resized/square/#{item.id}.jpg"
+      squareImage = "/data/resized/square/#{item.get('id')}.jpg"
     else
       squareImage = "/images/loading.png"
 
-    selected = if item.isSelected then 'selected' else ''
-    <div className="item" style={bgStyle} onClick={@props.onClick} key="item_#{item.id || Math.random()}">
+    selected = if item.get('isSelected') then 'selected' else ''
+    <div className="item" style={bgStyle} onClick={@props.onClick} key="item_#{item.get('id') || Math.random()}">
       <img className="thumb" style={imageStyle} src={squareImage}/>
       <div className="#{selected}" ></div>
     </div>
