@@ -1,7 +1,7 @@
 #= require ember-sparse-array
 
 App.SearchResults = Ember.SparseArray.extend
-  batchSize: 1000
+  batchSize: 100
 
   load: (offset, limit) ->
     promise = @store.query 'item',

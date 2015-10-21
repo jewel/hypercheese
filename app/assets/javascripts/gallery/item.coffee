@@ -26,13 +26,14 @@
     classes.push 'is-selected' if item.get('isSelected')
 
     maxFit = 6
-    tagCount = item.get('tags.length')
+    tags = item.get('tags') || []
+    tagCount = item.get('tags.length') || 0
     hasComments = item.get('hasComments')
     numberToShow = maxFit
     numberToShow-- if hasComments
     if tagCount > numberToShow
       numberToShow--
-    firstTags = item.get('tags').slice(0,numberToShow)
+    firstTags = tags.slice(0,numberToShow)
     extraTags = tagCount - firstTags.length
 
     <div className="item" style={bgStyle} onClick={@onClick} key="item_#{item.get('id') || Math.random()}">
