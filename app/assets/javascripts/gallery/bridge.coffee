@@ -19,12 +19,10 @@ class @Bridge
         @update()
 
       updateSelection: Ember.observer 'isSelected', ->
-        console.log 'updateSelection'
         if @get('isSelected')
           selection.addObject @
         else
           selection.removeObject @
-        console.log selection
 
   @dump: ->
     state =

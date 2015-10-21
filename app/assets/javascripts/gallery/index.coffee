@@ -5,4 +5,6 @@
 #= require twitter/bootstrap
 #= require_tree .
 
-React.render <GalleryApp/>, document.getElementById('content')
+$ ->
+  Bridge.init()
+  React.render <GalleryApp/>, document.getElementById('content')

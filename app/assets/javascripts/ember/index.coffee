@@ -1,6 +1,7 @@
 #= require jquery
 #= require jquery_ujs
 #= require ember
+#= require ./hide-deprecations
 #= require ember-data
 #= require_self
 #= require ./store

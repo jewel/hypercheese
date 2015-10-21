@@ -60,7 +60,6 @@
     imagesPerRow = Math.floor @state.win_width / columnWidth
 
     rowCount = Math.ceil @props.results.get('length') / imagesPerRow
-    console.log @props.results.get('length')
 
     viewPortRowCount = Math.ceil @state.win_height / rowHeight + overdraw * 2
 

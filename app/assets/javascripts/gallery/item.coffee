@@ -1,6 +1,5 @@
 @Item = React.createClass
   onClick: ->
-    console.log 'click on ', @props.item
     @props.item.set 'isSelected', !@props.item.get('isSelected')
 
   render: ->
