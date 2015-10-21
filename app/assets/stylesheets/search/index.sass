@@ -122,14 +122,18 @@
     :display block
     :width 100%
 
-body, html, section#main, body > div.ember-view
+body, html, #content, .react-wrapper
   :height 100%
   :overflow hidden
 
+.react-wrapper
+  :display flex
+  :flex-direction column
+
 .scroll-window
   :position relative
-  :height 100%
   :overflow-y auto
+  :flex 1
 
 .navbar
   :margin-bottom 0

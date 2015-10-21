@@ -17,6 +17,9 @@ group :assets do
 
   gem 'uglifier'
   gem 'lightbox2-rails'
+  gem 'jquery-rails'
+  gem 'font-awesome-rails'
+  gem 'sprockets-coffee-react'
 end
 
 gem 'twitter-bootstrap-rails'
@@ -25,10 +28,9 @@ gem 'mini_magick'
 gem 'andand'
 gem 'exifr'
 gem 'zipline'
-gem 'dalli'
-gem 'jquery-rails'
-gem 'haml-rails'
 gem 'active_model_serializers'
+gem 'dalli'
+gem 'haml-rails'
 
 group :production do
   gem 'mysql2'
