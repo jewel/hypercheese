@@ -92,6 +92,7 @@
     </div>
 
   render: ->
+    console.log 'rendering navbar'
     <nav className="navbar navbar-default">
       <div className="container-fluid">
         <div className="navbar-header">

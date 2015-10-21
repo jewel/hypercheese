@@ -25,16 +25,30 @@
     classes = ["thumb"]
     classes.push 'is-selected' if item.get('isSelected')
 
+    maxFit = 6
+    tagCount = item.get('tags.length')
+    hasComments = item.get('hasComments')
+    numberToShow = maxFit
+    numberToShow-- if hasComments
+    if tagCount > numberToShow
+      numberToShow--
+    firstTags = item.get('tags').slice(0,numberToShow)
+    extraTags = tagCount - firstTags.length
+
     <div className="item" style={bgStyle} onClick={@onClick} key="item_#{item.get('id') || Math.random()}">
       <img className={classes.join ' '} style={imageStyle} src={squareImage}/>
-      {
-        if item.get('hasComments')
-          <img className="comments" src="/images/comment.png"/>
-      }
-      <div className="mini-tag-icons">
+      <div className="tagbox">
         {
-          item.get('tags').map (tag) ->
-            <img key={tag.get('id')} src={tag.get('iconUrl')}/>
+          if hasComments
+            <img src="/images/comment.png"/>
+        }
+        {
+          firstTags.map (tag) ->
+            <img className="tag-icon" key={tag.get('id')} src={tag.get('iconUrl')}/>
+        }
+        {
+          if extraTags > 0
+            <div className="extra-tags">{'+' + extraTags}</div>
         }
       </div>
     </div>

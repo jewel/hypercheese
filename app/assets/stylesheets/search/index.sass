@@ -4,35 +4,38 @@
 
   .item
     :display inline-block
-    :position relative
     :vertical-align top
     :margin 1px
     :text-align center
+    :background #444
 
-    img.comments
-      :position absolute
-      :top 10px
-      :right 10px
+    .tagbox
+      :height 30px
 
-    .mini-tag-icons
-      :position absolute
-      :bottom 3px
-      :right 3px
-      :max-width 200px
-      :border 1px solid rgba(255,255,255,0.5)
+      .extra-tags
+        :background #888
+        :color black
+        :width 28px
+        :display inline-block
+        :vertical-align middle
+        :line-height 28px
+
+      img.tag-icon, .extra-tags
+        :width 28px
+        :height 28px
+        :border-radius 50%
+        :box-shadow 1px 1px 2px black
 
       img
-        :width 40px
-        :height 40px
-
+        :margin-right 4px
 
     img.thumb
-      :border 1px solid black
-      :padding 0px
+      :padding 1px
       :box-sizing content-box
 
       &.is-selected
         :border 1px solid blue
+        :padding 0px
         :opacity 0.8
 
   .active img.thumb

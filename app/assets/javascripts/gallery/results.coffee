@@ -30,7 +30,10 @@
       win_width: @window.clientWidth
       win_height: @window.clientHeight
 
+  # margin represents 1px of margin and 1px of image padding.  When used we
+  # double it since it's on both sides of the image
   margin: 2
+  tagboxHeight: 30
 
   imageSize: ->
     maxSize = 200
@@ -42,12 +45,12 @@
       maxSize
 
   rowHeight: ->
+    @imageSize() + @tagboxHeight + @margin * 2
+
+  columnWidth: ->
     @imageSize() + @margin * 2
 
   render: ->
-    console.log 'rendering'
-
-    margin = 2
     overdraw = 3
     maxSize = 200
     minColumns = 3
@@ -55,7 +58,7 @@
     imageWidth = @imageSize()
     imageHeight = @imageSize()
     rowHeight = @rowHeight()
-    columnWidth = rowHeight
+    columnWidth = @columnWidth()
 
     imagesPerRow = Math.floor @state.win_width / columnWidth
 
