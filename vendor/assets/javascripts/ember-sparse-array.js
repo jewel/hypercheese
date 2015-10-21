@@ -11,6 +11,8 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
 
     _loadedIndexes: null,
 
+    processing: false,
+
     load: null,
 
     init: function() {
@@ -62,6 +64,11 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
             halfBatchSize = Math.ceil(batchSize/2),
             startOffset = index,
             endOffset = index;
+
+        if( this.processing )
+          return;
+
+        this.processing = true;
 
         while (true) {
             loadedIndexes[startOffset] = true;
@@ -132,6 +139,8 @@ Ember.SparseArray = Em.Object.extend(Em.Array, {
             self.set( 'loadCount', self.get( 'loadCount' ) + 1 );
 
             self._ignoreLastObject = false;
+
+            self.processing = false;
         }, function(e) {
             console.error('SparseArray load error', e);
         });
