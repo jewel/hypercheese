@@ -10,7 +10,7 @@ organize large photo collections from multiple sources.
 
 #### Ubuntu 14.04
 ```bash
-$ git clone git@github.com:jewel/hypercheese.git -b ember
+$ git clone https://github.com/jewel/hypercheese.git
 $ cd hypercheese
 $ sudo apt-get install bundler ruby-dev libmysqlclient-dev libsqlite3-dev build-essential nodejs
 $ bundle install
