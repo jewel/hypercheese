@@ -22,8 +22,19 @@
     else
       squareImage = "/images/loading.png"
 
-    selected = if item.get('isSelected') then 'selected' else ''
+    classes = ["thumb"]
+    classes.push 'is-selected' if item.get('isSelected')
+
     <div className="item" style={bgStyle} onClick={@onClick} key="item_#{item.get('id') || Math.random()}">
-      <img className="thumb" style={imageStyle} src={squareImage}/>
-      <div className="#{selected}" ></div>
+      <img className={classes.join ' '} style={imageStyle} src={squareImage}/>
+      {
+        if item.get('hasComments')
+          <img className="comments" src="/images/comment.png"/>
+      }
+      <div className="mini-tag-icons">
+        {
+          item.get('tags').map (tag) ->
+            <img key={tag.get('id')} src={tag.get('iconUrl')}/>
+        }
+      </div>
     </div>
