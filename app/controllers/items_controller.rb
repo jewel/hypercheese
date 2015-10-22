@@ -9,7 +9,7 @@ class ItemsController < ApplicationController
     limit = params[:limit] || 1000
     offset = params[:offset] || 0
 
-    res = search.items.limit( limit ).offset( offset )
+    res = search.items.includes(:comments, :tags).limit( limit ).offset( offset )
 
     render json: res, each_serializer: ItemSerializer, meta: { total: search.items.count }
   end
