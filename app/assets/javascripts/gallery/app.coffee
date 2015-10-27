@@ -1,6 +1,3 @@
-#= require ./navbar
-#= require ./item
-
 @GalleryApp = React.createClass
   componentDidMount: ->
     Store.onChange =>
@@ -8,5 +5,6 @@
 
   render: ->
     <div className="react-wrapper">
+      <NavBar/>
       <Results/>
     </div>

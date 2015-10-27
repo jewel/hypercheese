@@ -23,14 +23,22 @@ class @Store
     @search ''
 
   @toggleSelection: (id) ->
-    @state.selection[id] = !@state.selection[id]
+    if @state.selection[id]
+      delete @state.selection[id]
+      @state.selectionCount--
+    else
+      @state.selection[id] = true
+      @state.selectionCount++
     @forceUpdate()
 
   @search: (q) ->
     @state.query = q
     @state.items = []
+    @state.itemsById = {}
     @state.selection = {}
+    @state.selectionCount = 0
     @state.resultCount = null
+    @executeSearch 0, 0
 
   @executeSearch: (start, end) ->
     batchSize = 100
@@ -38,11 +46,17 @@ class @Store
     if @searching?
       return
 
+    if @state.resultCount == 0
+      return
+
     # Ask for the data segmented in batches.  Fetch multiple batches at once if
     # needed to account for all data.
 
     batchStart = start - start % batchSize
     batchEnd = end - end % batchSize + batchSize - 1
+
+    if @state.resultCount != null && batchStart >= @state.resultCount
+      batchStart = @state.resultCount - 1
 
     if @state.resultCount != null && batchEnd >= @state.resultCount
       batchEnd = @state.resultCount - 1
@@ -77,16 +91,12 @@ class @Store
         for item, i in res.items
           item.index = batchStart + i
           @state.items[batchStart + i] = item
+          @state.itemsById[item.id] = item
 
         @forceUpdate()
 
       complete: =>
         @searching = null
-
-  @setState: (changes) ->
-    for k, v of changes
-      @state[k] = changes
-    @forceUpdate()
 
   @forceUpdate: ->
     @callback() if @callback

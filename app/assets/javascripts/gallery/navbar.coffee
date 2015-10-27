@@ -1,30 +1,36 @@
 @NavBar = React.createClass
-  handleSearch: ->
+  handleSearch: (e) ->
     e.preventDefault()
-    query = @refs.query.trim()
+    query = e.target.querySelector('[name=cheesequery]').value
     Store.search query
-    false
 
   selectedTags: ->
     index = {}
     tags = []
-    Bridge.selection.forEach (item) ->
-      item.get('tags').forEach (tag) ->
-        obj = index[tag.id]
+    for id of Store.state.selection
+      item = Store.state.itemsById[id]
+      if !item
+        console.warn "Can't find item #{id}"
+        continue
+      for tag_id in item.tag_ids
+        obj = index[tag_id]
         if !obj
-          obj = index[tag.id] =
+          tag = Store.state.tagsById[tag_id]
+          if !tag
+            console.warn "Can't find tag #{tag_id}"
+            continue
+          obj = index[tag_id] =
             tag: tag
             count: 0
           tags.push obj
         obj.count++
-
     tags
 
   selectedMenu: ->
     <div>
       <ul className="nav navbar-nav">
         <li>
-          <p className="navbar-text"> Selected: {Bridge.selection.get('length')}</p>
+          <p className="navbar-text"> Selected: {Store.state.selectionCount}</p>
         </li>
 
         <li>
@@ -36,7 +42,7 @@
         {
           @selectedTags().map (match) ->
             <p className="navbar-text">
-              {match.tag.get('label')}
+              {match.tag.label}
               ({match.count})
               <a href="javascript:void(0)">&times;</a>
             </p>
@@ -45,7 +51,7 @@
 
       <form className="navbar-form navbar-left">
         {
-          if Bridge.selection.get('length') == 1
+          if Store.state.selectionCount == 1
             <a className="btn btn-default">Comment</a>
         }
         {' '}
@@ -78,9 +84,9 @@
           <a href="#/tags">Tags</a>
         </li>
       </ul>
-      <form className="navbar-form navbar-left" role="Search" onsubmit={@handleSearch}>
+      <form className="navbar-form navbar-left" role="Search" onSubmit={@handleSearch}>
         <div className="form-group">
-          <input className="form-control" placeholder="Search" type="text" ref="query"/>
+          <input className="form-control" placeholder="Search" defaultValue={Store.state.query} name="cheesequery" type="text"/>
         </div>
       </form>
       <ul className="nav navbar-nav">
@@ -93,12 +99,11 @@
         }
       </ul>
       <p className="navbar-text">
-        Count: {@props.results.get('length')}
+        Count: {Store.state.resultCount}
       </p>
     </div>
 
   render: ->
-    console.log 'rendering navbar'
     <nav className="navbar navbar-default">
       <div className="container-fluid">
         <div className="navbar-header">
@@ -117,7 +122,7 @@
           <ul className="nav navbar-nav"></ul>
 
           {
-            if Bridge.selection.get('length') > 0
+            if Store.state.selectionCount > 0
               @selectedMenu()
             else
               @searchMenu()

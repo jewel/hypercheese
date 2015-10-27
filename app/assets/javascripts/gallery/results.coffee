@@ -78,6 +78,7 @@
 
     startIndex = viewPortStartRow * imagesPerRow
     endIndex = startIndex + viewPortRowCount * imagesPerRow
+    startIndex = totalItems - 1 if startIndex >= totalItems
     endIndex = totalItems - 1 if endIndex >= totalItems
 
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
@@ -90,6 +91,8 @@
         id: null
         index: i
       items.push item
+
+    items = [] if totalItems == 0
 
     viewPortStyle =
       top: "#{viewPortStartRow * rowHeight}px"

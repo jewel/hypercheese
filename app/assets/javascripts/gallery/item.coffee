@@ -10,17 +10,12 @@
       width: "#{@props.imageWidth}px"
       height: "#{@props.imageHeight}px"
 
-    bgStyle = if selected
-      "backgroundColor: blue"
-    else
-      null
-
     if item.id?
       squareImage = "/data/resized/square/#{item.id}.jpg"
     else
       squareImage = "/images/loading.png"
 
-    classes = ["thumb"]
+    classes = ["item"]
     classes.push 'is-selected' if selected
 
     maxFit = 6
@@ -34,8 +29,8 @@
     firstTags = tags.slice 0, numberToShow
     extraTags = tagCount - firstTags.length
 
-    <div className="item" style={bgStyle} onClick={@onClick} key="#{item.index}">
-      <img className={classes.join ' '} style={imageStyle} src={squareImage}/>
+    <div className={classes.join ' '} onClick={@onClick} key="#{item.index}">
+      <img className="thumb" style={imageStyle} src={squareImage}/>
       <div className="tagbox">
         {
           if hasComments
