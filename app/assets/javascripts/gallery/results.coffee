@@ -1,6 +1,6 @@
 @Results = React.createClass
   getInitialState: ->
-    scrollTop: 0
+    scrollTop: null
     win_width: 1000
     win_height: 700
 
@@ -62,27 +62,34 @@
 
     imagesPerRow = Math.floor @state.win_width / columnWidth
 
-    rowCount = Math.ceil @props.results.get('length') / imagesPerRow
+    scrollTop = @state.scrollTop
+    scrollTop = 0 unless scrollTop
 
     viewPortRowCount = Math.ceil @state.win_height / rowHeight + overdraw * 2
-
-    viewPortStartRow = Math.floor @state.scrollTop / rowHeight - overdraw
+    viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
+
+    totalItems = Store.state.resultCount
+
+    if totalItems == null
+      totalItems = viewPortRowCount * imagesPerRow
+
+    rowCount = Math.ceil totalItems / imagesPerRow
 
     startIndex = viewPortStartRow * imagesPerRow
     endIndex = startIndex + viewPortRowCount * imagesPerRow
+    endIndex = totalItems - 1 if endIndex >= totalItems
 
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
     # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
 
-    # by calling 'objectAt', we will trigger a new AJAX request if the item
-    # and its neighbors aren't already loaded
     items = []
-    len = @props.results.get 'length'
-    for i in [startIndex...endIndex]
-      if i >= 0 && i < len
-        item = @props.results.objectAt i
-        items.push item
+    for i in [startIndex..endIndex]
+      item = Store.state.items[i]
+      item ||=
+        id: null
+        index: i
+      items.push item
 
     viewPortStyle =
       top: "#{viewPortStartRow * rowHeight}px"
@@ -90,11 +97,15 @@
     resultsStyle =
       height: "#{rowHeight * rowCount}px"
 
+    # Now that we know exactly how many records we need, we ask for them to be
+    # fetched.  When the results come back, they will cause a re-render
+    Store.executeSearch startIndex, endIndex
+
     <div className="scroll-window">
       <div className="results" style={resultsStyle}>
         <div className="viewport" style={viewPortStyle}>
           {items.map((item) =>
-            <Item imageWidth=imageWidth imageHeight=imageHeight key={item.get('id') || Math.random()} item={item}/>)
+            <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>)
           }
         </div>
       </div>

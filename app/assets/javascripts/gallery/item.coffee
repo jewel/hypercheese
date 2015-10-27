@@ -1,42 +1,40 @@
 @Item = React.createClass
   onClick: ->
-    @props.item.set 'isSelected', !@props.item.get('isSelected')
+    Store.toggleSelection @props.item.id
 
   render: ->
     item = @props.item
+    selected = Store.state.selection[item.id]
 
     imageStyle =
       width: "#{@props.imageWidth}px"
       height: "#{@props.imageHeight}px"
 
-    bgColor = if item.get('isSelected')
-      "blue"
+    bgStyle = if selected
+      "backgroundColor: blue"
     else
-      item.get('bgcolor')
-
-    bgStyle =
-      "backgroundColor": bgColor
+      null
 
     if item.id?
-      squareImage = "/data/resized/square/#{item.get('id')}.jpg"
+      squareImage = "/data/resized/square/#{item.id}.jpg"
     else
       squareImage = "/images/loading.png"
 
     classes = ["thumb"]
-    classes.push 'is-selected' if item.get('isSelected')
+    classes.push 'is-selected' if selected
 
     maxFit = 6
-    tags = item.get('tags') || []
-    tagCount = item.get('tags.length') || 0
-    hasComments = item.get('hasComments')
+    tags = item.tag_ids || []
+    tagCount = tags.length
+    hasComments = item.hasComments
     numberToShow = maxFit
     numberToShow-- if hasComments
     if tagCount > numberToShow
       numberToShow--
-    firstTags = tags.slice(0,numberToShow)
+    firstTags = tags.slice 0, numberToShow
     extraTags = tagCount - firstTags.length
 
-    <div className="item" style={bgStyle} onClick={@onClick} key="item_#{item.get('id') || Math.random()}">
+    <div className="item" style={bgStyle} onClick={@onClick} key="#{item.index}">
       <img className={classes.join ' '} style={imageStyle} src={squareImage}/>
       <div className="tagbox">
         {
@@ -44,8 +42,11 @@
             <img src="/images/comment.png"/>
         }
         {
-          firstTags.map (tag) ->
-            <img className="tag-icon" key={tag.get('id')} src={tag.get('iconUrl')}/>
+          firstTags.map (tag_id) ->
+            tag = Store.state.tagsById[tag_id]
+            if tag
+              tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+              <img className="tag-icon" key={tag_id} src={tag_icon_url}/>
         }
         {
           if extraTags > 0

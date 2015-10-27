@@ -1,4 +1,10 @@
 @NavBar = React.createClass
+  handleSearch: ->
+    e.preventDefault()
+    query = @refs.query.trim()
+    Store.search query
+    false
+
   selectedTags: ->
     index = {}
     tags = []
@@ -72,9 +78,9 @@
           <a href="#/tags">Tags</a>
         </li>
       </ul>
-      <form className="navbar-form navbar-left" role="Search">
+      <form className="navbar-form navbar-left" role="Search" onsubmit={@handleSearch}>
         <div className="form-group">
-          <input className="form-control" placeholder="Search" type="text"/>
+          <input className="form-control" placeholder="Search" type="text" ref="query"/>
         </div>
       </form>
       <ul className="nav navbar-nav">
