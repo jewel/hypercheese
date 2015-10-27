@@ -33,7 +33,7 @@ class @Store
 
   @search: (q) ->
     @state.query = q
-    @state.items = []
+    @state.items = {}
     @state.itemsById = {}
     @state.selection = {}
     @state.selectionCount = 0
@@ -43,7 +43,7 @@ class @Store
   @executeSearch: (start, end) ->
     batchSize = 100
 
-    if @searching?
+    if @searching
       return
 
     if @state.resultCount == 0
@@ -85,7 +85,7 @@ class @Store
         offset: batchStart
         query: @state.query
       success: (res) =>
-        @searching = null
+        @searching = false
 
         @state.resultCount = res.meta.total
         for item, i in res.items
@@ -94,9 +94,6 @@ class @Store
           @state.itemsById[item.id] = item
 
         @forceUpdate()
-
-      complete: =>
-        @searching = null
 
   @forceUpdate: ->
     @callback() if @callback
