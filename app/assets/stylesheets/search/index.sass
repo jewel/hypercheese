@@ -9,6 +9,7 @@
     :cursor pointer
     :text-align center
     :background #444
+    :transition background 0.5s
 
     .tagbox
       :height 30px
@@ -34,33 +35,33 @@
       :padding 1px
       :box-sizing content-box
 
+    &:hover
+      .checkmark
+        :opacity 0.5
 
     &.is-selected
-      :background #008
+      :background #448
 
       img.thumb
         :opacity 0.7
 
       .checkmark
-        :display block
-        :color white
+        :opacity 1
 
-    &:hover
-      .checkmark
-        :display block
+      &:hover
+        .checkmark
+          :opacity 1
 
     .checkmark
-      :color #88f
+      :color white
       :font-size 30px
       :text-shadow 0 0 4px black
       :position absolute
       :left 20px
       :top 20px
-      :display none
-
-      &:hover
-        :color #fff
-
+      :opacity 0
+      :transition opacity 0.5s
+      :outline 0
 
   .active img.thumb
     :border 4px dotted black
