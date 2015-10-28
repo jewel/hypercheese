@@ -1,7 +1,9 @@
 @Item = React.createClass
-  onClick: ->
-    # Store.toggleSelection @props.item.id
-    @props.showItem @props.item.id
+  onClick: (e) ->
+    if e.ctrlKey
+      Store.toggleSelection @props.item.id
+    else
+      @props.showItem @props.item.id
 
   render: ->
     item = @props.item
@@ -29,7 +31,7 @@
     firstTags = tags.slice 0, numberToShow
     extraTags = tagCount - firstTags.length
 
-    <div className={classes.join ' '} onClick={@onClick} key="#{item.index}">
+    <div className={classes.join ' '} onDblClick={@onDoubleClick} onClick={@onClick} key="#{item.index}">
       <img className="thumb" style={imageStyle} src={squareImage}/>
       <div className="tagbox">
         {

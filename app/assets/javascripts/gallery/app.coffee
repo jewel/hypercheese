@@ -16,7 +16,12 @@
       classes.push 'show-details'
 
     <div className={classes.join ' '}>
-      <NavBar/>
+      {
+        if Store.state.selectionCount > 0
+          <SelectBar/>
+        else
+          <NavBar/>
+      }
       <Results showItem={@showItem}/>
       {
         if @state.item_id

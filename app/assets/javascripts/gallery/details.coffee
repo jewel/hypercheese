@@ -3,13 +3,8 @@
     @props.showItem null
 
   render: ->
-    style =
-      fontSize: '200px'
-
-    <div className="details-window" style={style}>
+    image_url = "/data/resized/large/#{@props.item_id}.jpg"
+    <div className="details-window">
       <a href="javascript:void(0)" onClick={@onClose}>&times;</a>
-      <div>
-        THIS IS IMAGE {@props.item_id} PLACE DETAILS
-      </div>
-      <img src="/images/loading.png"/>
+      <img src={image_url}/>
     </div>
