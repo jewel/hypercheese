@@ -4,6 +4,9 @@
     query = e.target.querySelector('[name=cheesequery]').value
     Store.search query
 
+  clearSelection: (e) ->
+    Store.clearSelection()
+
   selectedTags: ->
     index = {}
     tags = []
@@ -35,7 +38,7 @@
 
         <li>
           <form className="navbar-form navbar-left">
-            <a className="btn btn-default">Clear</a>
+            <a className="btn btn-default" onClick={@clearSelection}>Clear</a>
           </form>
         </li>
 

@@ -31,13 +31,18 @@ class @Store
       @state.selectionCount++
     @forceUpdate()
 
+  @clearSelection: ->
+    @state.selection = {}
+    @state.selectionCount = 0
+    @forceUpdate()
+
   @search: (q) ->
     @state.query = q
     @state.items = {}
     @state.itemsById = {}
+    @state.resultCount = null
     @state.selection = {}
     @state.selectionCount = 0
-    @state.resultCount = null
     @executeSearch 0, 0
 
   @executeSearch: (start, end) ->
