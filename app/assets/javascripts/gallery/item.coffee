@@ -21,7 +21,7 @@
     classes = ["item"]
     classes.push 'is-selected' if selected
 
-    maxFit = 6
+    maxFit = @props.imageWidth / 33
     tags = item.tag_ids || []
     tagCount = tags.length
     numberToShow = maxFit
