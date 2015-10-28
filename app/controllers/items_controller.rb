@@ -1,17 +1,39 @@
 require_dependency 'search'
+require 'digest'
 
 class ItemsController < ApplicationController
   respond_to :json
 
   def index
-    search = Search.new params[:query] || ''
+    search_key = params[:search_key]
+    path = Rails.root.join('tmp/searches').join search_key if search_key
 
-    limit = params[:limit] || 1000
-    offset = params[:offset] || 0
+    if search_key == '' || path && !File.exists?( path )
+      search = Search.new params[:query] || ''
+      ids = search.items.pluck(:id)
+      str = ids.join ','
+      search_key = Digest::MD5.hexdigest str
+      dir = Rails.root.join('tmp/searches')
+      Dir.mkdir dir unless File.exists? path
+      path = "#{dir}/#{search_key}"
+      temp = path + ".#$$.tmp"
+      File.binwrite temp, str
+      File.rename temp, path
+    end
 
-    res = search.items.includes(:comments, :tags).limit( limit ).offset( offset )
+    raise "Invalid key" unless search_key =~ /\A[a-f0-9]{32}\Z/
 
-    render json: res, each_serializer: ItemSerializer, meta: { total: search.items.count }
+    str = File.binread path
+    ids = str.split ','
+
+    limit = (params[:limit] || 1000).to_i
+    offset = (params[:offset] || 0).to_i
+
+    subset = ids.slice offset, limit
+
+    res = Item.includes(:comments, :tags).find subset
+
+    render json: res, each_serializer: ItemSerializer, meta: { search_key: search_key, total: ids.size }
   end
 
   def show

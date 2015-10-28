@@ -93,6 +93,7 @@ class @Store
         @forceUpdate()
 
   @search: (q) ->
+    @state.searchKey = null
     @state.query = q
     @state.items = {}
     @state.itemsById = {}
@@ -145,20 +146,17 @@ class @Store
         limit: batchEnd - batchStart + 1
         offset: batchStart
         query: @state.query
+        search_key: @state.searchKey
       success: (res) =>
         @searching = false
-
-        if @state.resultCount != null && @state.resultCount != res.meta.total
-          # invalidate all other results, the number of results has changed
-          console.log "Result count has changed, discarding cache"
-          @state.items = {}
-          @state.itemsById = {}
 
         @state.resultCount = res.meta.total
         for item, i in res.items
           item.index = batchStart + i
           @state.items[item.index] = item.id
           @state.itemsById[item.id] = item
+
+        @state.searchKey = res.meta.search_key
 
         @forceUpdate()
 
