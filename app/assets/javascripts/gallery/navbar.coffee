@@ -1,10 +1,14 @@
 @NavBar = React.createClass
+  getInitialState: ->
+    newSearch: ''
+
+  changeNewSearch: (e) ->
+    @setState
+      newSearch: e.target.value
+
   handleSearch: (e) ->
     e.preventDefault()
-    query = e.target.querySelector('[name=cheesequery]').value
-    Store.search query
-
-  searchMenu: ->
+    Store.search @state.newSearch
 
   render: ->
     <nav id="main-navbar" className="navbar navbar-default">
@@ -32,18 +36,9 @@
             </ul>
             <form className="navbar-form navbar-left" role="Search" onSubmit={@handleSearch}>
               <div className="form-group">
-                <input className="form-control" placeholder="Search" defaultValue={Store.state.query} name="cheesequery" type="text"/>
+                <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
               </div>
             </form>
-            <ul className="nav navbar-nav">
-              {
-                # FIXME TagMatches of the current search
-                [].map (tag) ->
-                  <li>
-                    <p className="navbar-text">{tag.label}</p>
-                  </li>
-              }
-            </ul>
             <p className="navbar-text">
               Count: {Store.state.resultCount}
             </p>

@@ -31,6 +31,19 @@ class @Store
       @state.selectionCount++
     @forceUpdate()
 
+  @shareSelection: ->
+    ids = []
+    for id of @state.selection
+      ids.push id
+
+    @ajax(
+      type: "POST"
+      url: "/shares"
+      data:
+        items: ids
+    ).then (res) ->
+      res.url
+
   @clearSelection: ->
     @state.selection = {}
     @state.selectionCount = 0

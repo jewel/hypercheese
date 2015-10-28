@@ -1,6 +1,17 @@
 @SelectBar = React.createClass
+  getInitialState: ->
+    newTags: ''
+
   clearSelection: (e) ->
     Store.clearSelection()
+
+  shareSelection: (e) ->
+    Store.shareSelection().then (url) ->
+      window.prompt "The items are available at this link:", url
+
+  changeNewTags: (e) ->
+    @setState
+      newTags: e.target.value
 
   selectedTags: ->
     index = {}
@@ -25,6 +36,14 @@
     tags
 
   render: ->
+    ids = []
+    for id of Store.state.selection
+      ids.push id
+
+    downloadLink = "/items/download?ids=#{ids.join ','}"
+
+    matches = TagMatch.matchMany @state.newTags
+
     <nav id="select-navbar" className="navbar navbar-default">
       <div className="container-fluid">
         <div className="navbar-header">
@@ -55,7 +74,7 @@
 
               {
                 @selectedTags().map (match) ->
-                  <p className="navbar-text">
+                  <p className="navbar-text" key={match.tag.id}>
                     {match.tag.label}
                     {' '}
                     ({match.count})
@@ -66,27 +85,21 @@
             </ul>
 
             <form className="navbar-form navbar-left">
-              {
-                if Store.state.selectionCount == 1
-                  <a className="btn btn-default">Comment</a>
-              }
+              <a className="btn btn-default" href={downloadLink}>Download</a>
               {' '}
-              <a className="btn btn-default" href="/downloadlink_goes_here">Download</a>
-              {' '}
-              <a className="btn btn-default" href="javascript:void(0)">Share</a>
+              <a className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}>Share</a>
             </form>
 
             <form className="navbar-form navbar-left">
               <div className="form-group">
-                <input className="form-control" placeholder="Add tags" type="text"/>
+                <input className="form-control" placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
               </div>
             </form>
 
             <ul className="nav navbar-nav">
               {
-                # FIXME TagMatches of the current tag text
-                [].map (tag) ->
-                  <li>
+                matches.map (tag) ->
+                  <li key={tag.id}>
                     <p className="navbar-text">{tag.label}</p>
                   </li>
               }
