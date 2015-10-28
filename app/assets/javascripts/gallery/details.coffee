@@ -28,7 +28,7 @@
 
     newIndex = item.index + dir
     newItemId = Store.state.items[newIndex]
-    if newItem
+    if newItemId
       @props.showItem newItemId
 
   render: ->
@@ -51,4 +51,13 @@
       <a className="control close-control" href="javascript:void(0)" onClick={@onClose}></a>
       <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
       <img className="detailed-image" src={image_url}/>
+      <div className="tagbox">
+        {
+          item.tag_ids.map (tag_id) ->
+            tag = Store.state.tagsById[tag_id]
+            if tag
+              tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+              <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+        }
+      </div>
     </div>
