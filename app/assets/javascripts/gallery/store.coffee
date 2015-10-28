@@ -148,6 +148,12 @@ class @Store
       success: (res) =>
         @searching = false
 
+        if @state.resultCount != null && @state.resultCount != res.meta.total
+          # invalidate all other results, the number of results has changed
+          console.log "Result count has changed, discarding cache"
+          @state.items = {}
+          @state.itemsById = {}
+
         @state.resultCount = res.meta.total
         for item, i in res.items
           item.index = batchStart + i
