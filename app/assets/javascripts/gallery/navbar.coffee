@@ -46,7 +46,9 @@
           @selectedTags().map (match) ->
             <p className="navbar-text">
               {match.tag.label}
+              {' '}
               ({match.count})
+              {' '}
               <a href="javascript:void(0)">&times;</a>
             </p>
         }

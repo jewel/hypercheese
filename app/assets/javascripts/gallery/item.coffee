@@ -21,9 +21,8 @@
     maxFit = 6
     tags = item.tag_ids || []
     tagCount = tags.length
-    hasComments = item.hasComments
     numberToShow = maxFit
-    numberToShow-- if hasComments
+    numberToShow-- if item.has_comments
     if tagCount > numberToShow
       numberToShow--
     firstTags = tags.slice 0, numberToShow
@@ -33,7 +32,7 @@
       <img className="thumb" style={imageStyle} src={squareImage}/>
       <div className="tagbox">
         {
-          if hasComments
+          if item.has_comments
             <img src="/images/comment.png"/>
         }
         {
