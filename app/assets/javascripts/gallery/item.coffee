@@ -1,6 +1,7 @@
 @Item = React.createClass
   onClick: ->
-    Store.toggleSelection @props.item.id
+    # Store.toggleSelection @props.item.id
+    @props.showItem @props.item.id
 
   render: ->
     item = @props.item

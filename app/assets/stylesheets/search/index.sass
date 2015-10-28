@@ -6,6 +6,7 @@
     :display inline-block
     :vertical-align top
     :margin 1px
+    :cursor pointer
     :text-align center
     :background #444
 
@@ -140,5 +141,14 @@ body, html, #content, .react-wrapper
   :overflow-y auto
   :flex 1
 
+.react-wrapper.show-details
+  .scroll-window
+    :display none
+
 .navbar
   :margin-bottom 0
+
+.details-window
+  :position relative
+  :overflow-y auto
+  :flex 1

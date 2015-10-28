@@ -108,7 +108,7 @@
       <div className="results" style={resultsStyle}>
         <div className="viewport" style={viewPortStyle}>
           {items.map((item) =>
-            <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>)
+            <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item} showItem={@props.showItem}/>)
           }
         </div>
       </div>
