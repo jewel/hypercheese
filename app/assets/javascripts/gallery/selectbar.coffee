@@ -25,7 +25,7 @@
     tags
 
   render: ->
-    <nav className="navbar navbar-default">
+    <nav id="select-navbar" className="navbar navbar-default">
       <div className="container-fluid">
         <div className="navbar-header">
           <button className="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">

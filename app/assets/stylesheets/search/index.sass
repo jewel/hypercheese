@@ -36,10 +36,31 @@
 
 
     &.is-selected
-      :background blue
+      :background #008
 
       img.thumb
         :opacity 0.7
+
+      .checkmark
+        :display block
+        :color white
+
+    &:hover
+      .checkmark
+        :display block
+
+    .checkmark
+      :color #88f
+      :font-size 30px
+      :text-shadow 0 0 4px black
+      :position absolute
+      :left 20px
+      :top 20px
+      :display none
+
+      &:hover
+        :color #fff
+
 
   .active img.thumb
     :border 4px dotted black
@@ -192,3 +213,6 @@ body, html, #content, .react-wrapper
 .details-window .close-control
   :left 20%
   :right 20%
+
+#select-navbar
+  :background #ccf

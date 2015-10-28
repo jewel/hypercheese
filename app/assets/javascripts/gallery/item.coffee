@@ -1,9 +1,10 @@
 @Item = React.createClass
   onClick: (e) ->
-    if e.ctrlKey
-      Store.toggleSelection @props.item.id
-    else
-      @props.showItem @props.item.id
+    @props.showItem @props.item.id
+
+  onSelect: (e) ->
+    e.stopPropagation()
+    Store.toggleSelection @props.item.id
 
   render: ->
     item = @props.item
@@ -31,8 +32,9 @@
     firstTags = tags.slice 0, numberToShow
     extraTags = tagCount - firstTags.length
 
-    <div className={classes.join ' '} onDblClick={@onDoubleClick} onClick={@onClick} key="#{item.index}">
+    <div className={classes.join ' '} onClick={@onClick} key="#{item.index}">
       <img className="thumb" style={imageStyle} src={squareImage}/>
+      <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">&#x2714;</a>
       <div className="tagbox">
         {
           if item.has_comments
@@ -43,7 +45,7 @@
             tag = Store.state.tagsById[tag_id]
             if tag
               tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
-              <img className="tag-icon" key={tag_id} src={tag_icon_url}/>
+              <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
         }
         {
           if extraTags > 0
