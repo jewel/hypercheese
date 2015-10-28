@@ -86,7 +86,10 @@
 
     items = []
     for i in [startIndex..endIndex]
-      item = Store.state.items[i]
+      itemId = Store.state.items[i]
+      item = null
+      if itemId
+        item = Store.state.itemsById[itemId]
       item ||=
         id: null
         index: i

@@ -38,7 +38,7 @@
       <div className="tagbox">
         {
           if item.has_comments
-            <img src="/images/comment.png"/>
+            <img src="/images/comment.png" key="comments"/>
         }
         {
           firstTags.map (tag_id) ->
@@ -49,7 +49,7 @@
         }
         {
           if extraTags > 0
-            <div className="extra-tags">{'+' + extraTags}</div>
+            <div className="extra-tags" key="extras">{'+' + extraTags}</div>
         }
       </div>
     </div>

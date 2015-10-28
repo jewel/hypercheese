@@ -6,7 +6,7 @@
     @setState
       newSearch: e.target.value
 
-  handleSearch: (e) ->
+  onSearch: (e) ->
     e.preventDefault()
     Store.search @state.newSearch
 
@@ -34,9 +34,9 @@
                 <a href="#/tags">Tags</a>
               </li>
             </ul>
-            <form className="navbar-form navbar-left" role="Search" onSubmit={@handleSearch}>
+            <form className="navbar-form navbar-left" role="Search" onSubmit={@onSearch}>
               <div className="form-group">
-                <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
+                <input className="form-control" placeholder="Search" autoFocus defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
               </div>
             </form>
             <p className="navbar-text">

@@ -1,5 +1,5 @@
 class @Store
-  @ajax: (params) ->
+  @jax: (params) ->
     params.dataType ||= 'json'
     params.error ||= (xhr, status, error) ->
       alert "Problem with server: #{status}"
@@ -7,7 +7,7 @@ class @Store
     $.ajax params
 
   @init: ->
-    @ajax
+    @jax
       url: '/tags'
       success: (res) =>
         @state.tags = res.tags
@@ -36,7 +36,7 @@ class @Store
     for id of @state.selection
       ids.push id
 
-    @ajax(
+    @jax(
       type: "POST"
       url: "/shares"
       data:
@@ -48,6 +48,49 @@ class @Store
     @state.selection = {}
     @state.selectionCount = 0
     @forceUpdate()
+
+  @addTagsToSelection: (tags) ->
+    tagIds = []
+    for tag in tags
+      tagIds.push tag.id
+
+    itemIds = []
+    for id of @state.selection
+      itemIds.push id
+
+    @jax
+      url: "/items/add_tags"
+      data:
+        items: itemIds
+        tags: tagIds
+      type: "POST"
+      success: (res) =>
+        @_ingestItemUpdates res.items
+        @forceUpdate()
+
+    null
+
+  @_ingestItemUpdates: (items) ->
+    for item in items
+      oldItem = @state.itemsById[item.id]
+      if oldItem
+        item.index = oldItem.index
+      @state.itemsById[item.id] = item
+
+  @removeTagFromSelection: (tagId) ->
+    itemIds = []
+    for id of @state.selection
+      itemIds.push id
+
+    @jax
+      url: "/items/remove_tag"
+      data:
+        items: itemIds
+        tag: tagId
+      type: "POST"
+      success: (res) =>
+        @_ingestItemUpdates res.items
+        @forceUpdate()
 
   @search: (q) ->
     @state.query = q
@@ -96,7 +139,7 @@ class @Store
 
     @searching = true
 
-    @searchRequest = @ajax
+    @searchRequest = @jax
       url: "/items"
       data:
         limit: batchEnd - batchStart + 1
@@ -108,7 +151,7 @@ class @Store
         @state.resultCount = res.meta.total
         for item, i in res.items
           item.index = batchStart + i
-          @state.items[batchStart + i] = item
+          @state.items[item.index] = item.id
           @state.itemsById[item.id] = item
 
         @forceUpdate()

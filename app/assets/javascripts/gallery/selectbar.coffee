@@ -13,6 +13,19 @@
     @setState
       newTags: e.target.value
 
+  removeTag: (e) ->
+    Store.removeTagFromSelection(e.target.dataset.tag)
+
+  addNewTags: (e) ->
+    e.preventDefault()
+    tags = TagMatch.matchMany @state.newTags
+    if tags.length == 0
+      return
+    Store.addTagsToSelection tags
+    Store.clearSelection()
+    @setState
+      newTags: ''
+
   selectedTags: ->
     index = {}
     tags = []
@@ -73,13 +86,13 @@
               </li>
 
               {
-                @selectedTags().map (match) ->
+                @selectedTags().map (match) =>
                   <p className="navbar-text" key={match.tag.id}>
                     {match.tag.label}
                     {' '}
                     ({match.count})
                     {' '}
-                    <a href="javascript:void(0)">&times;</a>
+                    <a href="javascript:void(0)" data-tag={match.tag.id} onClick={@removeTag}>&times;</a>
                   </p>
               }
             </ul>
@@ -90,9 +103,9 @@
               <a className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}>Share</a>
             </form>
 
-            <form className="navbar-form navbar-left">
+            <form className="navbar-form navbar-left" onSubmit={@addNewTags}>
               <div className="form-group">
-                <input className="form-control" placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
+                <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
               </div>
             </form>
 

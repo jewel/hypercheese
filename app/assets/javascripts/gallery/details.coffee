@@ -15,10 +15,10 @@
       return
 
     newIndex = item.index + dir
-    newItem = Store.state.items[newIndex]
-    if newItem
+    newItemId = Store.state.items[newIndex]
+    if newItemId
       image = new Image()
-      image.src = "/data/resized/large/#{newItem.id}.jpg"
+      image.src = "/data/resized/large/#{newItemId}.jpg"
 
   moveTo: (dir) ->
     item = Store.state.itemsById[@props.item_id]
@@ -27,9 +27,9 @@
       return
 
     newIndex = item.index + dir
-    newItem = Store.state.items[newIndex]
+    newItemId = Store.state.items[newIndex]
     if newItem
-      @props.showItem newItem.id
+      @props.showItem newItemId
 
   render: ->
     # load prev and next indexes
