@@ -46,15 +46,9 @@
     @preload -1
 
     image_url = "/data/resized/large/#{@props.item_id}.jpg"
-    style =
-      fontSize: '35px'
-    <div style={style} className="details-window">
-      <div className="details-controls">
-        <a href="javascript:void(0)" onClick={@onPrev}>prev</a>
-        {' | '}
-        <a href="javascript:void(0)" onClick={@onClose}>close</a>
-        {' | '}
-        <a href="javascript:void(0)" onClick={@onNext}>next</a>
-      </div>
+    <div className="details-window">
+      <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
+      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}></a>
+      <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
       <img className="detailed-image" src={image_url}/>
     </div>
