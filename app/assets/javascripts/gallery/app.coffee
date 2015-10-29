@@ -8,6 +8,10 @@
     # exclude from state, we don't want to cause a redraw
     @oldScrollTop = scrollTop
 
+  updateHighlight: (itemId) ->
+    @setState
+      highlight: itemId
+
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
@@ -30,7 +34,7 @@
 
     if parts[1] == 'items'
       return {
-        itemId: parts[2]
+        itemId: Math.round(parts[2])
       }
 
     if parts[1] == 'search'
@@ -57,8 +61,8 @@
       }
       {
         if item
-          <Details itemId={@state.itemId} search={@state.search}/>
+          <Details itemId={@state.itemId} search={@state.search} updateHighlight={@updateHighlight}/>
         else
-          <Results scrollTop={@oldScrollTop} updateScrollTop={@updateScrollTop}/>
+          <Results scrollTop={@oldScrollTop} updateScrollTop={@updateScrollTop} highlight={@state.highlight}/>
       }
     </div>

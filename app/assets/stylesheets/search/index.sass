@@ -51,6 +51,24 @@
         .checkmark
           :opacity 1
 
+    @keyframes highlight
+      from
+        :background-color #ff8
+
+    @keyframes highlight-opacity
+      from
+        :opacity 0.7
+
+    &.highlight
+      :animation-name highlight
+      :animation-iteration-count 1
+      :animation-duration 2s
+
+      img.thumb
+        :animation-name highlight-opacity
+        :animation-iteration-count 1
+        :animation-duration 2s
+
     .checkmark
       :color white
       :font-size 30px
@@ -251,3 +269,9 @@ body, html, #content, .react-wrapper
 
 #select-navbar
   :background #ccf
+
+.results
+  :-webkit-user-select none
+  :-moz-user-select none
+  :-ms-user-select none
+  :user-select none

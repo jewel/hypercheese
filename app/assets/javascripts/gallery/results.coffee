@@ -1,14 +1,42 @@
 @Results = React.createClass
   getInitialState: ->
     scrollTop: 0
-    win_width: 1000
-    win_height: 700
+    winWidth: null
+    winHeight: null
+    haveScrolled: false
 
   componentDidMount: ->
     @window = @refs.scrollWindow.getDOMNode()
-    @window.scrollTop = @props.scrollTop
     window.addEventListener 'resize', @onResize, false
+
+    # Normally we'd set these in getInitialState, but we don't know the values
+    # until after the window exists.
+    #
+    # Note that onResize() sets the same properties, but we need them to exist
+    # BEFORE the end of componentDidMount
+    @state.winWidth = @window.clientWidth
+    @state.winHeight = @window.clientHeight
+
     @onResize()
+    @initialScroll()
+
+  # We can either restore scroll position to its last known position, or we can
+  # scroll to a specific item
+  initialScroll: ->
+    scrollTop = @props.scrollTop || 0
+    if @props.highlight
+      item = Store.state.itemsById[@props.highlight]
+      if item
+        row = Math.floor item.index / @imagesPerRow()
+        rowHeight = @rowHeight()
+        # Put image's row right in middle of screen
+        scrollTop = row * rowHeight - @state.winHeight / 2 + rowHeight / 2
+
+    scrollTop = 0 if scrollTop < 0
+    @window.scrollTop = Math.round scrollTop
+
+    @setState
+      haveScrolled: true
 
   componentWillUnmount: ->
     window.removeEventListener 'resize', @onResize, false
@@ -28,8 +56,8 @@
   onResize: ->
     # clientWidth excludes the system scrollbar
     @setState
-      win_width: @window.clientWidth
-      win_height: @window.clientHeight
+      winWidth: @window.clientWidth
+      winHeight: @window.clientHeight
 
   # margin represents 1px of margin and 1px of image padding.  When used we
   # double it since it's on both sides of the image
@@ -40,8 +68,8 @@
     maxSize = 200
     minColumns = 3
     columnSize = ( maxSize + @margin * 2 ) * minColumns
-    if @state.win_width < columnSize
-      @state.win_width / minColumns - @margin * 2
+    if @state.winWidth < columnSize
+      @state.winWidth / minColumns - @margin * 2
     else
       maxSize
 
@@ -52,9 +80,16 @@
     @imageSize() + @margin * 2
 
   imagesPerRow: ->
-    Math.floor @state.win_width / @columnWidth()
+    Math.floor @state.winWidth / @columnWidth()
 
   render: ->
+    if !@state.haveScrolled
+      res =
+        <div className="scroll-window" onScroll={@onScroll} ref="scrollWindow">
+          <div className="results" style={height: "200000px"}></div>
+        </div>
+      return res
+
     overdraw = 3
     maxSize = 200
     minColumns = 3
@@ -66,9 +101,8 @@
     imagesPerRow = @imagesPerRow()
 
     scrollTop = @state.scrollTop
-    scrollTop = 0 unless scrollTop
 
-    viewPortRowCount = Math.ceil @state.win_height / rowHeight + overdraw * 2
+    viewPortRowCount = Math.ceil @state.winHeight / rowHeight + overdraw * 2
     viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
 
@@ -103,7 +137,7 @@
     viewPortStyle =
       top: "#{viewPortStartRow * rowHeight}px"
 
-    if @window
+    if @state.haveScrolled
       windowHeight = rowHeight * rowCount
     else
       # make sure we have enough room to force the scroll position to the right
@@ -122,7 +156,7 @@
         <div className="viewport" style={viewPortStyle}>
           {
             items.map (item) =>
-              <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
+              <Item highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
           }
         </div>
       </div>

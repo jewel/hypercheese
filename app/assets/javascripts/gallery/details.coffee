@@ -4,6 +4,8 @@
 
   onClose: (e) ->
     e.stopPropagation()
+    @props.updateHighlight @props.itemId
+
     if @props.search == ''
       window.location.hash = '/'
     else

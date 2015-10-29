@@ -18,6 +18,7 @@
 
     classes = ["item"]
     classes.push 'is-selected' if selected
+    classes.push 'highlight' if @props.highlight == item.id
 
     maxFit = @props.imageWidth / 33
     tags = item.tag_ids || []
