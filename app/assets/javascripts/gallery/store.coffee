@@ -60,6 +60,13 @@ class @Store
         'comment[text]': text
       success: (res) =>
         res.comment.user = res.users[0]
+        item = @state.itemsById[itemId]
+        if !item
+          console.warn "No such item: #{itemId}"
+        else
+          item.has_comments = true
+
+        @state.comments[itemId] = [] unless @state.comments[itemId]
         @state.comments[itemId].push res.comment
         @forceUpdate()
 
