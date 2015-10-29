@@ -1,6 +1,6 @@
 @Item = React.createClass
   onClick: (e) ->
-    @props.showItem @props.item.id
+    window.location.hash = '/items/' + @props.item.id
 
   onSelect: (e) ->
     e.stopPropagation()

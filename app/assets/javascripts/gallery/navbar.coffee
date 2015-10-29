@@ -8,7 +8,10 @@
 
   onSearch: (e) ->
     e.preventDefault()
-    Store.search @state.newSearch
+    if @state.newSearch == ''
+      window.location.hash = '/'
+    else
+      window.location.hash = '/search/' + encodeURI(@state.newSearch)
 
   render: ->
     <nav id="main-navbar" className="navbar navbar-default">

@@ -21,7 +21,25 @@ class @Store
       tagsById: {}
       comments: {}
 
-    @search ''
+  @getItem: (itemId) ->
+    item = @state.itemsById[itemId]
+    return item if item
+    return null if @loading
+    @loading = true
+    console.warn "Item not loaded: #{itemId}"
+    @jax
+      url: '/items/' + itemId
+      data:
+        query: @state.query
+      success: (res) =>
+        @loading = false
+        index = res.meta.index
+        item = res.item
+        item.index = index
+        @state.items[index] = itemId
+        @state.itemsById[itemId] = item
+        @forceUpdate()
+    null
 
   @getComments: (itemId) ->
     item = @state.itemsById[itemId]
@@ -35,11 +53,16 @@ class @Store
     comments = @state.comments[itemId]
     if comments?
       return comments
+
+    return [] if @loading
+    @loading = true
+
     @jax
       url: '/comments'
       data:
         item_id: itemId
       success: (res) =>
+        @loading = false
         usersById = {}
         for user in res.users
           usersById[user.id] = user
@@ -153,7 +176,7 @@ class @Store
   @executeSearch: (start, end) ->
     batchSize = 100
 
-    if @searching
+    if @loading
       return
 
     if @state.resultCount == 0
@@ -186,7 +209,7 @@ class @Store
     while @state.items[batchEnd]
       batchEnd--
 
-    @searching = true
+    @loading = true
 
     @searchRequest = @jax
       url: "/items"
@@ -196,7 +219,7 @@ class @Store
         query: @state.query
         search_key: @state.searchKey
       success: (res) =>
-        @searching = false
+        @loading = false
 
         @state.resultCount = res.meta.total
         for item, i in res.items

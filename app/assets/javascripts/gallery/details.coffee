@@ -2,13 +2,16 @@
   getInitialState: ->
     newComment: ''
 
-  onClose: ->
-    @props.showItem null
+  onClose: (e) ->
+    e.stopPropagation()
+    window.location.hash = '/'
 
-  onNext: ->
+  onNext: (e) ->
+    e.stopPropagation()
     @moveTo 1
 
-  onPrev: ->
+  onPrev: (e) ->
+    e.stopPropagation()
     @moveTo -1
 
   onChangeNewComment: (e) ->
@@ -41,14 +44,13 @@
     newIndex = item.index + dir
     newItemId = Store.state.items[newIndex]
     if newItemId
-      @props.showItem newItemId
+      window.location.hash = '/items/' + newItemId
 
   render: ->
     # load prev and next indexes
-    item = Store.state.itemsById[@props.item_id]
+    item = Store.getItem @props.item_id
     if !item
-      console.warn "Item not loaded: #{@props.item_id}"
-      return
+      return <div>Loading image</div>
 
     # make sure that the next batch is loaded if they are a fast clicker
     margin = 10
@@ -62,9 +64,9 @@
     image_url = "/data/resized/large/#{@props.item_id}.jpg"
     <div className="details-window">
       <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
-      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}></a>
+      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>
       <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
-      <img className="detailed-image" src={image_url}/>
+      <img className="detailed-image" src={image_url} onClick={@onClose}/>
       <div className="tagbox">
         {
           item.tag_ids.map (tag_id) ->
@@ -85,7 +87,7 @@
         }
         <div key="new" className="comment">
           <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
-          <button class="btn btn-default" onClick={@onComment}>Submit</button>
+          <button className="btn btn-default" onClick={@onComment}>Submit</button>
         </div>
       </div>
     </div>

@@ -47,7 +47,15 @@ class ItemsController < ApplicationController
   end
 
   def show
-    render json: item
+    id = params[:id].to_i
+    @item = Item.find id
+
+    if params[:query]
+      search = Search.new params[:query]
+      index = search.items.pluck(:id).index id
+    end
+
+    render json: @item, meta: { index: index }
   end
 
   def add_tags
@@ -103,9 +111,6 @@ class ItemsController < ApplicationController
   end
 
   private
-  def item
-    Item.find params[:id].to_i
-  end
 
   def item_tag_params
     params.permit items: [], tags: []

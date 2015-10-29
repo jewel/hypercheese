@@ -1,14 +1,33 @@
 @GalleryApp = React.createClass
   getInitialState: ->
-    item_id: null
+    @parseHash()
 
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
+    window.addEventListener 'hashchange', =>
+      @setState @parseHash()
 
-  showItem: (item_id) ->
-    @setState
-      item_id: item_id
+  parseHash: ->
+    hash = window.location.hash.substr(1)
+    if hash == '' || hash == '/'
+      Store.search ''
+      return item_id: null
+
+    parts = hash.split('/')
+    if parts.length == 1 || parts[0] != ''
+      console.warn "Invalid URL: #{hash}"
+      return {}
+
+    if parts[1] == 'items'
+      return item_id: parts[2]
+
+    if parts[1] == 'search'
+      Store.search decodeURI(parts[2])
+      return item_id: null
+
+    console.warn "Invalid URL: #{hash}"
+    return {}
 
   render: ->
     classes = ['react-wrapper']
@@ -22,9 +41,9 @@
         else
           <NavBar/>
       }
-      <Results showItem={@showItem}/>
+      <Results/>
       {
         if @state.item_id
-          <Details showItem={@showItem} item_id={@state.item_id}/>
+          <Details item_id={@state.item_id}/>
       }
     </div>

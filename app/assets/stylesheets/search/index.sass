@@ -174,7 +174,6 @@ body, html, #content, .react-wrapper
 
 .details-window
   :position relative
-  :flex 1
   :text-align center
   :background black
   :width 100%
@@ -194,8 +193,6 @@ body, html, #content, .react-wrapper
   :align-items center
   :padding 20px
   :position absolute
-  :top 10%
-  :bottom 10%
   :outline none
   :opacity 0
   :transition opacity 0.5s
@@ -204,17 +201,22 @@ body, html, #content, .react-wrapper
     :opacity 1
 
 .details-window .prev-control
+  :top 10%
+  :bottom 10%
   :left 0
   :width 20%
 
 .details-window .next-control
+  :top 10%
+  :bottom 10%
   :right 0
   :width 20%
   :justify-content flex-end
 
 .details-window .close-control
-  :left 20%
-  :right 20%
+  :right 0
+  :opacity 0.5
+  :justify-content flex-end
 
 .details-window .tagbox
   :position absolute
