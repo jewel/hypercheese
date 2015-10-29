@@ -41,20 +41,20 @@
     return {}
 
   render: ->
-    classes = ['react-wrapper']
-    if @state.itemId
-      classes.push 'show-details'
+    selection = Store.state.selectionCount > 0
+    item = @state.itemId != null
 
-    <div className={classes.join ' '}>
+    <div className='react-wrapper'>
       {
-        if Store.state.selectionCount > 0
-          <SelectBar/>
-        else
+        if !item && !selection
           <NavBar search={@state.search}/>
+        else if selection
+          <SelectBar/>
       }
-      <Results/>
       {
-        if @state.itemId
+        if item
           <Details itemId={@state.itemId} search={@state.search}/>
+        else
+          <Results/>
       }
     </div>
