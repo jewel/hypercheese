@@ -1,4 +1,7 @@
 @Details = React.createClass
+  getInitialState: ->
+    newComment: ''
+
   onClose: ->
     @props.showItem null
 
@@ -7,6 +10,15 @@
 
   onPrev: ->
     @moveTo -1
+
+  onChangeNewComment: (e) ->
+    @setState
+      newComment: e.target.value
+
+  onComment: ->
+    Store.newComment @props.item_id, @state.newComment
+    @setState
+      newComment: ''
 
   preload: (dir) ->
     item = Store.state.itemsById[@props.item_id]
@@ -71,5 +83,9 @@
               <em>{comment.created_at}</em>
             </div>
         }
+        <div key="new" className="comment">
+          <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
+          <button class="btn btn-default" onClick={@onComment}>Submit</button>
+        </div>
       </div>
     </div>

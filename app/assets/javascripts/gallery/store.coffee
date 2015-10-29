@@ -51,6 +51,18 @@ class @Store
 
     return []
 
+  @newComment: (itemId, text) ->
+    @jax
+      url: '/comments'
+      type: 'POST'
+      data:
+        'comment[item_id]': itemId
+        'comment[text]': text
+      success: (res) =>
+        res.comment.user = res.users[0]
+        @state.comments[itemId].push res.comment
+        @forceUpdate()
+
   @toggleSelection: (id) ->
     if @state.selection[id]
       delete @state.selection[id]
