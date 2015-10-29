@@ -19,8 +19,37 @@ class @Store
     @state =
       tags: []
       tagsById: {}
+      comments: {}
 
     @search ''
+
+  @getComments: (itemId) ->
+    item = @state.itemsById[itemId]
+    if !item
+      console.warn "No such item: #{itemId}"
+      return []
+
+    if !item.has_comments
+      return []
+
+    comments = @state.comments[itemId]
+    if comments?
+      return comments
+    @jax
+      url: '/comments'
+      data:
+        item_id: itemId
+      success: (res) =>
+        usersById = {}
+        for user in res.users
+          usersById[user.id] = user
+        for comment in res.comments
+          comment.user = usersById[comment.user_id]
+
+        @state.comments[itemId] = res.comments
+        @forceUpdate()
+
+    return []
 
   @toggleSelection: (id) ->
     if @state.selection[id]

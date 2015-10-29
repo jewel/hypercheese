@@ -227,5 +227,24 @@ body, html, #content, .react-wrapper
     :margin-right 8px
     :box-shadow 2px 2px 4px black
 
+.details-window .comments
+  :position absolute
+  :bottom 10px
+  :width 25%
+  :right -22%
+  :overflow-y auto
+  :height 100%
+  :transition right 1s
+
+  &:hover
+    :right 10px
+
+  .comment
+    :background linear-gradient(#ff0, #f80)
+    :color black
+    :margin-bottom 10px
+    :border-radius 5px
+    :padding 15px
+
 #select-navbar
   :background #ccf

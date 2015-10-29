@@ -45,6 +45,8 @@
     @preload 1
     @preload -1
 
+    comments = Store.getComments(@props.item_id)
+
     image_url = "/data/resized/large/#{@props.item_id}.jpg"
     <div className="details-window">
       <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
@@ -58,6 +60,16 @@
             if tag
               tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
               <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+        }
+      </div>
+      <div className="comments">
+        {
+          comments.map (comment) ->
+            <div key={comment.id} className="comment">
+              {comment.text}<br/>
+              <strong>{comment.user.name}</strong> &mdash;
+              <em>{comment.created_at}</em>
+            </div>
         }
       </div>
     </div>
