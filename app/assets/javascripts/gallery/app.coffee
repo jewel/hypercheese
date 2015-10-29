@@ -4,6 +4,10 @@
     state.search ||= ''
     state
 
+  updateScrollTop: (scrollTop) ->
+    # exclude from state, we don't want to cause a redraw
+    @oldScrollTop = scrollTop
+
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
@@ -55,6 +59,6 @@
         if item
           <Details itemId={@state.itemId} search={@state.search}/>
         else
-          <Results/>
+          <Results scrollTop={@oldScrollTop} updateScrollTop={@updateScrollTop}/>
       }
     </div>

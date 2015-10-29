@@ -1,25 +1,26 @@
 @Results = React.createClass
   getInitialState: ->
-    scrollTop: null
+    scrollTop: 0
     win_width: 1000
     win_height: 700
 
   componentDidMount: ->
-    @window = $('.scroll-window')[0]
-    @window.addEventListener 'scroll', @onScroll, false
+    @window = @refs.scrollWindow.getDOMNode()
+    @window.scrollTop = @props.scrollTop
     window.addEventListener 'resize', @onResize, false
     @onResize()
 
   componentWillUnmount: ->
-    @window.removeEventListener 'scroll', @onScroll, false
     window.removeEventListener 'resize', @onResize, false
 
-  onScroll: ->
+  onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so
     # that images will be fetched from the server before we need them, but we
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
-    scrollTop = @window.scrollTop
+    scrollTop = e.target.scrollTop
+    @props.updateScrollTop scrollTop
+
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
       @setState
         scrollTop: scrollTop
@@ -50,6 +51,9 @@
   columnWidth: ->
     @imageSize() + @margin * 2
 
+  imagesPerRow: ->
+    Math.floor @state.win_width / @columnWidth()
+
   render: ->
     overdraw = 3
     maxSize = 200
@@ -59,8 +63,7 @@
     imageHeight = @imageSize()
     rowHeight = @rowHeight()
     columnWidth = @columnWidth()
-
-    imagesPerRow = Math.floor @state.win_width / columnWidth
+    imagesPerRow = @imagesPerRow()
 
     scrollTop = @state.scrollTop
     scrollTop = 0 unless scrollTop
@@ -100,18 +103,26 @@
     viewPortStyle =
       top: "#{viewPortStartRow * rowHeight}px"
 
+    if @window
+      windowHeight = rowHeight * rowCount
+    else
+      # make sure we have enough room to force the scroll position to the right
+      # place in componentDidMount
+      windowHeight = @props.scrollTop + 3000
+
     resultsStyle =
-      height: "#{rowHeight * rowCount}px"
+      height: "#{windowHeight}px"
 
     # Now that we know exactly how many records we need, we ask for them to be
     # fetched.  When the results come back, they will cause a re-render
     Store.executeSearch startIndex, endIndex
 
-    <div className="scroll-window">
+    <div className="scroll-window" onScroll={@onScroll} ref="scrollWindow">
       <div className="results" style={resultsStyle}>
         <div className="viewport" style={viewPortStyle}>
-          {items.map((item) =>
-            <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item} showItem={@props.showItem}/>)
+          {
+            items.map (item) =>
+              <Item imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
           }
         </div>
       </div>
