@@ -33,6 +33,16 @@ class ItemsController < ApplicationController
 
     res = Item.includes(:comments, :tags).find subset
 
+    # `find` returns unordered, sort according to desired order
+    items_by_id = {}
+    res.each do |item|
+      items_by_id[item.id] = item
+    end
+
+    res = subset.map do |item_id|
+      items_by_id[item_id.to_i]
+    end
+
     render json: res, each_serializer: ItemSerializer, meta: { search_key: search_key, total: ids.size }
   end
 
