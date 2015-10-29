@@ -4,7 +4,10 @@
 
   onClose: (e) ->
     e.stopPropagation()
-    window.location.hash = '/'
+    if @props.search == ''
+      window.location.hash = '/'
+    else
+      window.location.hash = '/search/' + encodeURI(@props.search)
 
   onNext: (e) ->
     e.stopPropagation()
@@ -19,14 +22,14 @@
       newComment: e.target.value
 
   onComment: ->
-    Store.newComment @props.item_id, @state.newComment
+    Store.newComment @props.itemId, @state.newComment
     @setState
       newComment: ''
 
   preload: (dir) ->
-    item = Store.state.itemsById[@props.item_id]
+    item = Store.state.itemsById[@props.itemId]
     if !item
-      console.warn "Item not loaded: #{@props.item_id}"
+      console.warn "Item not loaded: #{@props.itemId}"
       return
 
     newIndex = item.index + dir
@@ -36,9 +39,9 @@
       image.src = "/data/resized/large/#{newItemId}.jpg"
 
   moveTo: (dir) ->
-    item = Store.state.itemsById[@props.item_id]
+    item = Store.state.itemsById[@props.itemId]
     if !item
-      console.warn "Item not loaded: #{@props.item_id}"
+      console.warn "Item not loaded: #{@props.itemId}"
       return
 
     newIndex = item.index + dir
@@ -48,7 +51,7 @@
 
   render: ->
     # load prev and next indexes
-    item = Store.getItem @props.item_id
+    item = Store.getItem @props.itemId
     if !item
       return <div>Loading image</div>
 
@@ -59,9 +62,9 @@
     @preload 1
     @preload -1
 
-    comments = Store.getComments(@props.item_id)
+    comments = Store.getComments(@props.itemId)
 
-    image_url = "/data/resized/large/#{@props.item_id}.jpg"
+    image_url = "/data/resized/large/#{@props.itemId}.jpg"
     <div className="details-window">
       <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
       <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>

@@ -20,6 +20,13 @@ class @Store
       tags: []
       tagsById: {}
       comments: {}
+      searchKey: null
+      query: {}
+      items: {}
+      itemsById: {}
+      resultCount: null
+      selection: {}
+      selectionCount: 0
 
   @getItem: (itemId) ->
     item = @state.itemsById[itemId]

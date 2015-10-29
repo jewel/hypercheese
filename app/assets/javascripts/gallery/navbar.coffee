@@ -1,6 +1,6 @@
 @NavBar = React.createClass
   getInitialState: ->
-    newSearch: ''
+    newSearch: @props.search
 
   changeNewSearch: (e) ->
     @setState

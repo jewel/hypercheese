@@ -1,7 +1,4 @@
 @Item = React.createClass
-  onClick: (e) ->
-    window.location.hash = '/items/' + @props.item.id
-
   onSelect: (e) ->
     e.stopPropagation()
     Store.toggleSelection @props.item.id
@@ -32,8 +29,10 @@
     firstTags = tags.slice 0, numberToShow
     extraTags = tagCount - firstTags.length
 
-    <div className={classes.join ' '} onClick={@onClick} key="#{item.index}">
-      <img className="thumb" style={imageStyle} src={squareImage}/>
+    <div className={classes.join ' '} key="#{item.index}">
+      <a href={"#/items/#{@props.item.id}"}>
+        <img className="thumb" style={imageStyle} src={squareImage}/>
+      </a>
       <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">&#x2714;</a>
       <div className="tagbox">
         {
