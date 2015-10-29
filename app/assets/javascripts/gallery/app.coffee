@@ -1,6 +1,8 @@
 @GalleryApp = React.createClass
   getInitialState: ->
-    @parseHash()
+    state = @parseHash()
+    state.search ||= ''
+    state
 
   componentDidMount: ->
     Store.onChange =>

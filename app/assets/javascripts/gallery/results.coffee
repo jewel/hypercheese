@@ -107,6 +107,8 @@
     # fetched.  When the results come back, they will cause a re-render
     Store.executeSearch startIndex, endIndex
 
+    console.log items
+
     <div className="scroll-window">
       <div className="results" style={resultsStyle}>
         <div className="viewport" style={viewPortStyle}>

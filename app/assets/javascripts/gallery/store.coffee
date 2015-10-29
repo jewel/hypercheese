@@ -21,7 +21,7 @@ class @Store
       tagsById: {}
       comments: {}
       searchKey: null
-      query: {}
+      query: ''
       items: {}
       itemsById: {}
       resultCount: null
@@ -171,6 +171,7 @@ class @Store
         @forceUpdate()
 
   @search: (q) ->
+    return if q == @state.query
     @state.searchKey = null
     @state.query = q
     @state.items = {}
@@ -183,7 +184,7 @@ class @Store
   @executeSearch: (start, end) ->
     batchSize = 100
 
-    if @loading
+    if @searching
       return
 
     if @state.resultCount == 0
@@ -216,7 +217,7 @@ class @Store
     while @state.items[batchEnd]
       batchEnd--
 
-    @loading = true
+    @searching = true
 
     @searchRequest = @jax
       url: "/items"
@@ -226,7 +227,7 @@ class @Store
         query: @state.query
         search_key: @state.searchKey
       success: (res) =>
-        @loading = false
+        @searching = false
 
         @state.resultCount = res.meta.total
         for item, i in res.items
