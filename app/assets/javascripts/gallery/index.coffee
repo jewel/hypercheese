@@ -6,4 +6,4 @@
 
 $ ->
   Store.init()
-  React.render <GalleryApp/>, document.getElementById('content')
+  ReactDOM.render <GalleryApp/>, document.getElementById('content')

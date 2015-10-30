@@ -6,7 +6,7 @@
     haveScrolled: false
 
   componentDidMount: ->
-    @window = @refs.scrollWindow.getDOMNode()
+    @window = @refs.scrollWindow
     window.addEventListener 'resize', @onResize, false
 
     # Normally we'd set these in getInitialState, but we don't know the values

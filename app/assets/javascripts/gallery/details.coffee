@@ -25,7 +25,7 @@
     @moveTo -1
 
   onPlay: (e) ->
-    @refs.video.getDOMNode().play()
+    @refs.video.play()
     @setState
       playing: true
 
