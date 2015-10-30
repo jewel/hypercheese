@@ -1,0 +1,77 @@
+.results .item
+  :display inline-block
+  :vertical-align top
+  :margin 1px
+  :text-align center
+  :background #444
+  :transition background 0.5s
+
+  .tagbox
+    :height 30px
+
+    .extra-tags
+      :background #888
+      :color black
+      :width 28px
+      :display inline-block
+      :vertical-align middle
+      :line-height 28px
+
+    img.tag-icon, .extra-tags
+      :width 28px
+      :height 28px
+      :border-radius 50%
+      :box-shadow 1px 1px 2px black
+
+    img
+      :margin-right 4px
+
+  img.thumb
+    :padding 1px
+    :box-sizing content-box
+
+  &:hover
+    .checkmark
+      :opacity 0.5
+
+  &.is-selected
+    :background #448
+
+    img.thumb
+      :opacity 0.7
+
+    .checkmark
+      :opacity 1
+
+    &:hover
+      .checkmark
+        :opacity 1
+
+  @keyframes highlight
+    from
+      :background-color #ff8
+
+  @keyframes highlight-opacity
+    from
+      :opacity 0.7
+
+  &.highlight
+    :animation-name highlight
+    :animation-iteration-count 1
+    :animation-duration 2s
+
+    img.thumb
+      :animation-name highlight-opacity
+      :animation-iteration-count 1
+      :animation-duration 2s
+
+  .checkmark
+    :color white
+    :font-size 30px
+    :text-shadow 0 0 4px black
+    :position absolute
+    :left 20px
+    :top 20px
+    :opacity 0
+    :transition opacity 0.5s
+    :outline 0
