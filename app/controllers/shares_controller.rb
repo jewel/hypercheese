@@ -1,10 +1,17 @@
 class SharesController < ApplicationController
-  skip_before_filter :authenticate_user!, only: [:show]
-  skip_before_filter :verify_approval!, only: [:show]
+  skip_before_filter :authenticate_user!, only: [:show, :download]
+  skip_before_filter :verify_approval!, only: [:show, :download]
 
   def show
     @share = Share.find_by_code( params[:id] )
     @items = @share.items
+
+    render layout: 'share'
+  end
+
+  def download
+    @share = Share.find_by_code( params[:share_id] )
+    download_zip @share.items
   end
 
   def create

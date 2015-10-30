@@ -1,10 +1,10 @@
 %h1 Shared Pictures
 
 %p
-  %a(href="javascript:alert('coming soon!')")
-    Download
+  %a{ :href => "/shares/#{@share.code}/download" }
+    Download All
 
 - @items.each do |item|
-  %a{:href => item.resized_url(:large)}(data-lightbox="box")<
-    %img{:src => item.resized_url(:square)}
+  %a{:href => item.resized_url(:large)}(data-lightbox="box")>
+    %img{:src => item.resized_url(:square)}>
 

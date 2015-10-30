@@ -43,7 +43,9 @@ HyperCheese::Application.routes.draw do
 
   resources :tags
 
-  resources :shares
+  resources :shares do
+    get :download
+  end
 
   # Sample resource route with options:
   #   resources :products do
