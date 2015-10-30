@@ -90,9 +90,6 @@
     comments = Store.getComments(@props.itemId)
 
     <div className="details-window">
-      <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
-      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>
-      <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
       {
         if item.variety == 'video' && !@state.playing
           <a className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
@@ -104,6 +101,9 @@
         else
           <img onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
       }
+      <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
+      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>
+      <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
       <div className="tagbox">
         {
           item.tag_ids.map (tag_id) ->

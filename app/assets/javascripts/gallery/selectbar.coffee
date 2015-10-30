@@ -57,73 +57,76 @@
 
     matches = TagMatch.matchMany @state.newTags
 
-    <nav id="select-navbar" className="navbar navbar-default">
-      <div className="container-fluid">
-        <div className="navbar-header">
-          <button className="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">
-            <span className="sr-only">
-              Toggle Navigation
-            </span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-          </button>
-        </div>
-
-        <div className="collapse navbar-collapse" id="hypercheese-navbar-collapse-1">
-          <ul className="nav navbar-nav"></ul>
-
-          <div>
-            <ul className="nav navbar-nav">
-              <li>
-                <p className="navbar-text"> Selected: {Store.state.selectionCount}</p>
-              </li>
-
-              <li>
-                <form className="navbar-form navbar-left">
-                  <a className="btn btn-default" onClick={@clearSelection}>Clear</a>
-                </form>
-              </li>
-
-              {
-                @selectedTags().map (match) =>
-                  <p className="navbar-text" key={match.tag.id}>
-                    {match.tag.label}
-                    {' '}
-                    ({match.count})
-                    {' '}
-                    <a href="javascript:void(0)" data-tag={match.tag.id} onClick={@removeTag}>&times;</a>
-                  </p>
-              }
-            </ul>
-
-            <form className="navbar-form navbar-left">
-              <a className="btn btn-default" href={downloadLink}>Download</a>
-              {' '}
-              <a className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}>Share</a>
-            </form>
-
-            <form className="navbar-form navbar-left" onSubmit={@addNewTags}>
-              <div className="form-group">
-                <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
-              </div>
-            </form>
-
-            <ul className="nav navbar-nav">
-              {
-                matches.map (tag) ->
-                  <li key={tag.id}>
-                    <p className="navbar-text">{tag.label}</p>
-                  </li>
-              }
-            </ul>
+    <div>
+      <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
+      <nav id="select-navbar" className="navbar navbar-fixed-top">
+        <div className="container-fluid">
+          <div className="navbar-header">
+            <button className="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">
+              <span className="sr-only">
+                Toggle Navigation
+              </span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+              <span className="icon-bar"></span>
+            </button>
           </div>
 
-          <ul className="nav navbar-nav navbar-right">
-            <li>
-              <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
-            </li>
-          </ul>
+          <div className="collapse navbar-collapse" id="hypercheese-navbar-collapse-1">
+            <ul className="nav navbar-nav"></ul>
+
+            <div>
+              <ul className="nav navbar-nav">
+                <li>
+                  <p className="navbar-text"> Selected: {Store.state.selectionCount}</p>
+                </li>
+
+                <li>
+                  <form className="navbar-form navbar-left">
+                    <a className="btn btn-default" onClick={@clearSelection}>Clear</a>
+                  </form>
+                </li>
+
+                {
+                  @selectedTags().map (match) =>
+                    <p className="navbar-text" key={match.tag.id}>
+                      {match.tag.label}
+                      {' '}
+                      ({match.count})
+                      {' '}
+                      <a href="javascript:void(0)" data-tag={match.tag.id} onClick={@removeTag}>&times;</a>
+                    </p>
+                }
+              </ul>
+
+              <form className="navbar-form navbar-left">
+                <a className="btn btn-default" href={downloadLink}>Download</a>
+                {' '}
+                <a className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}>Share</a>
+              </form>
+
+              <form className="navbar-form navbar-left" onSubmit={@addNewTags}>
+                <div className="form-group">
+                  <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
+                </div>
+              </form>
+
+              <ul className="nav navbar-nav">
+                {
+                  matches.map (tag) ->
+                    <li key={tag.id}>
+                      <p className="navbar-text">{tag.label}</p>
+                    </li>
+                }
+              </ul>
+            </div>
+
+            <ul className="nav navbar-nav navbar-right">
+              <li>
+                <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>

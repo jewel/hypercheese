@@ -1,0 +1,10 @@
+// Use visibility in case we got the height wrong
+
+.navbar:not(.navbar-hidden)
+  :visibility visible
+  :transition visibility 0s, top 0.5s ease-in
+
+.navbar.navbar-hidden
+  :visibility hidden
+  :top -50px
+  :transition top 0.5s ease-in, visibility 0s 0.5s

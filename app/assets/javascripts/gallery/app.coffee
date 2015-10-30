@@ -52,7 +52,10 @@
     selection = Store.state.selectionCount > 0
     item = @state.itemId != null
 
-    <div className='react-wrapper'>
+    classes = ['react-wrapper']
+    classes.push 'showing-details' if item
+
+    <div className={classes.join ' '}>
       {
         if !item && !selection
           <NavBar search={@state.search}/>

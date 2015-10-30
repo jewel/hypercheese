@@ -5,17 +5,19 @@
     winHeight: null
     haveScrolled: false
 
+  html: document.documentElement
+
   componentDidMount: ->
-    @window = @refs.scrollWindow
     window.addEventListener 'resize', @onResize, false
+    window.addEventListener 'scroll', @onScroll, false
 
     # Normally we'd set these in getInitialState, but we don't know the values
     # until after the window exists.
     #
     # Note that onResize() sets the same properties, but we need them to exist
     # BEFORE the end of componentDidMount
-    @state.winWidth = @window.clientWidth
-    @state.winHeight = @window.clientHeight
+    @state.winWidth = @html.clientWidth
+    @state.winHeight = @html.clientHeight
 
     @onResize()
     @initialScroll()
@@ -33,20 +35,21 @@
         scrollTop = row * rowHeight - @state.winHeight / 2 + rowHeight / 2
 
     scrollTop = 0 if scrollTop < 0
-    @window.scrollTop = Math.round scrollTop
+    window.scrollTop = Math.round scrollTop
 
     @setState
       haveScrolled: true
 
   componentWillUnmount: ->
     window.removeEventListener 'resize', @onResize, false
+    window.removeEventListener 'scroll', @onScroll, false
 
   onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so
     # that images will be fetched from the server before we need them, but we
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
-    scrollTop = e.target.scrollTop
+    scrollTop = @html.scrollTop
     @props.updateScrollTop scrollTop
 
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
@@ -56,8 +59,8 @@
   onResize: ->
     # clientWidth excludes the system scrollbar
     @setState
-      winWidth: @window.clientWidth
-      winHeight: @window.clientHeight
+      winWidth: @html.clientWidth
+      winHeight: @html.clientHeight
 
   # margin represents 1px of margin and 1px of image padding.  When used we
   # double it since it's on both sides of the image
@@ -85,9 +88,7 @@
   render: ->
     if !@state.haveScrolled
       res =
-        <div className="scroll-window" onScroll={@onScroll} ref="scrollWindow">
-          <div className="results" style={height: "200000px"}></div>
-        </div>
+        <div className="results" style={height: "20000000px"}></div>
       return res
 
     overdraw = 3
@@ -102,7 +103,7 @@
 
     scrollTop = @state.scrollTop
 
-    viewPortRowCount = Math.ceil @state.winHeight / rowHeight + overdraw * 2
+    viewPortRowCount = Math.ceil @state.winHeight / rowHeight + overdraw * 2 + 1
     viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
 
@@ -114,12 +115,12 @@
     rowCount = Math.ceil totalItems / imagesPerRow
 
     startIndex = viewPortStartRow * imagesPerRow
-    endIndex = startIndex + viewPortRowCount * imagesPerRow
+    endIndex = startIndex + viewPortRowCount * imagesPerRow - 1
     startIndex = totalItems - 1 if startIndex >= totalItems
     endIndex = totalItems - 1 if endIndex >= totalItems
 
     # console.log "#{viewPortStartRow} * #{imagesPerRow} = #{startIndex}"
-    # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} = #{endIndex}"
+    # console.log "#{startIndex} + #{viewPortRowCount} * #{imagesPerRow} - 1 = #{endIndex}"
 
     items = []
     for i in [startIndex..endIndex]
@@ -137,12 +138,7 @@
     viewPortStyle =
       top: "#{viewPortStartRow * rowHeight}px"
 
-    if @state.haveScrolled
-      windowHeight = rowHeight * rowCount
-    else
-      # make sure we have enough room to force the scroll position to the right
-      # place in componentDidMount
-      windowHeight = @props.scrollTop + 3000
+    windowHeight = rowHeight * rowCount
 
     resultsStyle =
       height: "#{windowHeight}px"
@@ -151,13 +147,11 @@
     # fetched.  When the results come back, they will cause a re-render
     Store.executeSearch startIndex, endIndex
 
-    <div className="scroll-window" onScroll={@onScroll} ref="scrollWindow">
-      <div className="results" style={resultsStyle}>
-        <div className="viewport" style={viewPortStyle}>
-          {
-            items.map (item) =>
-              <Item highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
-          }
-        </div>
+    <div className="results" style={resultsStyle}>
+      <div className="viewport" style={viewPortStyle}>
+        {
+          items.map (item) =>
+            <Item highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
+        }
       </div>
     </div>
