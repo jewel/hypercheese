@@ -35,7 +35,7 @@
         scrollTop = row * rowHeight - @state.winHeight / 2 + rowHeight / 2
 
     scrollTop = 0 if scrollTop < 0
-    window.scrollTop = Math.round scrollTop
+    window.scroll 0, scrollTop
 
     @setState
       haveScrolled: true
@@ -49,7 +49,7 @@
     # that images will be fetched from the server before we need them, but we
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
-    scrollTop = @html.scrollTop
+    scrollTop = window.pageYOffset
     @props.updateScrollTop scrollTop
 
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
@@ -88,7 +88,7 @@
   render: ->
     if !@state.haveScrolled
       res =
-        <div className="results" style={height: "20000000px"}></div>
+        <div className="results" style={height: "2000000px"}></div>
       return res
 
     overdraw = 3

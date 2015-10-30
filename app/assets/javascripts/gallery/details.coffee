@@ -16,14 +16,6 @@
     if !@state.playing
       return @onClose(e)
 
-  onNext: (e) ->
-    e.stopPropagation()
-    @moveTo 1
-
-  onPrev: (e) ->
-    e.stopPropagation()
-    @moveTo -1
-
   onPlay: (e) ->
     @refs.video.play()
     @setState
@@ -37,6 +29,10 @@
     Store.newComment @props.itemId, @state.newComment
     @setState
       newComment: ''
+
+  stopVideo: ->
+    @setState
+      playing: false
 
   preload: (dir) ->
     item = Store.state.itemsById[@props.itemId]
@@ -63,7 +59,7 @@
 
     return "/data/resized/#{size}/#{itemId}.jpg"
 
-  moveTo: (dir) ->
+  linkTo: (dir) ->
     item = Store.state.itemsById[@props.itemId]
     if !item
       console.warn "Item not loaded: #{@props.itemId}"
@@ -72,7 +68,7 @@
     newIndex = item.index + dir
     newItemId = Store.state.items[newIndex]
     if newItemId
-      window.location.hash = '/items/' + newItemId
+      return '#/items/' + newItemId
 
   render: ->
     # load prev and next indexes
@@ -89,11 +85,10 @@
 
     comments = Store.getComments(@props.itemId)
 
+    nextLink = @linkTo 1
+    prevLink = @linkTo -1
+
     <div className="details-window">
-      {
-        if item.variety == 'video' && !@state.playing
-          <a className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
-      }
       {
         if item.variety == 'video'
           <video onClick={@onVideoClick} className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" preload="none" controls={@state.playing} poster={@largeURL(@props.itemId)} />
@@ -101,9 +96,20 @@
         else
           <img onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
       }
-      <a className="control prev-control" href="javascript:void(0)" onClick={@onPrev}>&larr;</a>
+
+      {
+        if item.variety == 'video' && !@state.playing
+          <a className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
+      }
+      {
+        if prevLink
+          <a className="control prev-control" href={prevLink} onClick={@stopVideo}>&larr;</a>
+      }
       <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>
-      <a className="control next-control" href="javascript:void(0)" onClick={@onNext}>&rarr;</a>
+      {
+        if nextLink
+          <a className="control next-control" href={nextLink} onClick={@stopVideo}>&rarr;</a>
+      }
       <div className="tagbox">
         {
           item.tag_ids.map (tag_id) ->

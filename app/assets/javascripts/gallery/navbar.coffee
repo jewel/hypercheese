@@ -10,7 +10,7 @@
     window.removeEventListener 'scroll', @onScroll, false
 
   onScroll: (e) ->
-    top = document.documentElement.scrollTop
+    top = window.pageYOffset
 
     if @prevTop?
       if @prevTop < top
@@ -24,7 +24,7 @@
 
     newHidden = false if top <= 100
 
-    if @state.hidden != newHidden
+    if newHidden? && @state.hidden != newHidden
       @setState
         hidden: newHidden
 
