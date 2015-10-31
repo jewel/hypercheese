@@ -3,6 +3,40 @@
     newComment: ''
     playing: false
 
+  onTouchStart: (e) ->
+    return unless e.touches.length == 1
+    touch = e.touches[0]
+    @startTouch = touch
+    null
+
+  onTouchMove: (e) ->
+    return unless start = @startTouch
+    touch = e.touches[0]
+    @showSwipe touch.pageX - start.pageX
+    @touchPosition = touch.pageX
+
+  onTouchEnd: (e) ->
+    return unless start = @startTouch
+    pageWidth = document.documentElement.clientWidth
+    # must move at least half the page
+    diff = @touchPosition - start.pageX
+    @startTouch = null
+    @touchPosition = 0
+    if Math.abs(diff) > pageWidth / 3
+      if diff > 0
+        @moveTo 1
+      else
+        @moveTo -1
+    @showSwipe 0
+
+  showSwipe: (amount) ->
+    (@refs.image || @refs.video).style.transform = "translateX(#{amount}px)"
+
+  moveTo: (dir) ->
+    @stopVideo()
+
+    window.location.hash = @linkTo dir
+
   onClose: (e) ->
     e.stopPropagation()
     @props.updateHighlight @props.itemId
@@ -69,32 +103,31 @@
   render: ->
     # load prev and next indexes
     item = Store.getItem @props.itemId
-    if !item
-      return <div>Loading image</div>
 
     # make sure that the next batch is loaded if they are a fast clicker
     margin = 10
 
-    Store.executeSearch item.index - margin, item.index + margin
-    @preload 1
-    @preload -1
+    if item
+      Store.executeSearch item.index - margin, item.index + margin
+      @preload 1
+      @preload -1
 
     comments = Store.getComments(@props.itemId)
 
     nextLink = @linkTo 1
     prevLink = @linkTo -1
 
-    <div className="details-window">
+    <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
       {
-        if item.variety == 'video'
+        if item && item.variety == 'video'
           <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
 
         else
-          <img onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
+          <img ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
       }
 
       {
-        if item.variety == 'video' && !@state.playing
+        if item && item.variety == 'video' && !@state.playing
           <a className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
       }
       {
@@ -108,11 +141,12 @@
       }
       <div className="tagbox">
         {
-          item.tag_ids.map (tag_id) ->
-            tag = Store.state.tagsById[tag_id]
-            if tag
-              tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
-              <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+          if item
+            item.tag_ids.map (tag_id) ->
+              tag = Store.state.tagsById[tag_id]
+              if tag
+                tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+                <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
         }
       </div>
       <div className="comments">
