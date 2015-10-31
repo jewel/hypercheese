@@ -12,10 +12,6 @@
     else
       window.location.hash = '/search/' + encodeURI(@props.search)
 
-  onVideoClick: (e) ->
-    if !@state.playing
-      return @onClose(e)
-
   onPlay: (e) ->
     @refs.video.play()
     @setState
@@ -91,7 +87,7 @@
     <div className="details-window">
       {
         if item.variety == 'video'
-          <video onClick={@onVideoClick} className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" preload="none" controls={@state.playing} poster={@largeURL(@props.itemId)} />
+          <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
 
         else
           <img onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />

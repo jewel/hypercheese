@@ -4,7 +4,8 @@
     %meta(charset="utf-8")
     %meta(http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1")
     %link{:rel => 'icon', :href => image_path( 'icon.png' )}
-    %meta(name="viewport" content="width=device-width, initial-scale=1, maxium-scale=1")
+    %meta(name="mobile-web-app-capable" content="yes")
+    %meta(name="theme-color" content="#ffc100")
 
     %title= @title || "HyperCheese"
     / HTML5 shim, for IE6-8 support of HTML elements
@@ -14,6 +15,6 @@
     = csrf_meta_tags
   %body
     #content
-      Loading
+      Making cheese...
     = yield
     = javascript_include_tag "gallery"
