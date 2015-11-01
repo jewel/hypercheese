@@ -27,9 +27,10 @@ class @Store
       resultCount: null
       selection: {}
       selectionCount: 0
+      rangeStart: null
 
-  @getItem: (itemId) ->
-    item = @state.itemsById[itemId]
+  @fetchItem: (itemId) ->
+    item = @getItem itemId
     return item if item
     return null if @loading
     @loading = true
@@ -48,13 +49,17 @@ class @Store
         @forceUpdate()
     null
 
-  @getComments: (itemId) ->
-    item = @state.itemsById[itemId]
-    if !item
-      console.warn "No such item: #{itemId}"
-      return []
+  @getItem: (itemId) ->
+    @state.itemsById[itemId]
 
-    if !item.has_comments
+  @getIndex: (itemId) ->
+    item = @getItem itemId
+    return null unless item
+    item.index
+
+  @getComments: (itemId) ->
+    item = @getItem itemId
+    if !item || !item.has_comments
       return []
 
     comments = @state.comments[itemId]
@@ -99,14 +104,37 @@ class @Store
         @state.comments[itemId] = [] unless @state.comments[itemId]
         @state.comments[itemId].push res.comment
         @forceUpdate()
+  @selectItem: (id) ->
+    if !@state.selection[id]
+      @state.selection[id] = true
+      @state.selectionCount++
 
-  @toggleSelection: (id) ->
+  @deselectItem: (id) ->
     if @state.selection[id]
       delete @state.selection[id]
       @state.selectionCount--
+
+  @toggleSelection: (id) ->
+    if @state.selection[id]
+      @deselectItem id
     else
-      @state.selection[id] = true
-      @state.selectionCount++
+      @selectItem id
+    @forceUpdate()
+
+  @selectRange: (itemId) ->
+    if !@state.rangeStart?
+      @state.rangeStart = itemId
+    startIndex = @getIndex @state.rangeStart
+    endIndex = @getIndex itemId
+    return unless startIndex? && endIndex?
+    if startIndex > endIndex
+      temp = startIndex
+      startIndex = endIndex
+      endIndex = temp
+    for index in [startIndex..endIndex]
+      id = @state.items[index]
+      if id
+        @state.selection[id] = true
     @forceUpdate()
 
   @shareSelection: ->
@@ -150,7 +178,7 @@ class @Store
 
   @_ingestItemUpdates: (items) ->
     for item in items
-      oldItem = @state.itemsById[item.id]
+      oldItem = @getItem item.id
       if oldItem
         item.index = oldItem.index
       @state.itemsById[item.id] = item

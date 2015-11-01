@@ -69,10 +69,8 @@
       playing: false
 
   neighbor: (dir) ->
-    item = Store.state.itemsById[@props.itemId]
-    if !item
-      console.warn "Item not loaded: #{@props.itemId}"
-      return
+    item = Store.getItem @props.itemId
+    return unless item
 
     newIndex = item.index + dir
     Store.state.items[newIndex]
@@ -80,9 +78,8 @@
   largeURL: (itemId) ->
     return unless itemId
 
-    item = Store.state.itemsById[itemId]
+    item = Store.getItem itemId
     if !item
-      console.warn "Item not loaded: #{itemId}"
       return null
 
     size = if item.variety == 'video'
@@ -98,7 +95,7 @@
       return '/items/' + itemId
 
   render: ->
-    item = Store.getItem @props.itemId
+    item = Store.fetchItem @props.itemId
 
     # make sure that the next batch is loaded if they are a fast clicker
     margin = 10

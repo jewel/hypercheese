@@ -27,7 +27,7 @@
   initialScroll: ->
     scrollTop = @props.scrollTop || 0
     if @props.highlight
-      item = Store.state.itemsById[@props.highlight]
+      item = Store.getItem @props.highlight
       if item
         row = Math.floor item.index / @imagesPerRow()
         rowHeight = @rowHeight()
@@ -66,6 +66,10 @@
   # double it since it's on both sides of the image
   margin: 2
   tagboxHeight: 30
+
+  # FIXME Instead of all the calculations in this method, we could have a hidden
+  # but representative child that we query to find out what size we are.  It
+  # would only need to be queried for resize events
 
   imageSize: ->
     maxSize = 200
@@ -128,7 +132,7 @@
       itemId = Store.state.items[i]
       item = null
       if itemId
-        item = Store.state.itemsById[itemId]
+        item = Store.getItem itemId
       item ||=
         id: null
         index: i

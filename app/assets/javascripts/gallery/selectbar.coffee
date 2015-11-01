@@ -30,7 +30,7 @@
     index = {}
     tags = []
     for id of Store.state.selection
-      item = Store.state.itemsById[id]
+      item = Store.getItem id
       if !item
         console.warn "Can't find item #{id}"
         continue

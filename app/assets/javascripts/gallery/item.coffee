@@ -1,7 +1,26 @@
 @Item = React.createClass
   onSelect: (e) ->
+    if e.ctrlKey || e.shiftKey
+      e.stopPropagation()
+      return @onClick(e)
+
     e.stopPropagation()
+    @props.setLastSelection @props.item.id
     Store.toggleSelection @props.item.id
+
+  onClick: (e) ->
+    if e.ctrlKey
+      e.preventDefault()
+      if Store.state.selection[@props.item.id]
+        Store.state.rangeStart = null
+      else
+        Store.state.rangeStart = @props.item.id
+      Store.toggleSelection @props.item.id
+    else if e.shiftKey
+      e.preventDefault()
+      Store.selectRange @props.item.id
+
+    true
 
   render: ->
     item = @props.item
@@ -37,7 +56,7 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <a href={"#/items/#{@props.item.id}"}>
+      <a href={"#/items/#{@props.item.id}"} onClick={@onClick}>
         <img className="thumb" style={imageStyle} src={squareImage}/>
       </a>
       <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">&#x2714;</a>
