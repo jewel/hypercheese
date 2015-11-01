@@ -88,7 +88,8 @@
   render: ->
     if !@state.haveScrolled
       res =
-        <div className="results" style={height: "2000000px"}></div>
+        <div className="results" style={height: '10000000px'}>
+        </div>
       return res
 
     overdraw = 3
