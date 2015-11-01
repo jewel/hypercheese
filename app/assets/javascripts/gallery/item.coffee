@@ -28,7 +28,13 @@
     if tagCount > numberToShow
       numberToShow--
     firstTags = tags.slice 0, numberToShow
-    extraTags = tagCount - firstTags.length
+    extraTags = tags.slice numberToShow
+    extraTagsLabels = []
+    for tagId in extraTags
+      tag = Store.state.tagsById[tagId]
+      if tag
+        extraTagsLabels.push tag.label
+
 
     <div className={classes.join ' '} key="#{item.index}">
       <a href={"#/items/#{@props.item.id}"}>
@@ -41,15 +47,15 @@
             <img src="/images/comment.png" key="comments"/>
         }
         {
-          firstTags.map (tag_id) ->
-            tag = Store.state.tagsById[tag_id]
+          firstTags.map (tagId) ->
+            tag = Store.state.tagsById[tagId]
             if tag
-              tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
-              <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+              tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
+              <img title={tag.label} className="tag-icon" key={tagId} src={tagIconUrl}/>
         }
         {
-          if extraTags > 0
-            <div className="extra-tags" key="extras">{'+' + extraTags}</div>
+          if extraTags.length > 0
+            <div className="extra-tags" title={extraTagsLabels.join ', '} key="extras">{'+' + extraTags.length}</div>
         }
       </div>
     </div>
