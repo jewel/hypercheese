@@ -24,13 +24,16 @@
     @touchPosition = 0
     if Math.abs(diff) > pageWidth / 3
       if diff > 0
-        @moveTo 1
-      else
         @moveTo -1
+      else
+        @moveTo 1
     @showSwipe 0
 
   showSwipe: (amount) ->
-    (@refs.image || @refs.video).style.transform = "translateX(#{amount}px)"
+    style = "translateX(#{amount}px)"
+    @refs.prevImage.style.transform = style
+    @refs.nextImage.style.transform = style
+    (@refs.image || @refs.video).style.transform = style
 
   moveTo: (dir) ->
     @stopVideo()
@@ -64,19 +67,18 @@
     @setState
       playing: false
 
-  preload: (dir) ->
+  neighbor: (dir) ->
     item = Store.state.itemsById[@props.itemId]
     if !item
       console.warn "Item not loaded: #{@props.itemId}"
       return
 
     newIndex = item.index + dir
-    newItemId = Store.state.items[newIndex]
-    if newItemId
-      image = new Image()
-      image.src = @largeURL newItemId
+    Store.state.items[newIndex]
 
   largeURL: (itemId) ->
+    return unless itemId
+
     item = Store.state.itemsById[itemId]
     if !item
       console.warn "Item not loaded: #{itemId}"
@@ -90,15 +92,9 @@
     return "/data/resized/#{size}/#{itemId}.jpg"
 
   linkTo: (dir) ->
-    item = Store.state.itemsById[@props.itemId]
-    if !item
-      console.warn "Item not loaded: #{@props.itemId}"
-      return
-
-    newIndex = item.index + dir
-    newItemId = Store.state.items[newIndex]
-    if newItemId
-      return '#/items/' + newItemId
+    itemId = @neighbor(dir)
+    if itemId
+      return '#/items/' + itemId
 
   render: ->
     # load prev and next indexes
@@ -109,15 +105,15 @@
 
     if item
       Store.executeSearch item.index - margin, item.index + margin
-      @preload 1
-      @preload -1
 
     comments = Store.getComments(@props.itemId)
 
-    nextLink = @linkTo 1
     prevLink = @linkTo -1
+    nextLink = @linkTo 1
 
     <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+      <img className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
+      <img className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
       {
         if item && item.variety == 'video'
           <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>

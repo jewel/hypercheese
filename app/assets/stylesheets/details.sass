@@ -11,14 +11,22 @@
   :background black
   :overflow hidden
 
-.detailed-image
+.detailed-image, .detailed-prev, .detailed-next
   // chrome is confused unless this is absolutely positioned
   :position absolute
   :top 0
-  :left 0
   :height 100%
   :width 100%
   :object-fit contain
+
+.detailed-image
+  :left 0
+
+.detailed-next
+  :left 102%
+
+.detailed-prev
+  :left -102%
 
 .details-window .control
   :font-size 5vh
