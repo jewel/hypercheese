@@ -22,6 +22,35 @@
 
     true
 
+  disableDefault: (e) ->
+    e.preventDefault()
+    null
+
+  onMouseDown: (e) ->
+    return unless e.button == 0
+    Store.state.dragStart = @props.item.id
+    Store.dragRange @props.item.id
+
+  onMouseOver: (e) ->
+    return unless e.button == 0
+    return unless Store.state.dragStart
+    return if Store.state.dragStart == @props.item.id
+    Store.dragRange @props.item.id
+
+  onMouseUp: (e) ->
+    return unless e.button == 0
+    return unless start = Store.state.dragStart
+    Store.state.dragStart = null
+    Store.state.dragging = {}
+
+    unless e.ctrlKey || e.shiftKey
+      Store.clearSelection()
+
+    Store.state.rangeStart = @props.item.id
+    Store.selectRange start
+    e.preventDefault()
+    e.stopPropagation()
+
   render: ->
     item = @props.item
     selected = Store.state.selection[item.id]
@@ -36,7 +65,8 @@
       squareImage = "/images/loading.png"
 
     classes = ["item"]
-    classes.push 'is-selected' if selected
+    classes.push 'selected' if selected
+    classes.push 'dragging' if Store.state.dragging[item.id]
     classes.push 'highlight' if @props.highlight == item.id
 
     maxFit = @props.imageWidth / 33
@@ -56,8 +86,8 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <a href={"#/items/#{@props.item.id}"} onClick={@onClick}>
-        <img className="thumb" style={imageStyle} src={squareImage}/>
+      <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp}>
+        <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>
       <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">&#x2714;</a>
       <div className="tagbox">

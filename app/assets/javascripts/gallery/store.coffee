@@ -28,6 +28,8 @@ class @Store
       selection: {}
       selectionCount: 0
       rangeStart: null
+      dragStart: null
+      dragging: {}
 
   @fetchItem: (itemId) ->
     item = @getItem itemId
@@ -121,20 +123,35 @@ class @Store
       @selectItem id
     @forceUpdate()
 
-  @selectRange: (itemId) ->
-    if !@state.rangeStart?
-      @state.rangeStart = itemId
-    startIndex = @getIndex @state.rangeStart
-    endIndex = @getIndex itemId
-    return unless startIndex? && endIndex?
+  @findRange: (startId, endId) ->
+    startIndex = @getIndex startId
+    endIndex = @getIndex endId
+    return [] unless startIndex? && endIndex?
     if startIndex > endIndex
       temp = startIndex
       startIndex = endIndex
       endIndex = temp
+
+    ids = []
     for index in [startIndex..endIndex]
       id = @state.items[index]
-      if id
-        @state.selection[id] = true
+      ids.push id if id
+
+    ids
+
+  @dragRange: (id) ->
+    @state.dragging = {}
+    items = @findRange id, @state.dragStart
+    for id in items
+      @state.dragging[id] = true
+    @forceUpdate()
+
+  @selectRange: (itemId) ->
+    if !@state.rangeStart?
+      @state.rangeStart = itemId
+    items = @findRange @state.rangeStart, itemId
+    for id in items
+      @selectItem id
     @forceUpdate()
 
   @shareSelection: ->

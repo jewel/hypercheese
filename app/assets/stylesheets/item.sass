@@ -35,8 +35,17 @@
     .checkmark
       :opacity 0.5
 
-  &.is-selected
+  &.selected
     :background #448
+
+    img.thumb
+      :opacity 0.7
+
+    .checkmark
+      :opacity 1
+
+  &.dragging
+    :background #484
 
     img.thumb
       :opacity 0.7
