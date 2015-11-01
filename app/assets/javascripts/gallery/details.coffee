@@ -17,11 +17,12 @@
 
   onTouchEnd: (e) ->
     return unless start = @startTouch
+    return unless @touchPosition?
     pageWidth = document.documentElement.clientWidth
     # must move at least half the page
     diff = @touchPosition - start.pageX
     @startTouch = null
-    @touchPosition = 0
+    @touchPosition = null
     if Math.abs(diff) > pageWidth / 3
       if diff > 0
         @moveTo -1
@@ -94,10 +95,9 @@
   linkTo: (dir) ->
     itemId = @neighbor(dir)
     if itemId
-      return '#/items/' + itemId
+      return '/items/' + itemId
 
   render: ->
-    # load prev and next indexes
     item = Store.getItem @props.itemId
 
     # make sure that the next batch is loaded if they are a fast clicker
@@ -106,10 +106,10 @@
     if item
       Store.executeSearch item.index - margin, item.index + margin
 
-    comments = Store.getComments(@props.itemId)
+    comments = Store.getComments @props.itemId
 
-    prevLink = @linkTo -1
-    nextLink = @linkTo 1
+    prevLink = '#' + @linkTo -1
+    nextLink = '#' + @linkTo 1
 
     <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
       <img className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
