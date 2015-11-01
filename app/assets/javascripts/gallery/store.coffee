@@ -29,6 +29,8 @@ class @Store
       selectionCount: 0
       rangeStart: null
       dragStart: null
+      dragEnd: null
+      dragLeftStart: false
       dragging: {}
 
   @fetchItem: (itemId) ->
@@ -106,21 +108,19 @@ class @Store
         @state.comments[itemId] = [] unless @state.comments[itemId]
         @state.comments[itemId].push res.comment
         @forceUpdate()
-  @selectItem: (id) ->
-    if !@state.selection[id]
-      @state.selection[id] = true
-      @state.selectionCount++
 
-  @deselectItem: (id) ->
-    if @state.selection[id]
-      delete @state.selection[id]
-      @state.selectionCount--
+  @selectItem: (id, value=true) ->
+    if value
+      if !@state.selection[id]
+        @state.selection[id] = true
+        @state.selectionCount++
+    else
+      if @state.selection[id]
+        delete @state.selection[id]
+        @state.selectionCount--
 
   @toggleSelection: (id) ->
-    if @state.selection[id]
-      @deselectItem id
-    else
-      @selectItem id
+    @selectItem id, !@state.selection[id]
     @forceUpdate()
 
   @findRange: (startId, endId) ->
@@ -139,19 +139,19 @@ class @Store
 
     ids
 
-  @dragRange: (id) ->
+  @dragRange: ->
     @state.dragging = {}
-    items = @findRange id, @state.dragStart
+    items = @findRange @state.dragEnd, @state.dragStart
     for id in items
       @state.dragging[id] = true
     @forceUpdate()
 
-  @selectRange: (itemId) ->
+  @selectRange: (itemId, value=true) ->
     if !@state.rangeStart?
       @state.rangeStart = itemId
     items = @findRange @state.rangeStart, itemId
     for id in items
-      @selectItem id
+      @selectItem id, value
     @forceUpdate()
 
   @shareSelection: ->

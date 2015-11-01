@@ -7,9 +7,32 @@
 
   html: document.documentElement
 
+  # users can let go of the mouse button when no longer over an item (most commonly
+  # on the black space to the right, but also can be off screen)
+  onMouseUp: (e) ->
+    return unless e.button == 0
+    return unless start = Store.state.dragStart
+    Store.state.dragStart = null
+    Store.state.dragging = {}
+
+    return if start == Store.state.dragEnd && !Store.state.dragLeftStart
+    e.preventDefault()
+
+    value = true
+    value = false if e.ctrlKey && Store.state.selection[start]
+
+    unless e.ctrlKey || e.shiftKey
+      Store.clearSelection()
+
+    # Use the end of the drag as the start of the next shift-click
+    Store.state.rangeStart = Store.state.dragEnd
+    Store.selectRange start, value
+    null
+
   componentDidMount: ->
     window.addEventListener 'resize', @onResize, false
     window.addEventListener 'scroll', @onScroll, false
+    window.addEventListener 'mouseup', @onMouseUp, false
 
     # Normally we'd set these in getInitialState, but we don't know the values
     # until after the window exists.
@@ -43,6 +66,7 @@
   componentWillUnmount: ->
     window.removeEventListener 'resize', @onResize, false
     window.removeEventListener 'scroll', @onScroll, false
+    window.removeEventListener 'mouseup', @onMouseUp, false
 
   onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so

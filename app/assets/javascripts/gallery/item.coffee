@@ -29,27 +29,17 @@
   onMouseDown: (e) ->
     return unless e.button == 0
     Store.state.dragStart = @props.item.id
-    Store.dragRange @props.item.id
+    Store.state.dragEnd = @props.item.id
+    Store.state.dragLeftStart = false
+    Store.dragRange()
 
   onMouseOver: (e) ->
     return unless e.button == 0
     return unless Store.state.dragStart
-    return if Store.state.dragStart == @props.item.id
-    Store.dragRange @props.item.id
-
-  onMouseUp: (e) ->
-    return unless e.button == 0
-    return unless start = Store.state.dragStart
-    Store.state.dragStart = null
-    Store.state.dragging = {}
-
-    unless e.ctrlKey || e.shiftKey
-      Store.clearSelection()
-
-    Store.state.rangeStart = @props.item.id
-    Store.selectRange start
-    e.preventDefault()
-    e.stopPropagation()
+    Store.state.dragEnd = @props.item.id
+    if @props.item.id != Store.state.dragStart
+      Store.state.dragLeftStart = true
+    Store.dragRange()
 
   render: ->
     item = @props.item
