@@ -97,6 +97,12 @@ class ItemsController < ApplicationController
     download_zip items
   end
 
+  # GET /items/:id/details
+  def details
+    @item = Item.includes(:comments).find params[:item_id].to_i
+    render json: @item, serializer: ItemDetailsSerializer
+  end
+
   private
 
   def item_tag_params

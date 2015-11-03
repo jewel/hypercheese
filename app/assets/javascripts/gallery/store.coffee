@@ -19,7 +19,7 @@ class @Store
     @state =
       tags: []
       tagsById: {}
-      comments: {}
+      details: {}
       searchKey: null
       query: ''
       items: {}
@@ -61,34 +61,48 @@ class @Store
     return null unless item
     item.index
 
-  @getComments: (itemId) ->
+  @getDetails: (itemId) ->
+    return if !itemId
+
     item = @getItem itemId
-    if !item || !item.has_comments
-      return []
+    blank = { comments: [], paths: [], ages: {} }
+    if !item
+      return blank
 
-    comments = @state.comments[itemId]
-    if comments?
-      return comments
+    details = @state.details[itemId]
+    if details?
+      return details
 
-    return [] if @loading
+    return blank if @loading
     @loading = true
 
     @jax
-      url: '/comments'
+      url: "/items/#{itemId}/details"
       data:
         item_id: itemId
       success: (res) =>
         @loading = false
+        details = res.item_details
+
         usersById = {}
-        for user in res.users
-          usersById[user.id] = user
+        if res.users
+          for user in res.users
+            usersById[user.id] = user
+
+        commentsById = {}
         for comment in res.comments
           comment.user = usersById[comment.user_id]
+          commentsById[comment.id] = comment
 
-        @state.comments[itemId] = res.comments
+        details.comments = []
+
+        for comment_id in details.comment_ids
+          details.comments.push commentsById[comment_id]
+
+        @state.details[itemId] = details
         @forceUpdate()
 
-    return []
+    return blank
 
   @newComment: (itemId, text) ->
     @jax
@@ -105,8 +119,7 @@ class @Store
         else
           item.has_comments = true
 
-        @state.comments[itemId] = [] unless @state.comments[itemId]
-        @state.comments[itemId].push res.comment
+        @state.details[itemId].comments.push res.comment
         @forceUpdate()
 
   @selectItem: (id, value=true) ->

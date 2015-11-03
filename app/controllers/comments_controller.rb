@@ -1,18 +1,6 @@
 class CommentsController < ApplicationController
   respond_to :json
 
-  # GET /comments
-  def index
-    @comments = Comment.where(item_id: params[:item_id].to_i).order( :created_at )
-    render json: @comments
-  end
-
-  # GET /comments/:id
-  def show
-    @comment = Comment.find params[:id]
-    render json: @comment
-  end
-
   # POST /comments
   def create
     c = Comment.new

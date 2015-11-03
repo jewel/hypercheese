@@ -37,6 +37,7 @@ HyperCheese::Application.routes.draw do
       post :remove_tag
       get :download
     end
+    get :details
   end
 
   resources :comments

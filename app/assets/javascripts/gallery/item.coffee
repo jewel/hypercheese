@@ -5,7 +5,10 @@
       return @onClick(e)
 
     e.stopPropagation()
-    @props.setLastSelection @props.item.id
+    if Store.state.selection[@props.item.id]
+      Store.state.rangeStart = null
+    else
+      Store.state.rangeStart = @props.item.id
     Store.toggleSelection @props.item.id
 
   onClick: (e) ->
@@ -79,7 +82,14 @@
       <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>
-      <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">&#x2714;</a>
+      <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">
+        {
+          if selected
+            <i className="fa fa-check-square-o"/>
+          else
+            <i className="fa fa-square-o"/>
+        }
+      </a>
       <div className="tagbox">
         {
           if item.has_comments

@@ -1,7 +1,34 @@
 @Details = React.createClass
   getInitialState: ->
-    newComment: ''
     playing: false
+    showInfo: true
+
+  onInfo: (e) ->
+    @setState
+      showInfo: !@state.showInfo
+
+  fullscreenFunctions: [
+      'requestFullscreen'
+      'mozRequestFullScreen'
+      'webkitRequestFullscreen'
+      'msRequestFullscreen'
+    ]
+
+  fullScreenFunction: ->
+    html = document.documentElement
+    for i in @fullscreenFunctions
+      if html[i]?
+        return i
+    null
+
+
+  onFullScreen: (e) ->
+    html = document.documentElement
+    if func = @fullScreenFunction()
+      html[func].apply html
+
+  onSelect: (e) ->
+    Store.toggleSelection @props.itemId
 
   onTouchStart: (e) ->
     return unless e.touches.length == 1
@@ -55,15 +82,6 @@
     @setState
       playing: true
 
-  onChangeNewComment: (e) ->
-    @setState
-      newComment: e.target.value
-
-  onComment: ->
-    Store.newComment @props.itemId, @state.newComment
-    @setState
-      newComment: ''
-
   stopVideo: ->
     @setState
       playing: false
@@ -103,57 +121,65 @@
     if item
       Store.executeSearch item.index - margin, item.index + margin
 
-    comments = Store.getComments @props.itemId
+    prevLink = @linkTo -1
+    nextLink = @linkTo 1
 
-    prevLink = '#' + @linkTo -1
-    nextLink = '#' + @linkTo 1
+    # preload neighbors details
+    if item && @state.showInfo
+      Store.getDetails @neighbor(1)
+      Store.getDetails @neighbor(-1)
 
-    <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
-      <img className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
-      <img className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
-      {
-        if item && item.variety == 'video'
-          <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
-
-        else
-          <img ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
-      }
-
-      {
-        if item && item.variety == 'video' && !@state.playing
-          <a className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
-      }
-      {
-        if prevLink
-          <a className="control prev-control" href={prevLink} onClick={@stopVideo}>&larr;</a>
-      }
-      <a className="control close-control" href="javascript:void(0)" onClick={@onClose}>&times;</a>
-      {
-        if nextLink
-          <a className="control next-control" href={nextLink} onClick={@stopVideo}>&rarr;</a>
-      }
-      <div className="tagbox">
+    <div className="details-wrapper">
+      <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+        <img className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
+        <img className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
         {
-          if item
-            item.tag_ids.map (tag_id) ->
-              tag = Store.state.tagsById[tag_id]
-              if tag
-                tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
-                <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+          if item && item.variety == 'video'
+            <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
+
+          else
+            <img ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
         }
-      </div>
-      <div className="comments">
+
         {
-          comments.map (comment) ->
-            <div key={comment.id} className="comment">
-              {comment.text}<br/>
-              <strong>{comment.user.name}</strong> &mdash;
-              <em>{comment.created_at}</em>
-            </div>
+          if item && item.variety == 'video' && !@state.playing
+            <a title="Play video" className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
         }
-        <div key="new" className="comment">
-          <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
-          <button className="btn btn-default" onClick={@onComment}>Submit</button>
+        {
+          if prevLink
+            <a className="control prev-control" href="##{prevLink}" onClick={@stopVideo}><i className="fa fa-arrow-left"/></a>
+        }
+        {
+          if nextLink
+            <a className="control next-control" href="##{nextLink}" onClick={@stopVideo}><i className="fa fa-arrow-right"/></a>
+        }
+        <div className="controls">
+          {
+            if item
+              item.tag_ids.map (tag_id) ->
+                tag = Store.state.tagsById[tag_id]
+                if tag
+                  tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+                  <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+          }
+          {
+            if @fullScreenFunction()
+              <a className="control fullscreen-control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt"/></a>
+          }
+          <a className="control select-control" href="javascript:void(0)" onClick={@onSelect}>
+            {
+              if Store.state.selection[@props.itemId]
+                <i className="fa fa-check-square-o"/>
+              else
+                <i className="fa fa-square-o"/>
+            }
+          </a>
+          <a className="control info-control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle"/></a>
+          <a className="control close-control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close"/></a>
         </div>
       </div>
+      {
+        if item && @state.showInfo
+          <Info item={item}/>
+      }
     </div>

@@ -14,7 +14,6 @@
       newTags: e.target.value
 
   removeTag: (e) ->
-    Store.removeTagFromSelection(e.target.dataset.tag)
 
   addNewTags: (e) ->
     e.preventDefault()
@@ -86,18 +85,25 @@
                     <a className="btn btn-default" onClick={@clearSelection}>Clear</a>
                   </form>
                 </li>
-
-                {
-                  @selectedTags().map (match) =>
-                    <p className="navbar-text" key={match.tag.id}>
-                      {match.tag.label}
-                      {' '}
-                      ({match.count})
-                      {' '}
-                      <a href="javascript:void(0)" data-tag={match.tag.id} onClick={@removeTag}>&times;</a>
-                    </p>
-                }
               </ul>
+
+              {
+                @selectedTags().map (match) =>
+                  del = ->
+                    Store.removeTagFromSelection match.tag.id
+
+                  tag_icon_url = "/data/resized/square/#{match.tag.icon}.jpg"
+
+                  <p className="navbar-text" key={match.tag.id}>
+                    <img className="tag-icon" src={tag_icon_url}/>
+                    {' '}
+                    {match.tag.label}
+                    {' '}
+                    ({match.count})
+                    {' '}
+                    <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+                  </p>
+              }
 
               <form className="navbar-form navbar-left">
                 <a className="btn btn-default" href={downloadLink}>Download</a>

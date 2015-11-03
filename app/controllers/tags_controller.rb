@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   def index
-    @tags = Tag.all
+    @tags = Tag.all.order 'item_count desc'
     render json: @tags
   end
 

@@ -46,4 +46,11 @@ class Item < ActiveRecord::Base
   def source
     path.split("/").first
   end
+
+  def camera
+    begin
+      exif = EXIFR::JPEG.new full_path
+      exif.model
+    end
+  end
 end
