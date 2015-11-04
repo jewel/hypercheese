@@ -1,7 +1,7 @@
 @Details = React.createClass
   getInitialState: ->
     playing: false
-    showInfo: true
+    showInfo: false
 
   onInfo: (e) ->
     @setState
@@ -162,11 +162,19 @@
                   tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
                   <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
           }
+          <a className="control" href="javascript:void(0)" onClick={@onStar}>
+            {
+              if @props.itemId % 2 == 0
+                <i className="fa fa-star-o"/>
+              else
+                <i className="fa fa-star"/>
+            }
+          </a>
           {
             if @fullScreenFunction()
-              <a className="control fullscreen-control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt"/></a>
+              <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt"/></a>
           }
-          <a className="control select-control" href="javascript:void(0)" onClick={@onSelect}>
+          <a className="control" href="javascript:void(0)" onClick={@onSelect}>
             {
               if Store.state.selection[@props.itemId]
                 <i className="fa fa-check-square-o"/>
@@ -174,8 +182,8 @@
                 <i className="fa fa-square-o"/>
             }
           </a>
-          <a className="control info-control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle"/></a>
-          <a className="control close-control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close"/></a>
+          <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle"/></a>
+          <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close"/></a>
         </div>
       </div>
       {

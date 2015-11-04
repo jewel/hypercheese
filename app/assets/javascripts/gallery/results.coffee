@@ -89,14 +89,13 @@
   # margin represents 1px of margin and 1px of image padding.  When used we
   # double it since it's on both sides of the image
   margin: 2
-  tagboxHeight: 30
 
   # FIXME Instead of all the calculations in this method, we could have a hidden
   # but representative child that we query to find out what size we are.  It
   # would only need to be queried for resize events
 
   imageSize: ->
-    maxSize = 200
+    maxSize = Math.round(1.3 ** (Store.state.zoom - 5) * 200)
     minColumns = 3
     columnSize = ( maxSize + @margin * 2 ) * minColumns
     if @state.winWidth < columnSize
@@ -104,8 +103,14 @@
     else
       maxSize
 
+  tagboxHeight: ->
+    if @imageSize() < 150
+      0
+    else
+      30
+
   rowHeight: ->
-    @imageSize() + @tagboxHeight + @margin * 2
+    @imageSize() + @tagboxHeight() + @margin * 2
 
   columnWidth: ->
     @imageSize() + @margin * 2
@@ -135,6 +140,8 @@
     viewPortRowCount = Math.ceil @state.winHeight / rowHeight + overdraw * 2 + 1
     viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
+
+    showTagbox = @tagboxHeight() != 0
 
     totalItems = Store.state.resultCount
 
@@ -180,7 +187,7 @@
       <div className="viewport" style={viewPortStyle}>
         {
           items.map (item) =>
-            <Item highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
+            <Item showTagbox={showTagbox} highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
         }
       </div>
     </div>

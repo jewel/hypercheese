@@ -22,12 +22,16 @@
       </tr>
 
     <div className="info">
+      <p>
+        <a href="javascript:void(0)"><i className="fa fa-close"/></a>
+      </p>
       <table className="table">
         <tbody>
           {fact 'calendar', details.taken}
           {fact 'camera', details.camera}
           {fact 'location-arrow', details.location}
           {fact 'folder-o', details.paths.join ' '}
+          {fact 'star-o', 'John'}
         </tbody>
       </table>
       {

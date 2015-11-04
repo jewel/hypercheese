@@ -90,21 +90,24 @@
             <i className="fa fa-square-o"/>
         }
       </a>
-      <div className="tagbox">
-        {
-          if item.has_comments
-            <img src="/images/comment.png" key="comments"/>
-        }
-        {
-          firstTags.map (tagId) ->
-            tag = Store.state.tagsById[tagId]
-            if tag
-              tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
-              <img title={tag.label} className="tag-icon" key={tagId} src={tagIconUrl}/>
-        }
-        {
-          if extraTags.length > 0
-            <div className="extra-tags" title={extraTagsLabels.join ', '} key="extras">{'+' + extraTags.length}</div>
-        }
-      </div>
+      {
+        if @props.showTagbox
+          <div className="tagbox">
+            {
+              if item.has_comments
+                <img src="/images/comment.png" key="comments"/>
+            }
+            {
+              firstTags.map (tagId) ->
+                tag = Store.state.tagsById[tagId]
+                if tag
+                  tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
+                  <img title={tag.label} className="tag-icon" key={tagId} src={tagIconUrl}/>
+            }
+            {
+              if extraTags.length > 0
+                <div className="extra-tags" title={extraTagsLabels.join ', '} key="extras">{'+' + extraTags.length}</div>
+            }
+          </div>
+      }
     </div>

@@ -32,6 +32,7 @@ class @Store
       dragEnd: null
       dragLeftStart: false
       dragging: {}
+      zoom: 5
 
   @fetchItem: (itemId) ->
     item = @getItem itemId
@@ -227,6 +228,10 @@ class @Store
       success: (res) =>
         @_ingestItemUpdates res.items
         @forceUpdate()
+
+  @setZoom: (level) ->
+    @state.zoom = level
+    @forceUpdate()
 
   @search: (q) ->
     return if q == @state.query

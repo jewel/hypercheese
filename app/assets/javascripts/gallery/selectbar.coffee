@@ -132,6 +132,7 @@
                 <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
               </li>
             </ul>
+            <Zoom/>
           </div>
         </div>
       </nav>
