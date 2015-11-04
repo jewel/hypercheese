@@ -78,7 +78,7 @@
         extraTagsLabels.push tag.label
 
 
-    <div contextMenu="cheesemenu" className={classes.join ' '} key="#{item.index}">
+    <div className={classes.join ' '} key="#{item.index}">
       <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>

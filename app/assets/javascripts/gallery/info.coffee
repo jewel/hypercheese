@@ -72,13 +72,6 @@
               }
             </p>
       }
-      <div>
-        <a href="javascript:void(0)">
-          <i className="fa fa-plus-circle"/>
-          {' '}
-          add tags
-        </a>
-      </div>
       {
         details.comments.map (comment) ->
           <p key={comment.id} className="comment">

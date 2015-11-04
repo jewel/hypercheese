@@ -106,9 +106,13 @@
               }
 
               <form className="navbar-form navbar-left">
-                <a className="btn btn-default" href={downloadLink}>Download</a>
+                <a title="Download" className="btn btn-default" href={downloadLink}><i className="fa fa-download"/></a>
                 {' '}
-                <a className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}>Share</a>
+                <a title="Rotate Right" className="btn btn-default" href="javascript:void(0)"><i className="fa fa-rotate-left"/></a>
+                {' '}
+                <a title="Rotate Left" className="btn btn-default" href="javascript:void(0)"><i className="fa fa-rotate-right"/></a>
+                {' '}
+                <a title="Share" className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
               </form>
 
               <form className="navbar-form navbar-left" onSubmit={@addNewTags}>
@@ -132,7 +136,7 @@
                 <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
               </li>
             </ul>
-            <Zoom/>
+            <Zoom small="true"/>
           </div>
         </div>
       </nav>

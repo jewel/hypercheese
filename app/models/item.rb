@@ -51,6 +51,8 @@ class Item < ActiveRecord::Base
     begin
       exif = EXIFR::JPEG.new full_path
       exif.model
+    rescue
+      nil
     end
   end
 end
