@@ -95,13 +95,9 @@
   # would only need to be queried for resize events
 
   imageSize: ->
-    maxSize = Math.round(1.3 ** (Store.state.zoom - 5) * 200)
-    minColumns = 3
-    columnSize = ( maxSize + @margin * 2 ) * minColumns
-    if @state.winWidth < columnSize
-      @state.winWidth / minColumns - @margin * 2
-    else
-      maxSize
+    size = Math.round(1.3 ** (Store.state.zoom - 5) * 200)
+    imagesPerRow = Math.floor(@state.winWidth / size)
+    Math.floor(@state.winWidth / imagesPerRow) - @margin * 2
 
   tagboxHeight: ->
     if @imageSize() < 150

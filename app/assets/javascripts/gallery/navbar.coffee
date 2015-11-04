@@ -9,6 +9,10 @@
   componentWillUnmount: ->
     window.removeEventListener 'scroll', @onScroll, false
 
+  onSelect: ->
+    Store.state.selecting = true
+    Store.forceUpdate()
+
   onScroll: (e) ->
     top = window.pageYOffset
 
@@ -66,6 +70,11 @@
             <ul className="nav navbar-nav"></ul>
 
             <div>
+              <form className="navbar-form navbar-left">
+                <a className="btn btn-default" onClick={@onSelect} href="javascript:void(0)">
+                  Select...
+                </a>
+              </form>
               <ul className="nav navbar-nav">
                 <li>
                   <a href="#/tags">Tags</a>
@@ -91,7 +100,6 @@
             </ul>
 
             <Zoom/>
-
           </div>
         </div>
       </nav>

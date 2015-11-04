@@ -49,14 +49,13 @@
     return {}
 
   render: ->
-    selection = Store.state.selectionCount > 0
+    selection = Store.state.selectionCount > 0 || Store.state.selecting
     item = @state.itemId != null
 
     classes = ['react-wrapper']
     classes.push 'showing-details' if item
 
     <div className={classes.join ' '}>
-      <ContextMenu/>
       {
         if !item && !selection
           <NavBar search={@state.search}/>

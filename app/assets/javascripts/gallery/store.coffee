@@ -33,6 +33,7 @@ class @Store
       dragLeftStart: false
       dragging: {}
       zoom: 5
+      selecting: false
 
   @fetchItem: (itemId) ->
     item = @getItem itemId
@@ -182,6 +183,7 @@ class @Store
       res.url
 
   @clearSelection: ->
+    @state.selecting = false
     @state.selection = {}
     @state.selectionCount = 0
     @forceUpdate()

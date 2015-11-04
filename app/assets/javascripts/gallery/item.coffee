@@ -22,6 +22,9 @@
     else if e.shiftKey
       e.preventDefault()
       Store.selectRange @props.item.id
+    else if Store.state.selecting
+      e.preventDefault()
+      Store.toggleSelection @props.item.id
 
     true
 
@@ -59,6 +62,7 @@
 
     classes = ["item"]
     classes.push 'selected' if selected
+    classes.push 'selecting' if Store.state.selecting
     classes.push 'dragging' if Store.state.dragging[item.id]
     classes.push 'highlight' if @props.highlight == item.id
 
