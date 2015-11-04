@@ -56,6 +56,7 @@
     classes.push 'showing-details' if item
 
     <div className={classes.join ' '}>
+      <ContextMenu/>
       {
         if !item && !selection
           <NavBar search={@state.search}/>

@@ -7,7 +7,7 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def taken
-    object.taken.strftime('%e %b %Y %H:%M%p')
+    object.taken.strftime('%b %e, %Y %l:%M%p') + " (#{time_ago_in_words(object.taken)} ago)"
   end
 
   def paths
