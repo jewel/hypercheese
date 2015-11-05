@@ -159,8 +159,12 @@
               item.tag_ids.map (tag_id) ->
                 tag = Store.state.tagsById[tag_id]
                 if tag
+                  setTag = (e) ->
+                    tag.icon = item.id
+                    Store.forceUpdate()
+
                   tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
-                  <img title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
+                  <img onClick={setTag} title={tag.label} className="tag-icon" key={tag_id} src={tag_icon_url}/>
           }
           <a className="control" href="javascript:void(0)" onClick={@onStar}>
             {

@@ -15,8 +15,6 @@
       newTags: e.target.value
       confirmCreateTags: false
 
-  removeTag: (e) ->
-
   addNewTags: (e) ->
     e.preventDefault()
     res = TagMatch.matchMany @state.newTags
