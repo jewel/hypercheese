@@ -17,21 +17,25 @@ class @TagMatch
 
     for tag in tags
       continue unless tag.label.toLowerCase() == str.toLowerCase()
-      return [tag]
+      return [ {match: tag} ]
 
-    # attempt to split by comma
-    matches = []
-    for part in str.split( /,\ */ )
-      res = @matchOne part
-      matches.push res if res
+    results = []
 
-    return matches if matches.length > 0
+    if str.indexOf(',') != -1
+      parts = str.split /,\ */
+    else
+      parts = str.split( /\ +/ )
 
-    # attempt to split by whitespace
-    for part in str.split( /\ +/ )
-      res = @matchOne part
-      matches.push res if res
+    for part in parts
+      part = part.trim()
+      continue if part == ""
 
-    return matches if matches.length > 0
+      tag = @matchOne part
+      if tag
+        results.push
+          match: tag
+      else
+        results.push
+          miss: part
 
-    return []
+    results

@@ -1,6 +1,7 @@
 @SelectBar = React.createClass
   getInitialState: ->
     newTags: ''
+    confirmCreateTags: false
 
   clearSelection: (e) ->
     Store.clearSelection()
@@ -12,18 +13,30 @@
   changeNewTags: (e) ->
     @setState
       newTags: e.target.value
+      confirmCreateTags: false
 
   removeTag: (e) ->
 
   addNewTags: (e) ->
     e.preventDefault()
-    tags = TagMatch.matchMany @state.newTags
-    if tags.length == 0
-      return
-    Store.addTagsToSelection tags
-    Store.clearSelection()
-    @setState
-      newTags: ''
+    res = TagMatch.matchMany @state.newTags
+    matches = []
+    misses = []
+    for part in res
+      matches.push part.match if part.match?
+      misses.push part.miss if part.miss?
+
+    if matches.size > 0
+      Store.addTagsToSelection res.matches
+
+    if misses.size == 0
+      Store.clearSelection()
+      @setState
+        newTags: ''
+    else
+      @setState
+        newTags: misses.join(', ')
+        confirmCreateTags: true
 
   selectedTags: ->
     index = {}
@@ -54,7 +67,7 @@
 
     downloadLink = "/items/download?ids=#{ids.join ','}"
 
-    matches = TagMatch.matchMany @state.newTags
+    tags = TagMatch.matchMany @state.newTags
 
     <div>
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
@@ -123,10 +136,34 @@
 
               <ul className="nav navbar-nav">
                 {
-                  matches.map (tag) ->
-                    <li key={tag.id}>
-                      <p className="navbar-text">{tag.label}</p>
+                  if @state.confirmCreateTags
+                    <li key="confirm">
+                      <p className="navbar-text">
+                        <em>Press ENTER again to create these tags:</em>
+                      </p>
                     </li>
+                }
+                {
+                  tags.map (part) ->
+                    if part.match?
+                      tag = part.match
+                      tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+
+                      <li key={tag.id}>
+                        <p className="navbar-text">
+                          <img className="tag-icon" src={tag_icon_url}/>
+                          {' '}
+                          {tag.label}
+                        </p>
+                      </li>
+                    else
+                      <li key={part.miss}>
+                        <p className="navbar-text">
+                          <strong>
+                            <i className="fa fa-plus-circle"/> {part.miss}
+                          </strong>
+                        </p>
+                      </li>
                 }
               </ul>
             </div>
