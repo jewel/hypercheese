@@ -34,6 +34,8 @@ class @Store
       dragging: {}
       zoom: 5
       selecting: false
+      lastScrollPosition: null
+      highlight: null
 
   @fetchItem: (itemId) ->
     item = @getItem itemId

@@ -64,7 +64,7 @@
     classes.push 'selected' if selected
     classes.push 'selecting' if Store.state.selecting
     classes.push 'dragging' if Store.state.dragging[item.id]
-    classes.push 'highlight' if @props.highlight == item.id
+    classes.push 'highlight' if Store.state.highlight? && Store.state.highlight == item.id
 
     maxFit = @props.imageWidth / 33
     tags = item.tag_ids || []

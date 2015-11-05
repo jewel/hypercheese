@@ -70,7 +70,6 @@
 
   onClose: (e) ->
     e.stopPropagation()
-    @props.updateHighlight @props.itemId
 
     if @props.search == ''
       window.location.hash = '/'
@@ -113,6 +112,7 @@
       return '/items/' + itemId
 
   render: ->
+    Store.state.highlight = @props.itemId
     item = Store.fetchItem @props.itemId
 
     # make sure that the next batch is loaded if they are a fast clicker

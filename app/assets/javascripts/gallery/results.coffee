@@ -1,14 +1,26 @@
 @Results = React.createClass
   getInitialState: ->
+    scrollStart = Store.state.lastScrollPosition || 0
+    if highlight = Store.state.highlight
+      if item = Store.getItem highlight
+        row = Math.floor item.index / @imagesPerRow()
+        rowHeight = @rowHeight()
+        itemTop = row * rowHeight
+        itemBottom = itemTop + rowHeight
+        scrollBottom = scrollStart + @html.clientHeight
+
+        # If image is off current screen, change scroll position
+        if itemTop < scrollStart || itemBottom > scrollBottom
+          scrollStart = row * rowHeight - @html.clientHeight / 2 + rowHeight / 2
+
     scrollTop: 0
-    winWidth: null
-    winHeight: null
+    scrollStart: scrollStart
     haveScrolled: false
 
   html: document.documentElement
 
-  # users can let go of the mouse button when no longer over an item (most commonly
-  # on the black space to the right, but also can be off screen)
+  # users can let go of the mouse button when no longer over an item (most
+  # commonly on the black space to the right, but also can be off screen)
   onMouseUp: (e) ->
     return unless e.button == 0
     return unless start = Store.state.dragStart
@@ -33,32 +45,12 @@
     window.addEventListener 'resize', @onResize, false
     window.addEventListener 'scroll', @onScroll, false
     window.addEventListener 'mouseup', @onMouseUp, false
-
-    # Normally we'd set these in getInitialState, but we don't know the values
-    # until after the window exists.
-    #
-    # Note that onResize() sets the same properties, but we need them to exist
-    # BEFORE the end of componentDidMount
-    @state.winWidth = @html.clientWidth
-    @state.winHeight = @html.clientHeight
-
-    @onResize()
     @initialScroll()
 
   # We can either restore scroll position to its last known position, or we can
   # scroll to a specific item
   initialScroll: ->
-    scrollTop = @props.scrollTop || 0
-    if @props.highlight
-      item = Store.getItem @props.highlight
-      if item
-        row = Math.floor item.index / @imagesPerRow()
-        rowHeight = @rowHeight()
-        # Put image's row right in middle of screen
-        scrollTop = row * rowHeight - @state.winHeight / 2 + rowHeight / 2
-
-    scrollTop = 0 if scrollTop < 0
-    window.scroll 0, scrollTop
+    window.scroll 0, @state.scrollStart
 
     @setState
       haveScrolled: true
@@ -74,30 +66,27 @@
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
     scrollTop = window.pageYOffset
-    @props.updateScrollTop scrollTop
+    Store.state.lastScrollPosition = scrollTop
 
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
       @setState
         scrollTop: scrollTop
 
   onResize: ->
-    # clientWidth excludes the system scrollbar
-    @setState
-      winWidth: @html.clientWidth
-      winHeight: @html.clientHeight
+    console.log 'resize'
+    @forceUpdate()
 
   # margin represents 1px of margin and 1px of image padding.  When used we
   # double it since it's on both sides of the image
   margin: 2
 
-  # FIXME Instead of all the calculations in this method, we could have a hidden
-  # but representative child that we query to find out what size we are.  It
-  # would only need to be queried for resize events
-
   imageSize: ->
     size = Math.round(1.3 ** (Store.state.zoom - 5) * 200)
-    imagesPerRow = Math.floor(@state.winWidth / size)
-    Math.floor(@state.winWidth / imagesPerRow) - @margin * 2
+
+    # Resize larger to fit perfectly on page
+    imagesPerRow = Math.floor(@html.clientWidth / size)
+    res = Math.floor(@html.clientWidth / imagesPerRow) - @margin * 2
+    res
 
   tagboxHeight: ->
     if @imageSize() < 150
@@ -112,15 +101,9 @@
     @imageSize() + @margin * 2
 
   imagesPerRow: ->
-    Math.floor @state.winWidth / @columnWidth()
+    Math.floor @html.clientWidth / @columnWidth()
 
   render: ->
-    if !@state.haveScrolled
-      res =
-        <div className="results" style={height: '10000000px'}>
-        </div>
-      return res
-
     overdraw = 3
     maxSize = 200
     minColumns = 3
@@ -133,7 +116,7 @@
 
     scrollTop = @state.scrollTop
 
-    viewPortRowCount = Math.ceil @state.winHeight / rowHeight + overdraw * 2 + 1
+    viewPortRowCount = Math.ceil @html.clientHeight / rowHeight + overdraw * 2 + 1
     viewPortStartRow = Math.floor scrollTop / rowHeight - overdraw
     viewPortStartRow = 0 if viewPortStartRow < 0
 
@@ -142,7 +125,7 @@
     totalItems = Store.state.resultCount
 
     if totalItems == null
-      totalItems = viewPortRowCount * imagesPerRow
+      totalItems = 0
 
     rowCount = Math.ceil totalItems / imagesPerRow
 
@@ -183,7 +166,7 @@
       <div className="viewport" style={viewPortStyle}>
         {
           items.map (item) =>
-            <Item showTagbox={showTagbox} highlight={@props.highlight} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
+            <Item showTagbox={showTagbox} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
         }
       </div>
     </div>

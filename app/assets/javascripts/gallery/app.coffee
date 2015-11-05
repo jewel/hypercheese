@@ -4,14 +4,6 @@
     state.search ||= ''
     state
 
-  updateScrollTop: (scrollTop) ->
-    # exclude from state, we don't want to cause a redraw
-    @oldScrollTop = scrollTop
-
-  updateHighlight: (itemId) ->
-    @setState
-      highlight: itemId
-
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
@@ -52,6 +44,15 @@
     selection = Store.state.selectionCount > 0 || Store.state.selecting
     item = @state.itemId != null
 
+    # The overflow-y parameter on the html tag needs to be set BEFORE
+    # Results.initialState is called.  That's because having a scrollbar appear
+    # doesn't cause a resize event to fire (and even if it did, it'd be too
+    # late to properly calculate our desired scroll position)
+    document.documentElement.style.overflowY = if item
+      'auto'
+    else
+      'scroll'
+
     classes = ['react-wrapper']
     classes.push 'showing-details' if item
 
@@ -64,8 +65,8 @@
       }
       {
         if item
-          <Details itemId={@state.itemId} search={@state.search} updateHighlight={@updateHighlight}/>
+          <Details itemId={@state.itemId} search={@state.search}/>
         else
-          <Results scrollTop={@oldScrollTop} updateScrollTop={@updateScrollTop} highlight={@state.highlight}/>
+          <Results/>
       }
     </div>
