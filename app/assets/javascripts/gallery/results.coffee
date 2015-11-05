@@ -73,7 +73,6 @@
         scrollTop: scrollTop
 
   onResize: ->
-    console.log 'resize'
     @forceUpdate()
 
   # margin represents 1px of margin and 1px of image padding.  When used we
