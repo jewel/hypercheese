@@ -70,7 +70,7 @@
     <div className={classes.join ' '}>
       {
         if !item && !selection
-          <NavBar search={@state.search}/>
+          <NavBar initialSearch={@state.search}/>
         else if selection
           <SelectBar/>
       }

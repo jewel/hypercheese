@@ -1,7 +1,8 @@
 @NavBar = React.createClass
   getInitialState: ->
-    newSearch: @props.search
+    newSearch: @props.initialSearch
     hidden: false
+    showSearchHelper: false
 
   componentDidMount: ->
     window.addEventListener 'scroll', @onScroll, false
@@ -31,6 +32,7 @@
     # if we are within 100 pixels of the top, always show
 
     newHidden = false if top <= 100
+    newHidden = false if @state.showSearchHelper
 
     if newHidden? && @state.hidden != newHidden
       @setState
@@ -41,6 +43,18 @@
   changeNewSearch: (e) ->
     @setState
       newSearch: e.target.value
+
+  updateSearch: (str) ->
+    @setState
+      newSearch: str
+
+  onFocusSearch: ->
+    @setState
+      showSearchHelper: true
+
+  closeSearchHelper: ->
+    @setState
+      showSearchHelper: false
 
   onSearch: (e) ->
     e.preventDefault()
@@ -86,7 +100,7 @@
               </ul>
               <form className="navbar-form navbar-left" role="Search" onSubmit={@onSearch}>
                 <div className="form-group">
-                  <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
+                  <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onFocus={@onFocusSearch} onChange={@changeNewSearch} type="text"/>
                 </div>
               </form>
               <p className="navbar-text">
@@ -107,4 +121,8 @@
           </div>
         </div>
       </nav>
+      {
+        if @state.showSearchHelper
+          <SearchHelper updateSearch={@updateSearch} close={@closeSearchHelper} search={@state.newSearch}/>
+      }
     </div>
