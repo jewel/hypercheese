@@ -56,13 +56,22 @@
         </tbody>
       </table>
       {
-        item.tag_ids.map (tag_id) ->
+        item.tag_ids.map (tag_id) =>
           tag = Store.state.tagsById[tag_id]
           if tag
-            tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+            tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+            setTagIcon = =>
+              console.warn "Not yet sticky"
+              tag.icon = @props.item.id
+              Store.forceUpdate()
+
             age = details.ages[tag_id]
             <p key={tag_id}>
-              <img className="tag-icon" src={tag_icon_url}/>
+              <img className="tag-icon" src={tagIconURL}/>
+              {' '}
+              <a href="javascript:void(0)" onClick=setTagIcon title="Set current photo as icon for this tag">
+                <i className="fa fa-link"/>
+              </a>
               {' '}
               <strong>{tag.label}</strong>
               {' '}

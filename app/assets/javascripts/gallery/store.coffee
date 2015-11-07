@@ -42,7 +42,6 @@ class @Store
     return item if item
     return null if @loading
     @loading = true
-    console.warn "Item not loaded: #{itemId}"
     @jax
       url: '/items/' + itemId
       data:

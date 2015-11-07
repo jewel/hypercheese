@@ -9,6 +9,10 @@
   componentWillUnmount: ->
     window.removeEventListener 'scroll', @onScroll, false
 
+  toggleTags: ->
+    Store.state.tagEditor = !Store.state.tagEditor
+    Store.forceUpdate()
+
   onSelect: ->
     Store.state.selecting = true
     Store.forceUpdate()

@@ -17,6 +17,7 @@
       return {
         search: ''
         itemId: null
+        tags: false
       }
 
     parts = hash.split('/')
@@ -27,6 +28,12 @@
     if parts[1] == 'items'
       return {
         itemId: Math.round(parts[2])
+        tags: false
+      }
+
+    if parts[1] == 'tags'
+      return {
+        tags: true
       }
 
     if parts[1] == 'search'
@@ -35,6 +42,7 @@
       return {
         itemId: null
         search: str
+        tags: false
       }
 
     console.warn "Invalid URL: #{hash}"
@@ -55,6 +63,9 @@
 
     classes = ['react-wrapper']
     classes.push 'showing-details' if item
+
+    if @state.tags
+      return <TagList/>
 
     <div className={classes.join ' '}>
       {

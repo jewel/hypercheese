@@ -103,10 +103,10 @@
                   del = ->
                     Store.removeTagFromSelection match.tag.id
 
-                  tag_icon_url = "/data/resized/square/#{match.tag.icon}.jpg"
+                  tagIconURL = "/data/resized/square/#{match.tag.icon}.jpg"
 
                   <p className="navbar-text" key={match.tag.id}>
-                    <img className="tag-icon" src={tag_icon_url}/>
+                    <img className="tag-icon" src={tagIconURL}/>
                     {' '}
                     {match.tag.label}
                     {' '}
@@ -145,11 +145,11 @@
                   tags.map (part) ->
                     if part.match?
                       tag = part.match
-                      tag_icon_url = "/data/resized/square/#{tag.icon}.jpg"
+                      tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
 
                       <li key={tag.id}>
                         <p className="navbar-text">
-                          <img className="tag-icon" src={tag_icon_url}/>
+                          <img className="tag-icon" src={tagIconURL}/>
                           {' '}
                           {tag.label}
                         </p>
