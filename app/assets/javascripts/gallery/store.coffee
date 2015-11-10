@@ -36,6 +36,20 @@ class @Store
       selecting: false
       lastScrollPosition: null
       highlight: null
+      recent: null
+
+  @fetchRecent: ->
+    return @state.recent if @state.recent
+    blank = {activity: []}
+    return blank if @loading
+    @loading = true
+    @jax
+      url: '/activity'
+      success: (res) =>
+        @loading = false
+        @state.recent = res
+        @forceUpdate()
+    blank
 
   @fetchItem: (itemId) ->
     item = @getItem itemId

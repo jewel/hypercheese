@@ -20,6 +20,13 @@
         }
         {' of '}
         {@props.tags || 'everything'}
+        {' uploaded by '}
+        {
+          @optionHelper 'source',
+            ['', 'anyone']
+            ['jill', 'Jill']
+            ['rick', 'Rick']
+        }
         {' from '}
         {
           @optionHelper 'month',
@@ -73,7 +80,7 @@
         }
         {'. '}
         <button className="btn btn-default btn-primary">
-          <i className="fa fa-search"/>
+          <i className="fa fa-search"/> Search
         </button>
       </form>
       <div className="tag-list">

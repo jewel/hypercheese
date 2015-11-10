@@ -13,11 +13,8 @@
   parseHash: ->
     hash = window.location.hash.substr(1)
     if hash == '' || hash == '/'
-      Store.search ''
       return {
-        search: ''
-        itemId: null
-        tags: false
+        home: true
       }
 
     parts = hash.split('/')
@@ -29,11 +26,13 @@
       return {
         itemId: Math.round(parts[2])
         tags: false
+        home: false
       }
 
     if parts[1] == 'tags'
       return {
         tags: true
+        home: false
       }
 
     if parts[1] == 'search'
@@ -43,6 +42,7 @@
         itemId: null
         search: str
         tags: false
+        home: false
       }
 
     console.warn "Invalid URL: #{hash}"
@@ -66,6 +66,9 @@
 
     if @state.tags
       return <TagList/>
+
+    if @state.home
+      return <Home/>
 
     <div className={classes.join ' '}>
       {

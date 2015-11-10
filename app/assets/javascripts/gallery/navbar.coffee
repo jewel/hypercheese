@@ -81,7 +81,7 @@
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <a className="navbar-brand">HyperCheese</a>
+            <a href="#/" className="navbar-brand">HyperCheese</a>
           </div>
 
           <div className="collapse navbar-collapse" id="hypercheese-navbar-collapse-1">

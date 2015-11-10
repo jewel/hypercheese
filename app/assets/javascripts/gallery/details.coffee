@@ -71,10 +71,7 @@
   onClose: (e) ->
     e.stopPropagation()
 
-    if @props.search == ''
-      window.location.hash = '/'
-    else
-      window.location.hash = '/search/' + encodeURI(@props.search)
+    window.location.hash = '/search/' + encodeURI(@props.search)
 
   onPlay: (e) ->
     @refs.video.play()
