@@ -5,10 +5,15 @@
       <h1>Welcome to HyperCheese</h1>
 
       <p>
-        <a className="btn btn-default btn-primary" href="#/search/">All Photos</a>
+        <a className="btn btn-default btn" href="#/search/">View All Photos</a>
       </p>
 
-      <SearchHelper/>
+      <div className="home-sidebar">
+        <form>
+          <input role="search" type="text" className="form-control" placeholder="Search"/>
+        </form>
+        <SearchHelper/>
+      </div>
 
       <h2>Recent Activity</h2>
       {

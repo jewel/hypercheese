@@ -123,6 +123,8 @@
       </nav>
       {
         if @state.showSearchHelper
-          <SearchHelper updateSearch={@updateSearch} close={@closeSearchHelper} search={@state.newSearch}/>
+          <div className="search-helper-float">
+            <SearchHelper updateSearch={@updateSearch} close={@closeSearchHelper} search={@state.newSearch}/>
+          </div>
       }
     </div>
