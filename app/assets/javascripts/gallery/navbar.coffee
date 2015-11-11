@@ -58,10 +58,7 @@
 
   onSearch: (e) ->
     e.preventDefault()
-    if @state.newSearch == ''
-      window.location.hash = '/'
-    else
-      window.location.hash = '/search/' + encodeURI(@state.newSearch)
+    window.location.hash = '/search/' + encodeURI(@state.newSearch)
 
   render: ->
     classes = ['navbar', 'navbar-default', 'navbar-fixed-top']
