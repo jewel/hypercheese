@@ -34,28 +34,63 @@
     return unless e.touches.length == 1
     touch = e.touches[0]
     @startTouch = touch
+    @prevTime = performance.now()
+    @position = 0
+    @speed = 0
     null
 
   onTouchMove: (e) ->
     return unless start = @startTouch
     touch = e.touches[0]
-    @showSwipe touch.pageX - start.pageX
-    @touchPosition = touch.pageX
+    position = touch.pageX - start.pageX
+    @showSwipe position
+    now = performance.now()
+    elapsed = now - @prevTime
+    @prevTime = now
+    @speed = (position - @position) / elapsed
+    @position = position
 
   onTouchEnd: (e) ->
-    return unless start = @startTouch
-    return unless @touchPosition?
-    pageWidth = document.documentElement.clientWidth
-    # must move at least half the page
-    diff = @touchPosition - start.pageX
+    return unless @position?
+    window.requestAnimationFrame(@animateSwipe)
+
+  animateSwipe: (now) ->
+    elapsed = now - @prevTime
+    @prevTime = now
+    oldPosition = @position
+    @position += @speed * elapsed
+    width = document.documentElement.clientWidth
+
+    # accelerate in current direction
+    acc = 0.1 * Math.sign(@position)
+
+    distanceFromStart = Math.abs(@position/width)
+
+    # if close to center, spring back
+    if distanceFromStart < 0.3
+      acc = 0.05 * -Math.sign(@position)
+
+    @speed += acc
+
+    if Math.sign(@position) != Math.sign(oldPosition)
+      # Crossed center position
+      @resetSwipe()
+      @showSwipe 0
+    else if @position > width
+      @resetSwipe()
+      @moveTo -1
+    else if @position < -width
+      @resetSwipe()
+      @moveTo 1
+    else
+      @showSwipe @position
+      window.requestAnimationFrame @animateSwipe
+
+  resetSwipe: ->
+    @position = null
+    @speed = null
+    @prevTime = null
     @startTouch = null
-    @touchPosition = null
-    if Math.abs(diff) > pageWidth / 3
-      if diff > 0
-        @moveTo -1
-      else
-        @moveTo 1
-    @showSwipe 0
 
   showSwipe: (amount) ->
     style = "translateX(#{amount}px)"
@@ -88,6 +123,15 @@
 
     newIndex = item.index + dir
     Store.state.items[newIndex]
+
+  neighborId: (dir) ->
+    item = @neighbor dir
+    if item
+      item.id
+    else
+      # Better to be wrong than to return null, since this is going to be used
+      # for "key"
+      @props.itemId + dir
 
   largeURL: (itemId) ->
     return unless itemId
@@ -128,14 +172,14 @@
 
     <div className="details-wrapper">
       <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
-        <img className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
-        <img className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
+        <img key={@neighborId(-1)} className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
+        <img key={@neighborId(1)} className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
         {
           if item && item.variety == 'video'
             <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
 
           else
-            <img ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
+            <img key={@props.itemId} ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
         }
 
         {
