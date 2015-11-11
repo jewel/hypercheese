@@ -20,12 +20,17 @@
   :overflow hidden
 
 .detailed-image, .detailed-prev, .detailed-next
-  // chrome is confused unless this is absolutely positioned
+  // Make sure that we don't start and stop GPU acceleration
+  :transform translate3d(0px, 0px, 0px)
   :position absolute
   :top 0
   :height 100%
   :width 100%
-  :object-fit contain
+
+  img
+    :height 100%
+    :width 100%
+    :object-fit contain
 
 .detailed-image
   :left 0

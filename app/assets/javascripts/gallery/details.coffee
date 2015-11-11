@@ -76,12 +76,10 @@
       # Crossed center position
       @resetSwipe()
       @showSwipe 0
-    else if @position > width
-      @resetSwipe()
-      @moveTo -1
-    else if @position < -width
-      @resetSwipe()
-      @moveTo 1
+    else if @position > width * 1.02
+      @moveTo -1, @refs.prevImage
+    else if @position < -(width * 1.02)
+      @moveTo 1, @refs.nextImage
     else
       @showSwipe @position
       window.requestAnimationFrame @animateSwipe
@@ -93,15 +91,22 @@
     @startTouch = null
 
   showSwipe: (amount) ->
-    style = "translateX(#{amount}px)"
-    @refs.prevImage.style.transform = style
-    @refs.nextImage.style.transform = style
-    (@refs.image || @refs.video).style.transform = style
+    style = "translate3d(#{amount}px, 0px, 0px)"
+    @refs.prev.style.transform = style
+    @refs.next.style.transform = style
+    @refs.cur.style.transform = style
 
-  moveTo: (dir) ->
+  moveTo: (dir, image) ->
     @stopVideo()
 
+    @resetSwipe()
+    # Avoid temporary glitch while swipe is reset by updating the image early
+    # FIXME Nothing is happening for videos
+    if @refs.curImage
+      @refs.curImage.src = image.src
+
     window.location.hash = @linkTo dir
+    @showSwipe 0
 
   onClose: (e) ->
     e.stopPropagation()
@@ -127,7 +132,7 @@
   neighborId: (dir) ->
     item = @neighbor dir
     if item
-      item.id
+      item
     else
       # Better to be wrong than to return null, since this is going to be used
       # for "key"
@@ -172,15 +177,21 @@
 
     <div className="details-wrapper">
       <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
-        <img key={@neighborId(-1)} className="detailed-prev" ref="prevImage" src={@largeURL(@neighbor(-1))}/>
-        <img key={@neighborId(1)} className="detailed-next" ref="nextImage" src={@largeURL(@neighbor( 1))}/>
-        {
-          if item && item.variety == 'video'
-            <video className="detailed-image" src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
+        <div ref="cur" className="detailed-image">
+          {
+            if item && item.variety == 'video'
+              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
 
-          else
-            <img key={@props.itemId} ref="image" onClick={@onClose} className="detailed-image" src={@largeURL(@props.itemId)} />
-        }
+            else
+              <img ref="curImage" onClick={@onClose} src={@largeURL(@props.itemId)} />
+          }
+        </div>
+        <div ref="prev" className="detailed-prev">
+          <img ref="prevImage" src={@largeURL(@neighbor(-1))}/>
+        </div>
+        <div ref="next" className="detailed-next">
+          <img ref="nextImage" src={@largeURL(@neighbor( 1))}/>
+        </div>
 
         {
           if item && item.variety == 'video' && !@state.playing
