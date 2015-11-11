@@ -1,6 +1,5 @@
 @NavBar = React.createClass
   getInitialState: ->
-    newSearch: @props.initialSearch
     hidden: false
     showSearchHelper: false
 
@@ -40,25 +39,13 @@
 
     @prevTop = top
 
-  changeNewSearch: (e) ->
+  onToggleSearchHelper: ->
     @setState
-      newSearch: e.target.value
-
-  updateSearch: (str) ->
-    @setState
-      newSearch: str
-
-  onFocusSearch: ->
-    @setState
-      showSearchHelper: true
+      showSearchHelper: !@state.showSearchHelper
 
   closeSearchHelper: ->
     @setState
       showSearchHelper: false
-
-  onSearch: (e) ->
-    e.preventDefault()
-    window.location.hash = '/search/' + encodeURI(@state.newSearch)
 
   render: ->
     classes = ['navbar', 'navbar-default', 'navbar-fixed-top']
@@ -69,62 +56,30 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
-          <div className="navbar-header">
-            <button className="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">
-              <span className="sr-only">
-                Toggle Navigation
-              </span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-            </button>
-            <a href="#/" className="navbar-brand">HyperCheese</a>
-          </div>
-
-          <div className="collapse navbar-collapse" id="hypercheese-navbar-collapse-1">
-            <ul className="nav navbar-nav"></ul>
-
-            <div>
-              <form className="navbar-form navbar-left">
-                <a className="btn btn-default" onClick={@onSelect} href="javascript:void(0)">
-                  Select...
-                </a>
-              </form>
-              <ul className="nav navbar-nav">
-                <li>
-                  <a href="#/tags">Tags</a>
-                </li>
-              </ul>
-              <form className="navbar-form navbar-left" role="Search" onSubmit={@onSearch}>
-                <div className="form-group">
-                  <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onFocus={@onFocusSearch} onBlur={@closeSearchHelper} onChange={@changeNewSearch} type="text"/>
-                </div>
-              </form>
-              <p className="navbar-text">
-                Count: {Store.state.resultCount}
-              </p>
-            </div>
-
-            <ul className="nav navbar-nav navbar-right">
-              <li>
-                <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
-              </li>
-              <li>
-                <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
-              </li>
-            </ul>
-
-            {
-              if @props.showZoom
-                <Zoom/>
-            }
-          </div>
+          <a className="navbar-brand" href="#/"><i className="fa fa-home"/></a>
+          <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default">
+            <i className="fa fa-search fa-fw"/>
+            {" #{Store.state.query}"}
+          </a>
+          <a href="javascript:void(0)" className="btn navbar-btn btn-default dropdown-toggle pull-right" data-toggle="dropdown">
+            <i className="fa fa-ellipsis-v fa-fw"/>
+          </a>
+          <ul className="dropdown-menu pull-right">
+            <li><a onClick={@onSelect} href="javascript:void(0)">Select...</a></li>
+            <li><a href="#/tags">Tags</a></li>
+            <li>
+              <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
+            </li>
+            <li>
+              <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
+            </li>
+          </ul>
         </div>
       </nav>
       {
         if @state.showSearchHelper
           <div className="search-helper-float">
-            <SearchHelper updateSearch={@updateSearch} close={@closeSearchHelper} search={@state.newSearch}/>
+            <SearchHelper close={@closeSearchHelper}/>
           </div>
       }
     </div>

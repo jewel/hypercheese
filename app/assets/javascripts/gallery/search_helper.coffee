@@ -1,4 +1,20 @@
 @SearchHelper = React.createClass
+  getInitialState: ->
+    newSearch: Store.state.query
+
+  changeNewSearch: (e) ->
+    @setState
+      newSearch: e.target.value
+
+  updateSearch: (str) ->
+    @setState
+      newSearch: str
+
+  onSearch: (e) ->
+    e.preventDefault()
+    @props.close()
+    window.location.hash = '/search/' + encodeURI(@state.newSearch)
+
   optionHelper: (field, options...) ->
     val = ""
     <select className="form-control" defaultValue={val}>
@@ -10,7 +26,8 @@
 
   render: ->
     <div className="search-helper">
-      <form onSubmit={(e) -> e.preventDefault()} className="form-inline">
+      <form onSubmit={@onSearch} className="form-inline">
+        <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
         {'Find '}
         {
           @optionHelper 'variety',
@@ -79,9 +96,6 @@
             ['stars', 'by star count']
         }
         {'. '}
-        <button className="btn btn-default btn-primary">
-          <i className="fa fa-search"/> Search
-        </button>
       </form>
       <div className="tag-list">
         {
