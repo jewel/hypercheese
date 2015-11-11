@@ -100,7 +100,7 @@
               </ul>
               <form className="navbar-form navbar-left" role="Search" onSubmit={@onSearch}>
                 <div className="form-group">
-                  <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onFocus={@onFocusSearch} onChange={@changeNewSearch} type="text"/>
+                  <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onFocus={@onFocusSearch} onBlur={@closeSearchHelper} onChange={@changeNewSearch} type="text"/>
                 </div>
               </form>
               <p className="navbar-text">
@@ -117,7 +117,10 @@
               </li>
             </ul>
 
-            <Zoom/>
+            {
+              if @props.showZoom
+                <Zoom/>
+            }
           </div>
         </div>
       </nav>

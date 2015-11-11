@@ -55,8 +55,13 @@
       width: "#{@props.imageWidth}px"
       height: "#{@props.imageHeight}px"
 
+    size = if @props.imageWidth > 400
+      "large"
+    else
+      "square"
+
     if item.id?
-      squareImage = "/data/resized/square/#{item.id}.jpg"
+      squareImage = "/data/resized/#{size}/#{item.id}.jpg"
     else
       squareImage = "/images/loading.png"
 

@@ -68,14 +68,14 @@
       return <TagList/>
 
     if @state.home
-      return <Home/>
+      return <div><NavBar initialSearch={@state.search}/><Home/></div>
 
     <div className={classes.join ' '}>
       {
         if !item && !selection
-          <NavBar initialSearch={@state.search}/>
+          <NavBar initialSearch={@state.search} showZoom={true}/>
         else if selection
-          <SelectBar/>
+          <SelectBar showZoom={!item}/>
       }
       {
         if item

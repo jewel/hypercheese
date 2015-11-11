@@ -171,7 +171,10 @@
                 <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
               </li>
             </ul>
-            <Zoom small="true"/>
+            {
+              if @props.showZoom
+                <Zoom small="true"/>
+            }
           </div>
         </div>
       </nav>
