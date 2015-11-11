@@ -19,6 +19,41 @@
 
   html: document.documentElement
 
+  onTouchStart: (e) ->
+    return unless e.touches.length == 2
+    @touchStart = e.touches
+    @startZoom = Store.state.zoom
+    e.preventDefault()
+    e.stopPropagation()
+
+  distance: (touches) ->
+    a = touches[0].pageX - touches[1].pageX
+    b = touches[0].pageY - touches[1].pageY
+    Math.sqrt( a * a + b * b )
+
+  onTouchMove: (e) ->
+    return unless e.touches.length == 2
+    return unless @touchStart
+    e.preventDefault()
+    e.stopPropagation()
+    startDistance = @distance @touchStart
+    curDistance = @distance e.touches
+    ratio = curDistance / startDistance
+    Store.state.zoom = @startZoom * ratio
+    if Store.state.zoom < 1
+      Store.state.zoom = 1
+    if Store.state.zoom > 10
+      Store.state.zoom = 10
+    Store.forceUpdate()
+
+  onTouchEnd: (e) ->
+    if @touchStart
+      e.preventDefault()
+      e.stopPropagation()
+    @touchStart = null
+    @startZoom = null
+
+
   # users can let go of the mouse button when no longer over an item (most
   # commonly on the black space to the right, but also can be off screen)
   onMouseUp: (e) ->
@@ -80,7 +115,7 @@
   margin: 2
 
   imageSize: ->
-    size = Math.round(1.3 ** (Store.state.zoom - 5) * 200)
+    size = Math.round(1.3 ** (Store.state.zoom - 5) * 100)
 
     # Resize larger to fit perfectly on page
     imagesPerRow = Math.floor(@html.clientWidth / size)
@@ -161,7 +196,7 @@
     # fetched.  When the results come back, they will cause a re-render
     Store.executeSearch startIndex, endIndex
 
-    <div className="results" style={resultsStyle}>
+    <div className="results" style={resultsStyle} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
       <div className="viewport" style={viewPortStyle}>
         {
           items.map (item) =>
