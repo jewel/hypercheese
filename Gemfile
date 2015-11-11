@@ -16,6 +16,7 @@ group :assets do
   gem 'lightbox2-rails'
   gem 'sprockets-coffee-react'
   gem 'font-awesome-rails'
+  gem 'bootstrap-sass'
 end
 
 group :production do
@@ -29,7 +30,6 @@ group :development do
   gem 'sqlite3'
 end
 
-gem 'twitter-bootstrap-rails'
 gem 'mini_magick'
 gem 'exifr'
 gem 'zipline'
