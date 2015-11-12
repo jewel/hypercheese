@@ -11,14 +11,17 @@ class @Store
       url: '/tags'
       success: (res) =>
         @state.tags = res.tags
-        @state.tagsById = []
+        @state.tagsById = {}
+        @state.tagsByLabel = {}
         for tag in res.tags
           @state.tagsById[tag.id] = tag
+          @state.tagsByLabel[tag.label.toLowerCase()] = tag
         @forceUpdate()
 
     @state =
       tags: []
       tagsById: {}
+      tagsByLabel: {}
       details: {}
       searchKey: null
       query: ''

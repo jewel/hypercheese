@@ -25,87 +25,41 @@
     </select>
 
   render: ->
+    query = new SearchQuery
+    query.parse @state.newSearch
+
     <div className="search-helper">
       <form onSubmit={@onSearch} className="form-inline">
-        <input className="form-control" placeholder="Search" defaultValue={Store.state.query} value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
-        {'Find '}
+        <div className="form-group">
+          <input className="form-control" placeholder="Search" value={@state.newSearch} onChange={@changeNewSearch} type="text"/>
+          {' '}
+          <button className="btn btn-default btn-primary">
+            <i className="fa fa-search"/> Search
+          </button>
+        </div>
         {
-          @optionHelper 'variety',
-            ['', 'photos and videos']
-            ['photo', 'photos']
-            ['videos', 'videos']
+          if query.unknown.length > 0
+            <div className="alert alert-danger" role="alert">
+              <strong>Unknown words:</strong> {query.unknown.join(', ')}
+            </div>
         }
-        {' of '}
-        {@props.tags || 'everything'}
-        {' uploaded by '}
+        <div className="tag-list">
+          {
+            query.tags.map (tag) ->
+              <Tag tag=tag key={tag.id}/>
+          }
+        </div>
         {
-          @optionHelper 'source',
-            ['', 'anyone']
-            ['jill', 'Jill']
-            ['rick', 'Rick']
+          res = []
+          for k, v of query.options
+            res.push <div key=k>{"#{k}: #{v}"}</div>
+          res
         }
-        {' from '}
-        {
-          @optionHelper 'month',
-            ['', 'all months']
-            ['spring', 'spring']
-            ['summer', 'summer']
-            ['fall', 'fall']
-            ['winter', 'winter']
-            ['jan', 'January']
-            ['feb', 'February']
-            ['mar', 'March']
-            ['apr', 'April']
-            ['may', 'May']
-            ['jun', 'June']
-            ['jul', 'July']
-            ['aug', 'August']
-            ['sep', 'September']
-            ['oct', 'October']
-            ['nov', 'November']
-            ['dec', 'December']
-        }
-        {' of '}
-        {
-          years = [
-            ['', 'all years']
-            ['<1990', '1989 or before']
-            ['1990s', 'the \'90s']
-            ['2000s', 'the \'00s']
-            ['2010s', 'the \'10s']
-          ]
-
-          for year in [1990...2020]
-            years.push ["#{year}", "#{year}"]
-
-          @optionHelper 'year', years...
-        }
-        {', in '}
-        {
-          @optionHelper 'direction',
-            ['', 'order']
-            ['reverse', 'reversed order']
-        }
-        {' '}
-        {
-          @optionHelper 'order',
-            ['', 'by date taken']
-            ['id', 'by id']
-            ['added', 'by date added']
-            ['md5', 'by randomness']
-            ['stars', 'by star count']
-        }
-        {'. '}
       </form>
       <div className="tag-list">
         {
-          # FIXME Add "untagged" as the first choice
           Store.state.tags.map (tag) =>
-            tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-            <div key={tag.id} className="tag">
-              <img className="tag-icon" src={tagIconURL}/><br/>
-              {tag.label}
-            </div>
+            <Tag key={tag.id} tag=tag label/>
         }
       </div>
     </div>
