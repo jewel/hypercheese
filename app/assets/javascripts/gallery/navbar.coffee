@@ -1,7 +1,7 @@
 @NavBar = React.createClass
   getInitialState: ->
     hidden: false
-    showSearchHelper: true
+    showSearchHelper: false
 
   componentDidMount: ->
     window.addEventListener 'scroll', @onScroll, false
@@ -56,11 +56,16 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
-          <a className="navbar-brand" href="#/"><i className="fa fa-home"/></a>
+          <a className="navbar-brand" href="#/">
+            <img style={height: '20px'} src="/assets/icon.png"/>
+          </a>
           <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default">
             <i className="fa fa-search fa-fw"/>
             {" #{Store.state.query} "}
-            <span className="badge">{(Store.state.resultCount || 0).toLocaleString()}</span>
+            {
+              if Store.state.resultCount != null
+                <span className="badge">{Store.state.resultCount.toLocaleString()}</span>
+            }
           </a>
           <a href="javascript:void(0)" className="btn navbar-btn btn-default dropdown-toggle pull-right" data-toggle="dropdown">
             <i className="fa fa-ellipsis-v fa-fw"/>

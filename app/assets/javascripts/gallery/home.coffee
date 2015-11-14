@@ -8,13 +8,6 @@
         <a className="btn btn-default btn" href="#/search/">View All Photos</a>
       </p>
 
-      <div className="home-sidebar">
-        <form>
-          <input role="search" type="text" className="form-control" placeholder="Search"/>
-        </form>
-        <SearchHelper/>
-      </div>
-
       <h2>Recent Activity</h2>
       {
         recent.activity.map (activity) =>
