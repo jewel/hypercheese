@@ -71,111 +71,82 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="select-navbar" className="navbar navbar-fixed-top">
         <div className="container-fluid">
-          <div className="navbar-header">
-            <button className="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#hypercheese-navbar-collapse-1">
-              <span className="sr-only">
-                Toggle Navigation
-              </span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-            </button>
-          </div>
+          <a className="navbar-brand" onClick={@clearSelection}> <i className="fa fa-times"/> </a>
+          <a className="navbar-brand">{" #{Store.state.selectionCount} "}</a>
 
-          <div className="collapse navbar-collapse" id="hypercheese-navbar-collapse-1">
-            <ul className="nav navbar-nav"></ul>
-
-            <div>
-              <ul className="nav navbar-nav">
-                <li>
-                  <p className="navbar-text"> Selected: {Store.state.selectionCount}</p>
-                </li>
-
-                <li>
-                  <form className="navbar-form navbar-left">
-                    <a className="btn btn-default" onClick={@clearSelection}>Clear</a>
-                  </form>
-                </li>
-              </ul>
-
-              {
-                @selectedTags().map (match) =>
-                  del = ->
-                    Store.removeTagFromSelection match.tag.id
-
-                  tagIconURL = "/data/resized/square/#{match.tag.icon}.jpg"
-
-                  <p className="navbar-text" key={match.tag.id}>
-                    <img className="tag-icon" src={tagIconURL}/>
-                    {' '}
-                    {match.tag.label}
-                    {' '}
-                    ({match.count})
-                    {' '}
-                    <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
-                  </p>
-              }
-
-              <form className="navbar-form navbar-left">
-                <a title="Download" className="btn btn-default" href={downloadLink}><i className="fa fa-download"/></a>
-                {' '}
-                <a title="Rotate Right" className="btn btn-default" href="javascript:void(0)"><i className="fa fa-rotate-left"/></a>
-                {' '}
-                <a title="Rotate Left" className="btn btn-default" href="javascript:void(0)"><i className="fa fa-rotate-right"/></a>
-                {' '}
-                <a title="Share" className="btn btn-default" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
-              </form>
-
-              <form className="navbar-form navbar-left" onSubmit={@addNewTags}>
-                <div className="form-group">
-                  <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
-                </div>
-              </form>
-
-              <ul className="nav navbar-nav">
-                {
-                  if @state.confirmCreateTags
-                    <li key="confirm">
-                      <p className="navbar-text">
-                        <em>Press ENTER again to create these tags:</em>
-                      </p>
-                    </li>
-                }
-                {
-                  tags.map (part) ->
-                    if part.match?
-                      tag = part.match
-                      tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-
-                      <li key={tag.id}>
-                        <p className="navbar-text">
-                          <img className="tag-icon" src={tagIconURL}/>
-                          {' '}
-                          {tag.label}
-                        </p>
-                      </li>
-                    else
-                      <li key={part.miss}>
-                        <p className="navbar-text">
-                          <strong>
-                            <i className="fa fa-plus-circle"/> {part.miss}
-                          </strong>
-                        </p>
-                      </li>
-                }
-              </ul>
-            </div>
-
-            <ul className="nav navbar-nav navbar-right">
+          <div className="pull-right">
+            <a title="Download" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
+            <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+            <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
+              <i className="fa fa-ellipsis-v fa-fw"/>
+            </a>
+            <ul className="dropdown-menu">
+              <li><a href="#/tags" className="dropdown">Tags</a></li>
               <li>
-                <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
+                <a title="Rotate Left" className="dropdown" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
+              </li>
+              <li>
+                <a title="Rotate Right" className="dropdown" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
               </li>
             </ul>
-            {
-              if @props.showZoom
-                <Zoom small="true"/>
-            }
           </div>
         </div>
       </nav>
+    </div>
+
+  bender: ->
+    <div>
+      {
+        @selectedTags().map (match) =>
+          del = ->
+            Store.removeTagFromSelection match.tag.id
+
+          tagIconURL = "/data/resized/square/#{match.tag.icon}.jpg"
+
+          <p className="navbar-text" key={match.tag.id}>
+            <img className="tag-icon" src={tagIconURL}/>
+            {' '}
+            {match.tag.label}
+            {' '}
+            ({match.count})
+            {' '}
+            <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+          </p>
+      }
+      <div className="form-group">
+        <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
+      </div>
+
+      <ul className="nav navbar-nav">
+        {
+          if @state.confirmCreateTags
+            <li key="confirm">
+              <p className="navbar-text">
+                <em>Press ENTER again to create these tags:</em>
+              </p>
+            </li>
+        }
+        {
+          tags.map (part) ->
+            if part.match?
+              tag = part.match
+              tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+
+              <li key={tag.id}>
+                <p className="navbar-text">
+                  <img className="tag-icon" src={tagIconURL}/>
+                  {' '}
+                  {tag.label}
+                </p>
+              </li>
+            else
+              <li key={part.miss}>
+                <p className="navbar-text">
+                  <strong>
+                    <i className="fa fa-plus-circle"/> {part.miss}
+                  </strong>
+                </p>
+              </li>
+        }
+      </ul>
     </div>
