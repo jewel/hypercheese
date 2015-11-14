@@ -35,7 +35,11 @@ def table old, new=nil
     next if res == false
     keys = row.keys.join  ", "
     values = row.values.map do |_|
-      "'" + @new.escape(_.to_s) + "'"
+      if _.nil?
+        "NULL"
+      else
+        "'" + @new.escape(_.to_s) + "'"
+      end
     end.join ", "
     @new.query( "INSERT INTO `#{new}` (#{keys}) VALUES (#{values})" )
   end
@@ -43,10 +47,26 @@ def table old, new=nil
 end
 
 table :accounts, :users do |row|
-  next false unless row[:email]
   row[:encrypted_password] = row.delete :password_hash
+  row[:encrypted_password] ||= SecureRandom.hex 20
   row[:role] = 'user'
-  row[:email] += '@hypercheese.com' unless row[:email] =~ /@/
+
+  if row[:email] && row[:email].empty?
+    row.delete :email
+  end
+
+  if row[:email] && row[:email] !~ /@/
+    row[:username] = row.delete :email
+    row[:email] = "#{row[:username]}@null"
+  end
+
+  if !row[:email] && row[:uid]
+    row[:username] = row[:uid]
+    row[:email] = "#{row[:uid]}@facebook.null"
+  end
+
+  puts "#{row[:email].inspect}"
+
   %w{first_name last_name image gender}.each do |field|
     row.delete field.to_sym
   end

@@ -3,7 +3,14 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+         :recoverable, :rememberable, :trackable, :validatable,
+         :authentication_keys => [:login]
+
+  attr_accessor :login
+
+  validates :username,
+    presence: true,
+    uniqueness: { case_sensitive: false }
 
   if Rails.application.config.use_omniauth
     devise :omniauthable, :omniauth_providers => [:facebook]
@@ -17,6 +24,15 @@ class User < ActiveRecord::Base
 
   def approved?
     role != :stranger
+  end
+
+  def self.find_for_database_authentication warden_conditions
+    conditions = warden_conditions.dup
+    if login = conditions.delete(:login)
+      where(conditions.to_hash).where(["username = :value or email = :value", value: login ]).first
+    else
+      where(conditions.to_hash).first
+    end
   end
 
   def self.find_for_facebook_oauth auth, signed_in_resource=nil
