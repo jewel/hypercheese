@@ -211,7 +211,7 @@
               item.tag_ids.map (tag_id) ->
                 tag = Store.state.tagsById[tag_id]
                 if tag
-                  <Tag tag=tag />
+                  <Tag key={tag.id} tag=tag />
           }
           <a className="control" href="javascript:void(0)" onClick={@onStar}>
             {

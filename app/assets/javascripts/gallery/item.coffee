@@ -47,6 +47,29 @@
       Store.state.dragLeftStart = true
     Store.dragRange()
 
+  onTouchStart: (e) ->
+    return if Store.state.selecting
+    return if e.touches.length != 1
+    window.clearTimeout @touchTimer if @touchTimer
+    @touchTimer = window.setTimeout @onTouchTimer, 1000
+
+  onTouchTimer: ->
+    return if Store.state.selecting
+    Store.toggleSelection @props.item.id
+    Store.state.selecting = true
+    Store.forceUpdate()
+
+  onTouchMove: (e) ->
+    window.clearTimeout @touchTimer if @touchTimer
+
+  onTouchEnd: (e) ->
+    window.clearTimeout @touchTimer if @touchTimer
+
+  onContextMenu: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    false
+
   render: ->
     item = @props.item
     selected = Store.state.selection[item.id]
@@ -88,7 +111,7 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp}>
+      <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>
       {

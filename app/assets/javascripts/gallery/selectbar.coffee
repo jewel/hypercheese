@@ -71,25 +71,22 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="select-navbar" className="navbar navbar-fixed-top">
         <div className="container-fluid">
-          <a className="navbar-brand" onClick={@clearSelection}> <i className="fa fa-times"/> </a>
-          <a className="navbar-brand">{" #{Store.state.selectionCount} "}</a>
+          <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
+          <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
 
-          <div className="pull-right">
-            <a title="Download" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
-            <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
-            <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
-              <i className="fa fa-ellipsis-v fa-fw"/>
-            </a>
-            <ul className="dropdown-menu">
-              <li><a href="#/tags" className="dropdown">Tags</a></li>
-              <li>
-                <a title="Rotate Left" className="dropdown" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
-              </li>
-              <li>
-                <a title="Rotate Right" className="dropdown" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
-              </li>
-            </ul>
-          </div>
+          <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
+            <i className="fa fa-ellipsis-v fa-fw"/>
+          </a>
+          <ul className="dropdown-menu pull-right">
+            <li>
+              <a title="Rotate Left" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
+            </li>
+            <li>
+              <a title="Rotate Right" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
+            </li>
+          </ul>
+          <a title="Share" className="btn navbar-btn pull-right" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+          <a title="Download" className="btn navbar-btn pull-right" href={downloadLink}><i className="fa fa-download"/></a>
         </div>
       </nav>
     </div>

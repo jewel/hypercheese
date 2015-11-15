@@ -154,6 +154,8 @@ class @Store
 
   @toggleSelection: (id) ->
     @selectItem id, !@state.selection[id]
+    if @state.selectionCount == 0
+      @state.selecting = false
     @forceUpdate()
 
   @findRange: (startId, endId) ->

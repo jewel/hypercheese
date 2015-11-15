@@ -67,7 +67,7 @@
                 <span className="badge">{Store.state.resultCount.toLocaleString()}</span>
             }
           </a>
-          <a href="javascript:void(0)" className="btn navbar-btn btn-default dropdown-toggle pull-right" data-toggle="dropdown">
+          <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
             <i className="fa fa-ellipsis-v fa-fw"/>
           </a>
           <ul className="dropdown-menu pull-right">
