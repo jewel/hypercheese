@@ -15,7 +15,7 @@
   render: ->
     tags = Store.state.tags
     <div className="container-fluid tag-editor">
-      <a className="pull-right" href="#/">&times;</a>
+      <a className="pull-right" href="javascript:history.back()"><i className="fa fa-times"/></a>
       <h1>HyperCheese Tag Editor</h1>
       <ul>
         <li>Only tags with no images can be deleted.</li>
