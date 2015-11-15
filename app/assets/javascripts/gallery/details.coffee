@@ -105,6 +105,8 @@
     # FIXME Nothing is happening for videos
     if @refs.curImage
       @refs.curImage.src = image.src
+    else if @refs.video
+      @refs.video.poster = image.src
 
     window.location.hash = @linkTo dir
     @showSwipe 0
