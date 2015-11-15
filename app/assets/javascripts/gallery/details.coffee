@@ -2,6 +2,7 @@
   getInitialState: ->
     playing: false
     showInfo: false
+    showControls: true
 
   onInfo: (e) ->
     @setState
@@ -113,6 +114,10 @@
 
     window.location.hash = '/search/' + encodeURI(@props.search)
 
+  toggleControls: (e) ->
+    @setState
+      showControls: !@state.showControls
+
   onPlay: (e) ->
     @refs.video.play()
     @setState
@@ -175,15 +180,18 @@
       Store.getDetails @neighbor(1)
       Store.getDetails @neighbor(-1)
 
+    classes = ['details-window']
+    classes.push 'show-controls' if @state.showControls
+
     <div className="details-wrapper">
-      <div className="details-window" onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
         <div ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
-              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
+              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
 
             else
-              <img ref="curImage" onClick={@onClose} src={@largeURL(@props.itemId)} />
+              <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
         </div>
         <div ref="prev" className="detailed-prev">
