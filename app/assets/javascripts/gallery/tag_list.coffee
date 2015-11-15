@@ -12,6 +12,9 @@
 
     true
 
+  newTag: (label) ->
+    Store.newTag(label)
+
   render: ->
     tags = Store.state.tags
     <div className="container-fluid tag-editor">
@@ -32,7 +35,7 @@
       <h2>Person Tags</h2>
       <div className="tag-list">
         <div className="new-tag">
-          <a href="javascript:void(0)">
+          <a href="javascript:void(0)" onClick={@newTag.bind(@, "Untitled")}>
             <i className="fa fa-plus-circle"/>
           </a>
           <br/>
