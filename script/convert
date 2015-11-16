@@ -65,8 +65,6 @@ table :accounts, :users do |row|
     row[:email] = "#{row[:uid]}@facebook.null"
   end
 
-  puts "#{row[:email].inspect}"
-
   %w{first_name last_name image gender}.each do |field|
     row.delete field.to_sym
   end
