@@ -93,9 +93,9 @@
 
   showSwipe: (amount) ->
     style = "translate3d(#{amount}px, 0px, 0px)"
-    @refs.prev.style.transform = style
-    @refs.next.style.transform = style
-    @refs.cur.style.transform = style
+    @refs.prev.style.transform = style if @refs.prev
+    @refs.cur.style.transform = style if @refs.cur
+    @refs.next.style.transform = style if @refs.next
 
   moveTo: (dir, image) ->
     @stopVideo()

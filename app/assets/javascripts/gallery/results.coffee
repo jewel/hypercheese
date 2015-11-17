@@ -15,6 +15,7 @@
 
     scrollTop: 0
     scrollStart: scrollStart
+    showScrollButton: false
     haveScrolled: false
 
   html: document.documentElement
@@ -95,6 +96,11 @@
     window.removeEventListener 'scroll', @onScroll, false
     window.removeEventListener 'mouseup', @onMouseUp, false
 
+  hideScrollButton: ->
+    @scrollButtonTimer = null
+    @setState
+      showScrollButton: false
+
   onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so
     # that images will be fetched from the server before we need them, but we
@@ -102,6 +108,13 @@
     # battery.
     scrollTop = window.pageYOffset
     Store.state.lastScrollPosition = scrollTop
+
+    if !@state.showScrollButton
+      @setState
+        showScrollButton: true
+
+    window.clearTimeout @scrollButtonTimer if @scrollButtonTimer
+    @scrollButtonTimer = window.setTimeout @hideScrollButton, 2000
 
     if Math.abs( scrollTop - @state.scrollTop ) >= @rowHeight()
       @setState
@@ -197,6 +210,7 @@
     Store.executeSearch startIndex, endIndex
 
     <div className="results" style={resultsStyle} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+      <ScrollButton height={windowHeight} top={scrollTop} visible={@state.showScrollButton}/>
       <div className="viewport" style={viewPortStyle}>
         {
           items.map (item) =>
