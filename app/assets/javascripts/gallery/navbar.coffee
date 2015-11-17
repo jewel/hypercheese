@@ -47,6 +47,12 @@
     @setState
       showSearchHelper: false
 
+  siteIcon: ->
+    return @_siteIcon if @_siteIcon?
+    elem = document.querySelector 'link[rel=icon]'
+
+    @_siteIcon = elem.href
+
   render: ->
     classes = ['navbar', 'navbar-default', 'navbar-fixed-top']
     if @state.hidden
@@ -57,7 +63,7 @@
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
           <a className="navbar-brand" href="#/">
-            <img style={height: '20px'} src="/assets/icon.png"/>
+            <img style={height: '20px'} src={@siteIcon()}/>
           </a>
           <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default">
             <i className="fa fa-search fa-fw"/>
