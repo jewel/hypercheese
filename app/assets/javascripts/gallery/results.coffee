@@ -98,8 +98,9 @@
 
   hideScrollButton: ->
     @scrollButtonTimer = null
-    @setState
-      showScrollButton: false
+    if @isMounted()
+      @setState
+        showScrollButton: false
 
   onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so

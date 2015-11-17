@@ -50,7 +50,8 @@
       position: null
 
   scrollWindow: ->
-    targetTop = @state.position / (document.documentElement.clientHeight - @height) * @props.height
+    windowHeight = document.documentElement.clientHeight
+    targetTop = @state.position / (windowHeight - @height) * (@props.height - windowHeight)
     window.scroll 0, targetTop
 
   componentDidMount: ->
@@ -65,7 +66,8 @@
   height: 40
 
   initialPosition: ->
-    @props.top / @props.height * (document.documentElement.clientHeight - @height)
+    windowHeight = document.documentElement.clientHeight
+    @props.top / (@props.height - windowHeight) * (windowHeight - @height)
 
   render: ->
     style =
