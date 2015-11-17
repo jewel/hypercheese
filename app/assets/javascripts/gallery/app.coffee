@@ -20,7 +20,9 @@
     parts = hash.split('/')
     if parts.length == 1 || parts[0] != ''
       console.warn "Invalid URL: #{hash}"
-      return {}
+      return {
+        home: true
+      }
 
     if parts[1] == 'items'
       return {
@@ -46,7 +48,9 @@
       }
 
     console.warn "Invalid URL: #{hash}"
-    return {}
+    return {
+      home: true
+    }
 
   render: ->
     selection = Store.state.selectionCount > 0 || Store.state.selecting
