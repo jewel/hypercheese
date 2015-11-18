@@ -84,7 +84,9 @@ table :items do |row|
   row.delete :location_id
   row.delete :length
   row[:variety] = row.delete :type
-  row[:created_at] = row[:updated_at] = row.delete(:added)
+  added = row.delete :added
+  row[:created_at] = added
+  row[:updated_at] = added
 end
 
 table :item_paths
