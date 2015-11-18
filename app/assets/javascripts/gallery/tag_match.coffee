@@ -8,7 +8,7 @@ class @TagMatch
 
     return null
 
-  @matchMany: (str) ->
+  @matchMany: (str, caretPosition) ->
     if !str? || str == ''
       return []
 
@@ -17,7 +17,7 @@ class @TagMatch
 
     for tag in tags
       continue unless tag.label.toLowerCase() == str.toLowerCase()
-      return [ {match: tag} ]
+      return [ {match: tag, current: true} ]
 
     results = []
 
@@ -26,7 +26,9 @@ class @TagMatch
     else
       parts = str.split( /\ +/ )
 
+    pos = 0
     for part in parts
+      pos += part.length + 1
       part = part.trim()
       continue if part == ""
 
@@ -37,5 +39,9 @@ class @TagMatch
       else
         results.push
           miss: part
+
+      if caretPosition? && pos >= caretPosition
+        results[results.length-1].current = true
+        caretPosition = null
 
     results

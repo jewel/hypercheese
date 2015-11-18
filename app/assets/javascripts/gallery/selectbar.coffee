@@ -1,7 +1,21 @@
 @SelectBar = React.createClass
   getInitialState: ->
     newTags: ''
-    confirmCreateTags: false
+    caretPosition: 0
+    tagging: false
+    showTagLabels: false
+
+  startTagging: ->
+    @setState
+      tagging: true
+
+  stopTagging: ->
+    @setState
+      tagging: false
+
+  toggleTagLabels: ->
+    @setState
+      showTagLabels: !@state.showTagLabels
 
   clearSelection: (e) ->
     Store.clearSelection()
@@ -13,7 +27,7 @@
   changeNewTags: (e) ->
     @setState
       newTags: e.target.value
-      confirmCreateTags: false
+      caretPosition: e.target.selectionStart
 
   addNewTags: (e) ->
     e.preventDefault()
@@ -24,17 +38,17 @@
       matches.push part.match if part.match?
       misses.push part.miss if part.miss?
 
-    if matches.size > 0
-      Store.addTagsToSelection res.matches
+    if matches.length > 0
+      Store.addTagsToSelection matches
 
-    if misses.size == 0
+    if misses.length == 0
       Store.clearSelection()
       @setState
         newTags: ''
+        tagging: false
     else
       @setState
         newTags: misses.join(', ')
-        confirmCreateTags: true
 
   selectedTags: ->
     index = {}
@@ -65,7 +79,7 @@
 
     downloadLink = "/items/download?ids=#{ids.join ','}"
 
-    tags = TagMatch.matchMany @state.newTags
+    tags = TagMatch.matchMany @state.newTags, @state.caretPosition
 
     <div>
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
@@ -73,26 +87,57 @@
         <div className="container-fluid">
           <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
+          <form onSubmit={@addNewTags} style={display: 'inline-block', width: if @state.tagging then '200px' else '120px'}>
+            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
+          </form>
 
-          <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
-            <i className="fa fa-ellipsis-v fa-fw"/>
-          </a>
-          <ul className="dropdown-menu pull-right">
-            <li>
-              <a title="Rotate Left" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
-            </li>
-            <li>
-              <a title="Rotate Right" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
-            </li>
-          </ul>
-          <a title="Share" className="btn navbar-btn pull-right" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
-          <a title="Download" className="btn navbar-btn pull-right" href={downloadLink}><i className="fa fa-download"/></a>
+          {
+            unless @state.tagging
+              <div className="pull-right">
+                <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
+                  <i className="fa fa-ellipsis-v fa-fw"/>
+                </a>
+                <ul className="dropdown-menu pull-right">
+                  <li>
+                    <a title="Rotate Left" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
+                  </li>
+                  <li>
+                    <a title="Rotate Right" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
+                  </li>
+                </ul>
+                <a title="Share" className="btn navbar-btn pull-right" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+                <a title="Download" className="btn navbar-btn pull-right" href={downloadLink}><i className="fa fa-download"/></a>
+              </div>
+            else
+              <div>
+                {
+                  tags.map (part) ->
+                    if part.match?
+                      tag = part.match
+                      tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+
+                      <span key={tag.id}>
+                        <img className="tag-icon" src={tagIconURL}/>
+                        {
+                          if part.current
+                            " #{tag.label}"
+                        }
+                      </span>
+                    else
+                      <span key={part.miss}>
+                        <strong>
+                          <i className="fa fa-exclamation-circle"/> {part.miss}
+                        </strong>
+                      </span>
+                }
+              </div>
+          }
         </div>
       </nav>
     </div>
 
   bender: ->
-    <div>
+    <div onClick={@toggleTagLabels}>
       {
         @selectedTags().map (match) =>
           del = ->
@@ -102,48 +147,13 @@
 
           <p className="navbar-text" key={match.tag.id}>
             <img className="tag-icon" src={tagIconURL}/>
-            {' '}
-            {match.tag.label}
-            {' '}
-            ({match.count})
-            {' '}
-            <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+            {
+              if @state.showTagLabels
+                <span>
+                  {" #{match.tag.label} (#{match.count}) "}
+                  <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+                </span>
+            }
           </p>
       }
-      <div className="form-group">
-        <input className="form-control" autoFocus placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
-      </div>
-
-      <ul className="nav navbar-nav">
-        {
-          if @state.confirmCreateTags
-            <li key="confirm">
-              <p className="navbar-text">
-                <em>Press ENTER again to create these tags:</em>
-              </p>
-            </li>
-        }
-        {
-          tags.map (part) ->
-            if part.match?
-              tag = part.match
-              tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-
-              <li key={tag.id}>
-                <p className="navbar-text">
-                  <img className="tag-icon" src={tagIconURL}/>
-                  {' '}
-                  {tag.label}
-                </p>
-              </li>
-            else
-              <li key={part.miss}>
-                <p className="navbar-text">
-                  <strong>
-                    <i className="fa fa-plus-circle"/> {part.miss}
-                  </strong>
-                </p>
-              </li>
-        }
-      </ul>
     </div>
