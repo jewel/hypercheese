@@ -208,6 +208,38 @@ class @Store
     @state.selectionCount = 0
     @forceUpdate()
 
+  @newTag: (label) ->
+    @jax
+      url: "/tags"
+      data:
+        tag:
+          label: label
+      type: "POST"
+      success: (res) =>
+        @state.tags.push res.tag
+        @state.tagsById[res.tag.id] = res.tag
+        @state.tagsByLabel[res.tag.label.toLowerCase()] = res.tag.label
+        @forceUpdate()
+
+    null
+
+  @deleteTag: (id) ->
+    @jax
+      url: "/tags/#{id}"
+      type: "DELETE"
+      success: (res) =>
+        toDeleteIndex = null
+        @state.tags.forEach (tag, i) =>
+          if res.tag.id == tag.id
+            toDeleteIndex = i
+        if toDeleteIndex != null
+          @state.tags.splice(toDeleteIndex, 1)
+        delete @state.tagsById[res.tag.id]
+        delete @state.tagsByLabel[res.tag.label.toLowerCase()]
+        @forceUpdate()
+
+    null
+
   @addTagsToSelection: (tags) ->
     tagIds = []
     for tag in tags

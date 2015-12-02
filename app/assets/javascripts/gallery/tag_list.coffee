@@ -12,10 +12,13 @@
 
     true
 
+  newTag: (label) ->
+    Store.newTag(label)
+
   render: ->
     tags = Store.state.tags
     <div className="container-fluid tag-editor">
-      <a className="pull-right" href="#/">&times;</a>
+      <a className="pull-right" href="javascript:history.back()"><i className="fa fa-times"/></a>
       <h1>HyperCheese Tag Editor</h1>
       <ul>
         <li>Only tags with no images can be deleted.</li>
@@ -32,7 +35,7 @@
       <h2>Person Tags</h2>
       <div className="tag-list">
         <div className="new-tag">
-          <a href="javascript:void(0)">
+          <a href="javascript:void(0)" onClick={@newTag.bind(@, "Untitled")}>
             <i className="fa fa-plus-circle"/>
           </a>
           <br/>

@@ -250,6 +250,6 @@
       </div>
       {
         if item && @state.showInfo
-          <Info item={item}/>
+          <Info item={item} onInfo={@onInfo}/>
       }
     </div>

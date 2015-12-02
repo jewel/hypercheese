@@ -23,7 +23,7 @@
 
     <div className="info">
       <p>
-        <a href="javascript:void(0)"><i className="fa fa-close"/></a>
+        <a href="javascript:void(0)" onClick={@props.onInfo}><i className="btn fa fa-close"/></a>
       </p>
       <table className="table">
         <tbody>
