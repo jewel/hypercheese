@@ -1,28 +1,29 @@
 @SearchHelper = React.createClass
   getInitialState: ->
-    newSearch: Store.state.query
-    typing: false
+    q = new SearchQuery
+    q.parse Store.state.query
 
-  changeNewSearch: (e) ->
-    @setState
-      newSearch: e.target.value
+    query: q
+    userInput: null
 
-  updateSearch: (str) ->
+  changeUserInput: (e) ->
+    @state.query.parse e.target.value
     @setState
-      newSearch: str
+      userInput: e.target.value
+      query: @state.query
 
   onFocus: ->
     @setState
-      typing: true
+      userInput: @state.query.stringify()
 
   onBlur: ->
     @setState
-      typing: false
+      userInput: null
 
   onSearch: (e) ->
     e.preventDefault()
     @props.close()
-    window.location.hash = '/search/' + encodeURI(@state.newSearch)
+    window.location.hash = '/search/' + encodeURI(@state.query.stringify())
 
   optionHelper: (field, options...) ->
     val = ""
@@ -34,24 +35,23 @@
     </select>
 
   render: ->
-    query = new SearchQuery
-    query.parse @state.newSearch
-    string = if @state.typing
-      @state.newSearch
+    query = @state.query
+    string = if @state.userInput?
+      @state.userInput
     else
       query.stringify()
 
     <div className="search-helper">
       <form onSubmit={@onSearch} className="form-inline">
         <div className="form-group">
-          <input className="form-control" placeholder="Search" value={string} onChange={@changeNewSearch} onFocus={@onFocus} onBlur={@onBlur} type="text"/>
+          <input className="form-control" placeholder="Search" value={string} onChange={@changeUserInput} onFocus={@onFocus} onBlur={@onBlur} type="text"/>
           {' '}
           <button className="btn btn-default btn-primary">
             <i className="fa fa-search"/> Search
           </button>
         </div>
         {
-          if !@state.typing && query.unknown.length > 0
+          if !@state.userInput? && query.unknown.length > 0
             <div className="alert alert-danger" role="alert">
               <strong>Unknown words:</strong> {query.unknown.join(', ')}
             </div>
@@ -69,16 +69,18 @@
           query.tags.map (tag) =>
             used[tag.id] = true
             removeTag = =>
+              query.tags = query.tags.filter (e) -> e.id != tag.id
               @setState
-                newSearch: @state.newSearch.replace( tag.label, '' )
+                query: query
             <Tag tag=tag key={tag.id} selected label onClick={removeTag}/>
         }
         {
           Store.state.tags.map (tag) =>
             return null if used[tag.id]
             addTag = =>
+              query.tags.push tag
               @setState
-                newSearch: @state.newSearch + " #{tag.label}"
+                query: query
             <Tag key={tag.id} tag=tag label onClick={addTag}/>
         }
       </div>
