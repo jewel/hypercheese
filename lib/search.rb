@@ -185,7 +185,7 @@ class Search
     end
 
     if opts[:month]
-      items = items.all :conditions => [ 'month(taken) in (?)', opts[:month] ]
+      items = items.where 'month(taken) in (?)', opts[:month]
     end
 
     if opts[:reverse]
