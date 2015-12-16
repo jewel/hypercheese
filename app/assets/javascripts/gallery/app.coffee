@@ -15,6 +15,7 @@
     if hash == '' || hash == '/'
       return {
         home: true
+        tags: false
       }
 
     parts = hash.split('/')
