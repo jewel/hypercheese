@@ -15,7 +15,7 @@
   newTag: ->
     label = window.prompt("Tag name", "Untitled")
     if label != null
-      Store.newTag(label, null) # TODO default tag
+      Store.newTag(label, null)
 
   render: ->
     tags = Store.state.tags

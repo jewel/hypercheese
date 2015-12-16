@@ -2,7 +2,7 @@ class @Store
   @jax: (params) ->
     params.dataType ||= 'json'
     params.error ||= (xhr, status, error) ->
-      alert "Problem with server: #{status}"
+      alert "Problem with server: #{error}"
 
     $.ajax params
 
@@ -11,11 +11,7 @@ class @Store
       url: '/tags'
       success: (res) =>
         @state.tags = res.tags
-        @state.tagsById = {}
-        @state.tagsByLabel = {}
-        for tag in res.tags
-          @state.tagsById[tag.id] = tag
-          @state.tagsByLabel[tag.label.toLowerCase()] = tag
+        @_updateTagIndexes()
         @forceUpdate()
 
     @state =
@@ -40,6 +36,13 @@ class @Store
       lastScrollPosition: null
       highlight: null
       recent: null
+
+  @_updateTagIndexes: ->
+    @state.tagsById = {}
+    @state.tagsByLabel = {}
+    for tag in @state.tags
+      @state.tagsById[tag.id] = tag
+      @state.tagsByLabel[tag.label.toLowerCase()] = tag
 
   @fetchRecent: ->
     return @state.recent if @state.recent
@@ -218,8 +221,7 @@ class @Store
       type: "POST"
       success: (res) =>
         @state.tags.push res.tag
-        @state.tagsById[res.tag.id] = res.tag
-        @state.tagsByLabel[res.tag.label.toLowerCase()] = res.tag.label
+        @_updateTagIndexes()
         @forceUpdate()
 
     null
@@ -231,6 +233,13 @@ class @Store
         tag: tag
       type: "PUT"
       success: (res) =>
+        @state.tags = @state.tags.map (t) ->
+          if t.id == tag.id
+            res.tag
+          else
+            t
+        @_updateTagIndexes()
+
         @forceUpdate()
 
     null
@@ -240,14 +249,8 @@ class @Store
       url: "/tags/#{id}"
       type: "DELETE"
       success: (res) =>
-        toDeleteIndex = null
-        @state.tags.forEach (tag, i) =>
-          if res.tag.id == tag.id
-            toDeleteIndex = i
-        if toDeleteIndex != null
-          @state.tags.splice(toDeleteIndex, 1)
-        delete @state.tagsById[res.tag.id]
-        delete @state.tagsByLabel[res.tag.label.toLowerCase()]
+        @state.tags = @state.tags.filter (tag) -> tag.id != id
+        @_updateTagIndexes()
         @forceUpdate()
 
     null

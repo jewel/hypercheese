@@ -13,13 +13,18 @@ class TagsController < ApplicationController
   end
 
   def update
-    render json: tag.update(tag_params)
+    @tag = tag
+    @tag.update(tag_params)
+
+    render json: @tag
   end
 
   private
 
   def tag_params
-    params.require(:tag).permit(:label, :icon_item_id)
+    p = params.dup
+    p[:tag][:icon_item_id] = p[:tag][:icon]
+    p.require(:tag).permit(:label, :icon_item_id)
   end
 
   def tag

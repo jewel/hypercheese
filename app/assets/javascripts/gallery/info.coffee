@@ -60,12 +60,11 @@
           tag = Store.state.tagsById[tag_id]
           if tag
             setTagIcon = =>
-              console.warn "Not yet sticky"
               tag.icon = @props.item.id
-              Store.forceUpdate()
+              Store.updateTag tag
 
             age = details.ages[tag_id]
-            <p key={tag_id}>
+            <div key={tag_id}>
               <Tag tag=tag />
               {' '}
               <a href="javascript:void(0)" onClick=setTagIcon title="Set current photo as icon for this tag">
@@ -78,7 +77,7 @@
                 if age
                   <em>({age})</em>
               }
-            </p>
+            </div>
       }
       {
         details.comments.map (comment) ->
