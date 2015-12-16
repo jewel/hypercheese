@@ -65,7 +65,7 @@
           <a className="navbar-brand" href="#/">
             <img style={height: '20px'} src={@siteIcon()}/>
           </a>
-          <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default">
+          <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default search-button">
             <i className="fa fa-search fa-fw"/>
             {" #{Store.state.query} "}
             {
