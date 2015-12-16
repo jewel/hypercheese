@@ -41,7 +41,7 @@
         {
           if @state.expanded && tag.item_count <= 0
             <div>
-              <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)}>
+              <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)} type="button">
                 <i className="fa fa-trash"/>
               </button>
             </div>
