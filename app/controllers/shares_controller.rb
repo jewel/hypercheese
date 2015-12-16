@@ -6,6 +6,11 @@ class SharesController < ApplicationController
     @share = Share.find_by_code( params[:id] )
     @items = @share.items
 
+    @has_video = false
+    @items.each do |item|
+      @has_video = true if item.variety == "video"
+    end
+
     render layout: 'share'
   end
 

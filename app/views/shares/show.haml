@@ -4,7 +4,12 @@
   %a{ :href => "/shares/#{@share.code}/download" }
     Download All
 
+- if @has_video
+  %p
+    Note: Videos do not yet play on this page, but if you use the "Download
+    All" link then you will be able to play them once they have been downloaded
+    onto your computer.
+
 - @items.each do |item|
   %a{:href => item.resized_url(:large)}(data-lightbox="box")>
     %img{:src => item.resized_url(:square)}>
-
