@@ -115,6 +115,8 @@
                     if part.match?
                       tag = part.match
                       tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+                      if tag.icon == null
+                        tagIconURL = "/images/unknown-icon.png"
 
                       <span key={tag.id}>
                         <img className="tag-icon" src={tagIconURL}/>
@@ -144,6 +146,8 @@
             Store.removeTagFromSelection match.tag.id
 
           tagIconURL = "/data/resized/square/#{match.tag.icon}.jpg"
+          if match.tag.icon == null
+            tagIconURL = "/images/unknown-icon.png"
 
           <p className="navbar-text" key={match.tag.id}>
             <img className="tag-icon" src={tagIconURL}/>

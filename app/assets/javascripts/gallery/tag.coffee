@@ -2,6 +2,9 @@
   render: ->
     tag = @props.tag
     tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+    if tag.icon == null
+      tagIconURL = "/images/unknown-icon.png"
+
     classes = ['tag-icon']
     classes.push 'selected' if @props.selected
 

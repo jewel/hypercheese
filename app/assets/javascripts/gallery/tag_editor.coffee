@@ -20,6 +20,8 @@
     tag = @props.tag
 
     tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+    if tag.icon == null
+      tagIconURL = "/images/unknown-icon.png"
 
     classes = ['tag']
     classes.push 'expanded' if @state.expanded

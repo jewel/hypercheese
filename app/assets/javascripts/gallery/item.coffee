@@ -137,6 +137,8 @@
                 tag = Store.state.tagsById[tagId]
                 if tag
                   tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
+                  if tag.icon == null
+                    tagIconUrl = "/images/unknown-icon.png"
                   <img title={tag.label} className="tag-icon" key={tagId} src={tagIconUrl}/>
             }
             {
