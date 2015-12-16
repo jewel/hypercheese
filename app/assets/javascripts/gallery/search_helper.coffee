@@ -68,20 +68,20 @@
           used = {}
           query.tags.map (tag) =>
             used[tag.id] = true
-            removeTag = =>
-              query.tags = query.tags.filter (e) -> e.id != tag.id
-              @setState
-                query: query
-            <Tag tag=tag key={tag.id} selected label onClick={removeTag}/>
-        }
-        {
           Store.state.tags.map (tag) =>
-            return null if used[tag.id]
-            addTag = =>
-              query.tags.push tag
-              @setState
-                query: query
-            <Tag key={tag.id} tag=tag label onClick={addTag}/>
+            selected = used[tag.id]
+            if !used[tag.id]
+              onClick = =>
+                query.tags.push tag
+                @setState
+                  query: query
+            else
+              onClick = =>
+                query.tags = query.tags.filter (e) -> e.id != tag.id
+                @setState
+                  query: query
+
+            <Tag tag=tag key={tag.id} selected={selected} label onClick={onClick}/>
         }
       </div>
     </div>
