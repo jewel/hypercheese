@@ -12,10 +12,14 @@ class TagsController < ApplicationController
     render json: tag.destroy
   end
 
+  def update
+    render json: tag.update(tag_params)
+  end
+
   private
 
   def tag_params
-    params.require(:tag).permit(:label)
+    params.require(:tag).permit(:label, :icon_item_id)
   end
 
   def tag

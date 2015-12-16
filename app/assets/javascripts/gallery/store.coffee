@@ -208,17 +208,29 @@ class @Store
     @state.selectionCount = 0
     @forceUpdate()
 
-  @newTag: (label) ->
+  @newTag: (label, icon) ->
     @jax
       url: "/tags"
       data:
         tag:
           label: label
+          icon_item_id: icon
       type: "POST"
       success: (res) =>
         @state.tags.push res.tag
         @state.tagsById[res.tag.id] = res.tag
         @state.tagsByLabel[res.tag.label.toLowerCase()] = res.tag.label
+        @forceUpdate()
+
+    null
+
+  @updateTag: (tag) ->
+    @jax
+      url: "/tags/#{tag.id}"
+      data:
+        tag: tag
+      type: "PUT"
+      success: (res) =>
         @forceUpdate()
 
     null

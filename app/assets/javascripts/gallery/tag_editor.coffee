@@ -14,7 +14,8 @@
   saveNewLabel: (e) ->
     e.preventDefault()
     @props.tag.label = @state.newLabel
-    Store.forceUpdate()
+    Store.updateTag(@props.tag)
+    @toggleSize()
 
   deleteTag: (tag) ->
     if tag.item_count == null || tag.item_count <= 0
@@ -28,6 +29,7 @@
 
     classes = ['tag']
     classes.push 'expanded' if @state.expanded
+    itemCount = if tag.item_count > 0 then tag.item_count else 0
 
     <div className={classes.join ' '}>
       <a className="expand-link" onClick={@toggleSize} href="javascript:void(0)">
@@ -49,5 +51,5 @@
           <i className="fa fa-save"/>
         </button>
       </form>
-      <span className="desc">{" #{tag.label} (#{tag.item_count}) "}</span>
+      <span className="desc">{" #{tag.label} (#{itemCount}) "}</span>
     </div>
