@@ -31,7 +31,7 @@
       else
         el
 
-    <form className="navbar-form navbar-right" onSubmit={-> false}>
+    <form className="navbar-form navbar-right hidden-xs" onSubmit={-> false}>
       {button @shrink, <i onClick={@shrink} className="fa fa-search-minus"/>}
       {' '}
       {

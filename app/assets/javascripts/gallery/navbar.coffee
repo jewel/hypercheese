@@ -86,6 +86,7 @@
               <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
             </li>
           </ul>
+          <Zoom/>
         </div>
       </nav>
       {
