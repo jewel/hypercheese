@@ -8,9 +8,9 @@ class HomeController < ApplicationController
     # a batch is a group of photos all uploaded from the same source where
     # there is no more than twenty minutes between each photo's upload date.
     events = []
-    events += Item.order('created_at desc').limit(5).to_a
+    # events += Item.order('created_at desc').limit(5).to_a
     # TODO Add Tag change history
-    events += Comment.order('created_at desc').includes(:item, :user).limit(5).to_a
+    events += Comment.order('created_at desc').includes(:item, :user).limit(50).to_a
     events = events.sort_by(&:created_at).reverse
 
     json = {

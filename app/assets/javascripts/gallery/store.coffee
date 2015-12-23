@@ -53,6 +53,16 @@ class @Store
       url: '/activity'
       success: (res) =>
         @loading = false
+        usersById = {}
+        if res.users
+          for user in res.users
+            usersById[user.id] = user
+
+        for activity in res.activity
+          c = activity.comment
+          if c && c.user_id
+            c.user = usersById[c.user_id]
+
         @state.recent = res
         @forceUpdate()
     blank
