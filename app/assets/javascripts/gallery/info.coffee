@@ -6,7 +6,8 @@
     @setState
       newComment: e.target.value
 
-  onComment: ->
+  onComment: (e) ->
+    e.preventDefault()
     Store.newComment @props.item.id, @state.newComment
     @setState
       newComment: ''
@@ -89,9 +90,9 @@
             </small>
           </p>
       }
-      <form key="new" className="comment">
+      <form key="new" className="comment" onSubmit={@onComment}>
         <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
         <br/>
-        <button className="btn btn-default" onClick={@onComment}>Submit</button>
+        <button className="btn btn-default">Submit</button>
       </form>
     </div>
