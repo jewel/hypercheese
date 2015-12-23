@@ -29,6 +29,10 @@
       newTags: e.target.value
       caretPosition: e.target.selectionStart
 
+  moveCaret: (e) ->
+    @setState
+      caretPosition: e.target.selectionStart
+
   addNewTags: (e) ->
     e.preventDefault()
     res = TagMatch.matchMany @state.newTags
@@ -88,52 +92,48 @@
           <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
           <form onSubmit={@addNewTags} style={display: 'inline-block', width: if @state.tagging then '200px' else '120px'}>
-            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text"/>
+            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text" autoFocus onClick={@moveCaret} onKeyUp={@moveCaret}/>
           </form>
 
-          {
-            unless @state.tagging
-              <div className="pull-right">
-                <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
-                  <i className="fa fa-ellipsis-v fa-fw"/>
-                </a>
-                <ul className="dropdown-menu pull-right">
-                  <li>
-                    <a title="Rotate Left" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
-                  </li>
-                  <li>
-                    <a title="Rotate Right" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
-                  </li>
-                </ul>
-                <a title="Share" className="btn navbar-btn pull-right" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
-                <a title="Download" className="btn navbar-btn pull-right" href={downloadLink}><i className="fa fa-download"/></a>
-              </div>
-            else
-              <div>
-                {
-                  tags.map (part) ->
-                    if part.match?
-                      tag = part.match
-                      tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-                      if tag.icon == null
-                        tagIconURL = "/images/unknown-icon.png"
+          <div className="pull-right">
+            <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
+              <i className="fa fa-ellipsis-v fa-fw"/>
+            </a>
+            <ul className="dropdown-menu pull-right">
+              <li>
+                <a title="Rotate Left" href="javascript:void(0)"><i className="fa fa-rotate-right"/> Rotate Left</a>
+              </li>
+              <li>
+                <a title="Rotate Right" href="javascript:void(0)"><i className="fa fa-rotate-left"/> Rotate Right</a>
+              </li>
+            </ul>
+            <a title="Share" className="btn navbar-btn pull-right" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+            <a title="Download" className="btn navbar-btn pull-right" href={downloadLink}><i className="fa fa-download"/></a>
+          </div>
+          <div>
+            {
+              tags.map (part) ->
+                if part.match?
+                  tag = part.match
+                  tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+                  if tag.icon == null
+                    tagIconURL = "/images/unknown-icon.png"
 
-                      <span key={tag.id}>
-                        <img className="tag-icon" src={tagIconURL}/>
-                        {
-                          if part.current
-                            " #{tag.label}"
-                        }
-                      </span>
-                    else
-                      <span key={part.miss}>
-                        <strong>
-                          <i className="fa fa-exclamation-circle"/> {part.miss}
-                        </strong>
-                      </span>
-                }
-              </div>
-          }
+                  <span key={tag.id}>
+                    <img className="tag-icon" src={tagIconURL}/>
+                    {
+                      if part.current
+                        " #{tag.label}"
+                    }
+                  </span>
+                else
+                  <span key={part.miss}>
+                    <strong>
+                      <i className="fa fa-exclamation-circle"/> {part.miss}
+                    </strong>
+                  </span>
+            }
+          </div>
         </div>
       </nav>
     </div>
