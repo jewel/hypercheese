@@ -18,7 +18,7 @@
                 <a href="#/items/#{comment.item_id}">
                   <img src="/data/resized/square/#{comment.item_id}.jpg" />
                 </a>
-                {comment.text}<br/>
+                <span className="text">{comment.text}</span><br/>
                 <em>&mdash; {comment.user.name}, {comment.created_at}</em>
               </p>
         }
