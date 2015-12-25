@@ -11,37 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151224155156) do
+ActiveRecord::Schema.define(version: 20151225062740) do
 
   create_table "comments", force: :cascade do |t|
     t.text     "text"
     t.integer  "user_id"
     t.integer  "item_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "comments", ["item_id"], name: "index_comments_on_item_id"
 
   create_table "events", force: :cascade do |t|
-    t.string   "name",        limit: 255
+    t.string   "name"
     t.datetime "start"
     t.datetime "finish"
     t.text     "description"
     t.integer  "location_id"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "groups", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "item_paths", force: :cascade do |t|
-    t.string  "path",    limit: 255
+    t.string  "path"
     t.integer "item_id"
   end
+
+  add_index "item_paths", ["item_id"], name: "index_item_paths_on_item_id"
+  add_index "item_paths", ["path"], name: "index_item_paths_on_path", unique: true
 
   create_table "item_tags", force: :cascade do |t|
     t.integer  "item_id"
@@ -56,26 +59,26 @@ ActiveRecord::Schema.define(version: 20151224155156) do
   create_table "items", force: :cascade do |t|
     t.datetime "taken"
     t.text     "description"
-    t.string   "md5",         limit: 255
+    t.string   "md5"
     t.integer  "width"
     t.integer  "height"
     t.integer  "view_count"
     t.integer  "event_id"
     t.integer  "group_id"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.datetime "deleted_at"
-    t.string   "variety",     limit: 255
-    t.boolean  "deleted",                 default: false, null: false
+    t.string   "variety"
+    t.boolean  "deleted",     default: false, null: false
   end
 
   add_index "items", ["md5"], name: "index_items_on_md5", unique: true
   add_index "items", ["taken"], name: "index_items_on_taken"
 
   create_table "locations", force: :cascade do |t|
-    t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "share_items", force: :cascade do |t|
@@ -85,38 +88,38 @@ ActiveRecord::Schema.define(version: 20151224155156) do
 
   create_table "shares", force: :cascade do |t|
     t.integer "user_id"
-    t.string  "code",    limit: 255, null: false
+    t.string  "code",    null: false
   end
 
   create_table "tags", force: :cascade do |t|
-    t.string   "label",         limit: 255
+    t.string   "label"
     t.datetime "birthday"
     t.integer  "item_count"
     t.integer  "icon_item_id"
     t.integer  "parent_tag_id"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "tags", ["label"], name: "index_tags_on_label"
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  limit: 255, default: "", null: false
-    t.string   "encrypted_password",     limit: 255, default: "", null: false
-    t.string   "reset_password_token",   limit: 255
+    t.string   "email",                  default: "", null: false
+    t.string   "encrypted_password",     default: "", null: false
+    t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                      default: 0
+    t.integer  "sign_in_count",          default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip",     limit: 255
-    t.string   "last_sign_in_ip",        limit: 255
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "role",                   limit: 255
-    t.string   "provider",               limit: 255
-    t.string   "uid",                    limit: 255
-    t.string   "name",                   limit: 255
+    t.string   "role"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "name"
     t.string   "username"
   end
 
