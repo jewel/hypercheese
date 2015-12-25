@@ -2,7 +2,7 @@ require 'exifr'
 require 'digest/md5'
 require 'pathname'
 require 'shellwords'
-require_relative 'avprobe'
+require_relative 'probe'
 require_relative 'scaler'
 
 module Import
@@ -211,7 +211,7 @@ module Import
     total = grid_w * grid_h
     gap = info[:duration] / total
 
-    run "avconv -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%03d.bmp"
+    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%03d.bmp"
 
     run "montage #{se tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{se tmp}/grid.jpg"
     FileUtils.mkdir_p File.dirname( dest )
@@ -237,10 +237,10 @@ module Import
     Dir.mkdir( tmp )
     tmp_file = "#{tmp}/snapshot.bmp"
 
-    run "avconv -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 2 -y #{se tmp_file}"
+    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 2 -y #{se tmp_file}"
     if !File.exists?(tmp_file)
       warn "Error making thumbnail for #{item.full_path}, trying at zero second mark"
-      run "avconv -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 0 -y #{se tmp_file}"
+      run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -vframes 1 -ss 0 -y #{se tmp_file}"
     end
 
     raise "Error making thumbnail for #{item.full_path}" unless File.exists? tmp_file
@@ -346,8 +346,8 @@ module Import
 
     res = "1280x720"
 
-    run "avconv -i #{se path} -pass 1 -pre:v slower_firstpass -b:v 3000k -strict experimental -s #{res} -an -vcodec libx264 -f mp4 -y /dev/null"
-    run "avconv -i #{se path} -pass 2 -pre:v slower -b:v 3000k -b:a 128k -ar 48000 -strict experimental -s #{res} -acodec aac -vcodec libx264 -f mp4 -y #{se tmp}"
+    run "ffmpeg -i #{se path} -pass 1 -preset veryslow -b:v 3000k -strict experimental -s #{res} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
+    run "ffmpeg -i #{se path} -pass 2 -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -s #{res} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
 
     File.rename tmp, dest
   end
