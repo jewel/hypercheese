@@ -16,6 +16,7 @@ module Import
     'mpg' => 'video',
     'mts' => 'video',
     'mp4' => 'video',
+    'mkv' => 'video',
   }
 
   def self.check_dependencies
@@ -72,6 +73,7 @@ module Import
         warn "#{partial_path} has same MD5 as #{old.paths.size} other files"
         item_path = ItemPath.new item: old, path: partial_path
         item_path.save
+
         return
       end
       warn "Creating #{partial_path}"
@@ -191,7 +193,7 @@ module Import
     return if File.exists? dest
 
     puts "Generated Exploded for #{item.full_path}"
-    tmp = "/tmp/make-exploded.#$$"
+    tmp = "/tmp/make-exploded.#$$.#{rand 1_000_000}"
 
     Dir.mkdir tmp
     info = Probe.video item.full_path
@@ -210,6 +212,7 @@ module Import
 
     total = grid_w * grid_h
     gap = info[:duration] / total
+    warn "gap will be #{gap.inspect}"
 
     run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%03d.bmp"
 
@@ -276,6 +279,7 @@ module Import
       File.unlink temp
 
       raise "Could not composite video frame" unless File.exist? dest
+      File.chmod 0644, dest
     end
 
     File.unlink tmp_file
@@ -312,8 +316,10 @@ module Import
     if size == :large
       run "jpegtran -progressive #{se temp} > #{se temp}P"
       File.unlink temp
+      File.chmod 0644, temp + "P"
       File.rename temp + "P", dest
     else
+      File.chmod 0644, temp
       File.rename temp, dest
     end
   end
@@ -335,7 +341,6 @@ module Import
     rotation = read_rotation path
 
     dimension = "height"
-    size = 480
 
     if rotation && rotation != 0
       raise "Rotation not yet supported"
@@ -344,11 +349,14 @@ module Import
     FileUtils.mkdir_p File.dirname( dest )
     tmp = "#{dest}.tmp"
 
-    res = "1280x720"
+    info = Probe.video path
+    height = [720, info[:height]].min
+    rate = [60, info[:rate]].min
 
-    run "ffmpeg -i #{se path} -pass 1 -preset veryslow -b:v 3000k -strict experimental -s #{res} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
-    run "ffmpeg -i #{se path} -pass 2 -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -s #{res} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
+    run "ffmpeg -i #{se path} -pass 1 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -strict experimental -vf scale=-1:#{height} -r #{rate} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
+    run "ffmpeg -i #{se path} -pass 2 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -vf scale=-1:#{height} -r #{rate} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
 
+    File.chmod 0644, tmp
     File.rename tmp, dest
   end
 

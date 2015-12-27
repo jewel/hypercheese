@@ -16,8 +16,14 @@ module Probe
       info[:height] = stream[:height].to_i
       info[:duration] = parse_duration stream[:duration]
       info[:codec] = stream[:codec_name]
+      rate = stream[:r_frame_rate].split( '/' )
+      info[:rate] = Rational(rate.first) / Rational(rate.second)
 
       break # use first video stream only
+    end
+
+    if (!info[:duration] || info[:duration] == 0.0) && data[:format] && data[:format][:duration]
+      info[:duration] = parse_duration data[:format][:duration]
     end
 
     return info

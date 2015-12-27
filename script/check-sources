@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+#
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+# Check sources to see how long it has been since the last upload.
+
+include ActionView::Helpers::DateHelper
+
+data = ActiveRecord::Base.connection.execute "
+  SELECT label source, MAX(taken) latest FROM items
+  JOIN item_paths ON items.id = item_paths.item_id
+  JOIN sources ON item_paths.path LIKE CONCAT(sources.path, '/%')
+  GROUP BY 1
+  ORDER BY 2 DESC
+  "
+
+data.each do |row|
+  puts "#{sprintf "%-15s", row.source} #{time_ago_in_words row.latest} ago"
+end

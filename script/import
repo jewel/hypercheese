@@ -46,7 +46,7 @@ Find.find( "#{dir}" ) do |path|
     next
   end
 
-  next unless path =~ /\.(JPE?G|MOV|AVI|TIFF?|MTS|MP4)\Z/i
+  next unless path =~ /\.(JPE?G|MOV|AVI|TIFF?|MTS|MP4|MKV)\Z/i
 
   next if check_exclude_regex(path)
 

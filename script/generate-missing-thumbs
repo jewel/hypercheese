@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
@@ -7,11 +7,8 @@ Rails.application.require_environment!
 
 require_dependency 'import'
 
-items = Item.where( deleted: false ).select([:id, :variety]).to_a
-
+items = Item.where(:deleted => 0)
 puts "#{items.count} items"
-
-Dir.chdir Rails.root
 
 def read_assets name, ext
   files = Dir.glob "public/data/resized/#{name}/*#{ext}"
@@ -50,7 +47,7 @@ puts "Missing exploded: #{missing_exploded.size}"
 errors = {}
 
 (missing_square + missing_large + missing_mp4 + missing_exploded).sort.uniq.reverse.each do |item_id|
-  puts "Fixing http://hypercheese.com/item/view/#{item_id}"
+  puts "Fixing http://hypercheese.com/#/items/#{item_id}"
 
   item = Item.find item_id
   begin
@@ -64,7 +61,7 @@ end
 warn ""
 warn "#{errors.size} errors"
 errors.each do |item_id,paths|
-  warn "http://hypercheese.com/item/view/#{item_id}"
+  warn "http://hypercheese.com/#/items/#{item_id}"
   paths.each do |path|
     warn "  originals/#{path.path}"
   end
