@@ -18,5 +18,5 @@ data = ActiveRecord::Base.connection.execute "
   "
 
 data.each do |row|
-  puts "#{sprintf "%-15s", row.source} #{time_ago_in_words row.latest} ago"
+  puts "#{sprintf "%-15s", row.first} #{time_ago_in_words row.last} ago"
 end
