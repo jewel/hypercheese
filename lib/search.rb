@@ -28,7 +28,7 @@ class Search
   def execute
     return if @executed
 
-    filter = { deleted: false }
+    items = Item.where deleted: false
 
     query = @query.dup
 
@@ -40,19 +40,27 @@ class Search
 
     case opts[:orientation] || opts[:orient]
     when /^land/
-      filter << [ 'height < width' ]
+      items = items.where 'height < width'
     when /^port/
-      filter << [ 'height > width' ]
+      items = items.where 'height > width'
     when /^square/
-      filter << [ 'height = width' ]
+      items = items.where 'height = width'
     else
     end
 
-    if opts[:type]
-      filter << [:type, opts[:type].downcase]
+    query.gsub! /\bvideos?\b/ do
+      opts[:type] = 'video'
+      ''
     end
 
-    items = Item.where filter
+    query.gsub! /\bphotos?\b/ do
+      opts[:type] = 'photo'
+      ''
+    end
+
+    if opts[:type]
+      items = items.where variety: opts[:type].downcase
+    end
 
     query.gsub! /^\s+/, ''
     query.gsub! /\s+$/, ''
