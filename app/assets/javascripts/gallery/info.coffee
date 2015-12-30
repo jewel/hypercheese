@@ -86,7 +86,7 @@
             {comment.text}<br/>
             <small>
               <strong>{comment.user.name}</strong> &mdash;
-              <em>{comment.created_at}</em>
+              <em>{new Date(comment.created_at).toLocaleString()}</em>
             </small>
           </p>
       }

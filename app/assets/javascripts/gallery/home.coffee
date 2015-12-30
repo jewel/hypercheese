@@ -19,7 +19,7 @@
                   <img src="/data/resized/square/#{comment.item_id}.jpg" />
                 </a>
                 <span className="text">{comment.text}</span><br/>
-                <em>&mdash; {comment.user.name}, {comment.created_at}</em>
+                <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
               </p>
         }
       </div>
