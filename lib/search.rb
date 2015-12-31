@@ -178,7 +178,7 @@ class Search
       source = Source.where( label: opts[:source] ).first
       source ||= Source.where( path: opts[:source] ).first
       if source
-        items = items.all :conditions => [ 'id in ( select item_id from item_paths where path like ?)', "#{source.path}/%" ]
+        items = items.where 'id in ( select item_id from item_paths where path like ?)', "#{source.path}/%"
       else
         @invalid << "source:#{opts[:source]}"
       end
