@@ -70,11 +70,12 @@ class ItemsController < ApplicationController
       items.each do |item|
         tags.each do |tag|
           next if item.tags.member? tag
-          item.tags.push tag
           ItemTag.create item: item, tag: tag, added_by: current_user_id
         end
       end
     end
+
+    items = Item.find item_tag_params[:items]
 
     render json: items, each_serializer: ItemSerializer
   end
