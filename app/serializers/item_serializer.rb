@@ -7,6 +7,10 @@ class ItemSerializer < ActiveModel::Serializer
   end
 
   def starred
-    object.starred_by.member? scope
+    if scope
+      object.stars.select { |_| _.user_id == scope.id }.any?
+    else
+      false
+    end
   end
 end

@@ -31,7 +31,7 @@ class ItemsController < ApplicationController
 
     subset = ids.slice offset, limit
 
-    res = Item.includes(:comments, :tags).find subset
+    res = Item.includes(:comments, :tags, :stars).find subset
 
     # `find` returns unordered, sort according to desired order
     items_by_id = {}
