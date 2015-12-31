@@ -75,7 +75,8 @@ class ItemsController < ApplicationController
       end
     end
 
-    items.reload
+    # reload to refresh new associations
+    items = Item.includes(:tags).find item_tag_params[:items]
 
     render json: items, each_serializer: ItemSerializer
   end
