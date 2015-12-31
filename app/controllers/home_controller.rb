@@ -14,11 +14,14 @@ class HomeController < ApplicationController
     events += Star.includes(:item, :user).where('created_at > ?', 90.days.ago).to_a
     events = events.sort_by(&:created_at).reverse
 
+    sources = Source.where show_on_home: true
+    sources = ActiveModel::ArraySerializer.new sources, each_serializer: SourceSerializer
 
     json = {
       activity: events,
       users: [],
       items: [],
+      sources: sources
     }
     json[:activity].map! do |event|
       case event

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151231202527) do
+ActiveRecord::Schema.define(version: 20151231231251) do
 
   create_table "comments", force: :cascade do |t|
     t.text     "text"
@@ -92,8 +92,9 @@ ActiveRecord::Schema.define(version: 20151231202527) do
   end
 
   create_table "sources", force: :cascade do |t|
-    t.string "label"
-    t.string "path"
+    t.string  "label"
+    t.string  "path"
+    t.boolean "show_on_home", default: true, null: false
   end
 
   create_table "stars", force: :cascade do |t|

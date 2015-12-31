@@ -11,6 +11,7 @@ class @SearchQuery
     month: true
     orientation: true
     type: true
+    source: true
 
   parse: (str) ->
     @options = {}
