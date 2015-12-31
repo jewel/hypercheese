@@ -10,8 +10,10 @@ class HomeController < ApplicationController
     events = []
     # events += Item.order('created_at desc').limit(5).to_a
     # TODO Add Tag change history
-    events += Comment.order('created_at desc').includes(:item, :user).limit(50).to_a
+    events += Comment.includes(:item, :user).where('created_at > ?', 90.days.ago).to_a
+    events += Star.includes(:item, :user).where('created_at > ?', 90.days.ago).to_a
     events = events.sort_by(&:created_at).reverse
+
 
     json = {
       activity: events,
@@ -24,15 +26,20 @@ class HomeController < ApplicationController
         ItemSerializer.new(event).as_json
       when Comment
         comment = CommentSerializer.new(event).as_json
-        comment.delete :users
+        comment.delete "users"
         json[:users].push event.user
         json[:items].push event.item
         comment
+      when Star
+        star = StarSerializer.new(event).as_json
+        star.delete "users"
+        json[:users].push event.user
+        json[:items].push event.item
+        star
       end
     end
-    json[:users].map { |_| UserSerializer.new(_).as_json[:user] }
     json[:users].uniq!
-    json[:items].map { |_| ItemSerializer.new(_).as_json[:item] }
+    json[:items].uniq!
 
     render json: json
   end

@@ -8,6 +8,9 @@
     @setState
       showInfo: !@state.showInfo
 
+  onStar: (e) ->
+    Store.toggleItemStar @props.itemId
+
   fullscreenFunctions: [
       'requestFullscreen'
       'mozRequestFullScreen'
@@ -223,12 +226,13 @@
                 if tag
                   <Tag key={tag.id} tag=tag />
           }
-          <a className="control" href="javascript:void(0)" onClick={@onStar}>
+          <a className="control star" href="javascript:void(0)" onClick={@onStar}>
             {
-              if @props.itemId % 2 == 0
-                <i className="fa fa-star-o fa-fw"/>
-              else
-                <i className="fa fa-star fa-fw"/>
+              if item
+                if item.starred
+                  <i className="fa fa-star fa-fw"/>
+                else
+                  <i className="fa fa-star-o fa-fw"/>
             }
           </a>
           {

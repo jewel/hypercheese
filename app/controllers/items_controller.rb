@@ -75,7 +75,7 @@ class ItemsController < ApplicationController
       end
     end
 
-    items = Item.find item_tag_params[:items]
+    items.reload
 
     render json: items, each_serializer: ItemSerializer
   end
@@ -95,6 +95,20 @@ class ItemsController < ApplicationController
     render json: items, each_serializer: ItemSerializer
   end
 
+  def toggle_star
+    @item = Item.includes(:stars).find params[:item_id].to_i
+    star = @item.stars.where(user_id: current_user.id).first
+    if star
+      star.delete
+    else
+      @item.starred_by.push current_user
+    end
+
+    @item.reload
+
+    render json: @item, serializer: ItemSerializer
+  end
+
   def download
     ids = params[:ids].split(/,/).map { |_| _.to_i }
     items = Item.where id: ids
@@ -103,7 +117,7 @@ class ItemsController < ApplicationController
 
   # GET /items/:id/details
   def details
-    @item = Item.includes(:comments).find params[:item_id].to_i
+    @item = Item.includes(:comments, :stars).find params[:item_id].to_i
     render json: @item, serializer: ItemDetailsSerializer
   end
 

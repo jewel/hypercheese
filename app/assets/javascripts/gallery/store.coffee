@@ -62,6 +62,9 @@ class @Store
           c = activity.comment
           if c && c.user_id
             c.user = usersById[c.user_id]
+          s = activity.star
+          if s && s.user_id
+            s.user = usersById[s.user_id]
 
         @state.recent = res
         @forceUpdate()
@@ -94,16 +97,16 @@ class @Store
     return null unless item
     item.index
 
-  @getDetails: (itemId) ->
+  @getDetails: (itemId, force=false) ->
     return if !itemId
 
     item = @getItem itemId
-    blank = { comments: [], paths: [], ages: {} }
+    blank = { comments: [], paths: [], ages: {}, stars: [] }
     if !item
       return blank
 
     details = @state.details[itemId]
-    if details?
+    if details? && !force
       return details
 
     return blank if @loading
@@ -122,6 +125,10 @@ class @Store
           for user in res.users
             usersById[user.id] = user
 
+        if res.starred_by
+          for user in res.starred_by
+            usersById[user.id] = user
+
         commentsById = {}
         for comment in res.comments
           comment.user = usersById[comment.user_id]
@@ -131,6 +138,10 @@ class @Store
 
         for comment_id in details.comment_ids
           details.comments.push commentsById[comment_id]
+
+        details.stars = []
+        for user_id in details.starred_by_ids
+          details.stars.push usersById[user_id]
 
         @state.details[itemId] = details
         @forceUpdate()
@@ -310,6 +321,16 @@ class @Store
       type: "POST"
       success: (res) =>
         @_ingestItemUpdates res.items
+        @forceUpdate()
+
+  @toggleItemStar: (itemId) ->
+    @jax
+      url: "/items/#{itemId}/toggle_star"
+      type: "POST"
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
+        if @state.details[itemId]
+          @getDetails itemId, true
         @forceUpdate()
 
   @setZoom: (level) ->

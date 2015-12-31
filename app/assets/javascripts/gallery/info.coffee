@@ -31,29 +31,33 @@
           {fact 'calendar', details.taken}
           {fact 'camera', details.camera}
           {fact 'location-arrow', details.location}
-          <tr key='folder-o'>
+          <tr>
             <th><i className="fa fa-folder-o"/></th>
             <td>
               {
-                first = true
                 details.paths.map (path) =>
-                  f = first
-                  first = false
-
                   <div key={path}>
                     {path}
-                    {' '}
-                    {
-                      if f
-                        <a href="/items/download?ids=#{@props.item.id}">
-                          <i className="fa fa-download"/>
-                        </a>
-                    }
+                  </div>
+              }
+              <div>
+                <a href="/items/download?ids=#{@props.item.id}">
+                  <i className="fa fa-download"/> Download
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th><i className="fa fa-star-o"/></th>
+            <td>
+              {
+                details.stars.map (user) =>
+                  <div key={user.id}>
+                    {user.name || "user ##{user.id}"}
                   </div>
               }
             </td>
           </tr>
-          {fact 'star-o', 'John'}
         </tbody>
       </table>
       {

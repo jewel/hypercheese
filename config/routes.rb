@@ -38,6 +38,7 @@ HyperCheese::Application.routes.draw do
       get :download
     end
     get :details
+    post :toggle_star
   end
 
   resources :comments

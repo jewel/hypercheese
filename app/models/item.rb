@@ -3,6 +3,8 @@ class Item < ActiveRecord::Base
   has_many :tags, through: :item_tags
   has_many :comments
   has_many :item_paths
+  has_many :stars
+  has_many :starred_by, through: :stars, source: :user
   belongs_to :group
   belongs_to :event
 

@@ -44,7 +44,6 @@
 .details-window .control
   :font-size 5vh
   :color white
-  :text-shadow 0 0 2vh black
   :text-decoration none
   :display flex
   :align-items center
@@ -52,6 +51,9 @@
   :outline none
   :opacity 0
   :transition opacity 0.5s
+
+  i
+    :text-shadow 0 0 2vh black
 
   &:hover
     :opacity 1
@@ -92,6 +94,18 @@
   :opacity 0
   :background-color rgba(0,0,0,0.3)
   :transition opacity 0.5s
+
+  .control.star i
+
+    &.fa-star-o
+      :transform rotate(0deg)
+      :transition color 2s, text-shadow 2s
+
+    &.fa-star
+      :transform rotate(720deg)
+      :transition transform 2s, color 2s, text-shadow 2s
+      :color #fc0
+      :text-shadow 0 0 2vh #fc0
 
   .tag-icon
     :height 6vh
