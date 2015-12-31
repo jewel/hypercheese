@@ -115,17 +115,6 @@
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>
       {
-        if @props.imageWidth >= 120 || selected || Store.state.selecting
-          <a href="javascript:void(0)" onClick={@onSelect} className="checkmark">
-            {
-              if selected
-                <i className="fa fa-check-square-o"/>
-              else
-                <i className="fa fa-square-o"/>
-            }
-          </a>
-      }
-      {
         if @props.showTagbox
           <div className="tagbox">
             {

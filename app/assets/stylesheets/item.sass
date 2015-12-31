@@ -31,27 +31,17 @@
     :box-sizing content-box
     :object-fit contain
 
-  &:hover, &.selecting
-    .checkmark
-      :opacity 0.5
-
   &.selected
     :background #09f
 
     img.thumb
       :opacity 0.7
 
-    .checkmark
-      :opacity 1
-
   &.dragging
     :background #fc0
 
     img.thumb
       :opacity 0.7
-
-    .checkmark
-      :opacity 1
 
   @keyframes highlight
     from
@@ -70,14 +60,3 @@
       :animation-name highlight-opacity
       :animation-iteration-count 1
       :animation-duration 10s
-
-  .checkmark
-    :color white
-    :font-size 30px
-    :text-shadow 0 0 4px black
-    :position absolute
-    :left 20px
-    :top 20px
-    :opacity 0
-    :outline 0
-    :text-decoration none
