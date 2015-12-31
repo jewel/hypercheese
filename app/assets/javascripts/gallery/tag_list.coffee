@@ -8,6 +8,7 @@
 
   filterTest: (tag) ->
     for part in @state.filter.split(/\s+/)
+      part = part.toLowerCase()
       return false if tag.label.toLowerCase().indexOf(part) == -1
 
     true
