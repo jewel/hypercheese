@@ -17,6 +17,7 @@ module Import
     'mts' => 'video',
     'mp4' => 'video',
     'mkv' => 'video',
+    'vob' => 'video',
   }
 
   def self.check_dependencies
