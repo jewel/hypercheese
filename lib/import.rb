@@ -141,7 +141,9 @@ module Import
   def self.load_metadata item, path, type
     begin
       exif = EXIFR::JPEG.new path
-      item.taken = exif.date_time if exif.date_time
+      item.taken = exif.date_time_original if exif.date_time_original
+      item.taken ||= exif.date_time_digitized if exif.date_time_digitized
+      item.taken ||= exif.date_time if exif.date_time
       if exif.orientation.to_i > 4
         item.height = exif.width
         item.width = exif.height
