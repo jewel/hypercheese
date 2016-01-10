@@ -1,0 +1,17 @@
+#!/usr/bin/ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+count = 0
+Tag.all.each do |tag|
+  old = tag.item_count || 0
+  tag.item_count = tag.items.count
+  next if old == tag.item_count
+  count += tag.item_count - old
+  puts "#{tag.label}: #{old < tag.item_count ? '+' : '-'}#{(old-tag.item_count).abs}"
+  tag.save
+end
+puts "Total changes: #{count}"

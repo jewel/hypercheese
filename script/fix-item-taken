@@ -1,0 +1,24 @@
+#!/usr/bin/ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require_dependency 'import'
+
+STDOUT.sync = 1
+
+# This isn't usually necessary because the mtime will be preserved
+ItemPath.where("path LIKE 'jill/Pictures/2015%'").each do |itempath|
+  print "#{itempath.path}      \r"
+  item = itempath.item
+  next if item.deleted
+  old_date = item.taken
+  # FIXME load_metadata doesn't include mtime!
+  Import.load_metadata item, itempath.full_path, item.variety
+  if old_date != item.taken
+    puts "#{itempath.path} #{old_date} #{item.taken}"
+    # item.save
+  end
+end
