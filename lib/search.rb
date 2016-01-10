@@ -113,7 +113,7 @@ class Search
 
     months.each_with_index do |month,index|
       month_num = (index % 12) + 1
-      query.gsub! /\b#{month}\b/ do
+      query.gsub! /\b#{month}\b/i do
         opts[:month] ||= []
         opts[:month] << month_num
         ''
