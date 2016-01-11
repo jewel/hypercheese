@@ -14,6 +14,11 @@ class @Store
         @_updateTagIndexes()
         @forceUpdate()
 
+    if document.documentElement.clientWidth > 960
+      defaultZoom = 7
+    else
+      defaultZoom = 5
+
     @state =
       tags: []
       tagsById: {}
@@ -31,7 +36,7 @@ class @Store
       dragEnd: null
       dragLeftStart: false
       dragging: {}
-      zoom: 5
+      zoom: defaultZoom
       selecting: false
       lastScrollPosition: null
       highlight: null
