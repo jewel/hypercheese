@@ -79,7 +79,10 @@
       height: "#{@props.imageHeight}px"
 
     size = if @props.imageWidth > 400
-      "large"
+      if item.variety == 'video'
+        "exploded"
+      else
+        "large"
     else
       "square"
 
