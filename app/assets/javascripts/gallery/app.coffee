@@ -56,6 +56,8 @@
   render: ->
     selection = Store.state.selectionCount > 0 || Store.state.selecting
     item = @state.itemId != null
+    if item && !Store.state.selection[@state.itemId]
+      selection = false
 
     # The overflow-y parameter on the html tag needs to be set BEFORE
     # Results.initialState is called.  That's because having a scrollbar appear
@@ -80,7 +82,7 @@
         if !item && !selection
           <NavBar initialSearch={@state.search} showZoom={true}/>
         else if selection
-          <SelectBar showZoom={!item}/>
+          <SelectBar showZoom={!item} fixed={!item}/>
       }
       {
         if item

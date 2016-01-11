@@ -83,9 +83,18 @@
 
     tags = TagMatch.matchMany @state.newTags, @state.caretPosition
 
+    classes = ['navbar']
+    if @props.fixed
+      classes.push 'navbar-fixed-top'
+    else
+      classes.push 'navbar-static-top'
+
     <div>
-      <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
-      <nav id="select-navbar" className="navbar navbar-fixed-top">
+      {
+        if @props.fixed
+          <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
+      }
+      <nav id="select-navbar" className={classes.join ' '}>
         <div className="container-fluid">
           <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
