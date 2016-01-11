@@ -3,7 +3,7 @@
     newTags: ''
     caretPosition: 0
     tagging: false
-    showTagLabels: false
+    showTagLabel: null
 
   startTagging: ->
     @setState
@@ -12,10 +12,6 @@
   stopTagging: ->
     @setState
       tagging: false
-
-  toggleTagLabels: ->
-    @setState
-      showTagLabels: !@state.showTagLabels
 
   clearSelection: (e) ->
     Store.clearSelection()
@@ -28,10 +24,12 @@
     @setState
       newTags: e.target.value
       caretPosition: e.target.selectionStart
+      showTagLabel: null
 
   moveCaret: (e) ->
     @setState
       caretPosition: e.target.selectionStart
+      showTagLabel: null
 
   addNewTags: (e) ->
     e.preventDefault()
@@ -112,6 +110,36 @@
           </div>
           <div>
             {
+              @selectedTags().map (match) =>
+                tag = match.tag
+
+                del = ->
+                  Store.removeTagFromSelection tag.id
+
+                select = =>
+                  if @state.showTagLabel == tag.id
+                    @setState
+                      showTagLabel: null
+                  else
+                    @setState
+                      showTagLabel: tag.id
+
+                tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+                if tag.icon == null
+                  tagIconURL = "/images/unknown-icon.png"
+
+                <span key={tag.id}>
+                  <img title={tag.label} className="tag-icon" onClick={select} src={tagIconURL}/>
+                  {
+                    if @state.showTagLabel == tag.id
+                      <span>
+                        {" #{tag.label} (#{match.count}) "}
+                        <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+                      </span>
+                  }
+                </span>
+            }
+            {
               tags.map (part) ->
                 if part.match?
                   tag = part.match
@@ -120,7 +148,7 @@
                     tagIconURL = "/images/unknown-icon.png"
 
                   <span key={tag.id}>
-                    <img className="tag-icon" src={tagIconURL}/>
+                    <img title={tag.label} className="tag-icon" src={tagIconURL}/>
                     {
                       if part.current
                         " #{tag.label}"
@@ -138,26 +166,3 @@
       </nav>
     </div>
 
-  bender: ->
-    <div onClick={@toggleTagLabels}>
-      {
-        @selectedTags().map (match) =>
-          del = ->
-            Store.removeTagFromSelection match.tag.id
-
-          tagIconURL = "/data/resized/square/#{match.tag.icon}.jpg"
-          if match.tag.icon == null
-            tagIconURL = "/images/unknown-icon.png"
-
-          <p className="navbar-text" key={match.tag.id}>
-            <img className="tag-icon" src={tagIconURL}/>
-            {
-              if @state.showTagLabels
-                <span>
-                  {" #{match.tag.label} (#{match.count}) "}
-                  <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
-                </span>
-            }
-          </p>
-      }
-    </div>
