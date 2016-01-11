@@ -1,9 +1,12 @@
 class @TagMatch
   @matchOne: (str) ->
+    clean = (str) ->
+      str.replace( ' ', '' ).toLowerCase()
+
     return null if str == ''
 
     for tag in Store.state.tags
-      continue unless tag.label.toLowerCase().indexOf( str.toLowerCase() ) == 0
+      continue unless clean(tag.label).indexOf( clean(str) ) == 0
       return tag
 
     return null
@@ -21,10 +24,7 @@ class @TagMatch
 
     results = []
 
-    if str.indexOf(',') != -1
-      parts = str.split /,\ */
-    else
-      parts = str.split( /\ +/ )
+    parts = str.split( /\ +/ )
 
     pos = 0
     for part in parts
