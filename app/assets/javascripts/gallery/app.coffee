@@ -14,78 +14,93 @@
     hash = window.location.hash.substr(1)
     if hash == '' || hash == '/'
       return {
-        home: true
-        tags: false
+        page: 'home'
       }
 
     parts = hash.split('/')
     if parts.length == 1 || parts[0] != ''
       console.warn "Invalid URL: #{hash}"
       return {
-        home: true
+        page: 'home'
       }
 
     if parts[1] == 'items'
       return {
+        page: 'item'
         itemId: Math.round(parts[2])
-        tags: false
-        home: false
+      }
+
+    if parts[1] == 'tags' && parts[2]
+      return {
+        page: 'tag'
+        tagId: parts[2]
       }
 
     if parts[1] == 'tags'
       return {
-        tags: true
-        home: false
+        page: 'tags'
       }
 
     if parts[1] == 'search'
       str = decodeURI parts[2]
       Store.search str
       return {
-        itemId: null
+        page: 'search'
         search: str
-        tags: false
-        home: false
       }
 
     console.warn "Invalid URL: #{hash}"
     return {
-      home: true
+      page: 'home'
     }
 
   render: ->
-    selection = Store.state.selectionCount > 0 || Store.state.selectMode
-    item = @state.itemId != null
-    if item && !Store.state.selection[@state.itemId]
-      selection = false
+    if @state.page == 'home'
+      return <div><NavBar initialSearch={@state.search}/><Home/></div>
+
+    if @state.page == 'tags'
+      return <TagList/>
+
+    if @state.page == 'tag'
+      tag = Store.state.tagsById[@state.tagId]
+      if !tag
+        if Store.state.tags.length > 0
+          return <h1>Tag not found</h1>
+        else
+          return <div>Loading...</div>
+
+      return <TagEditor tag={tag}/>
+
+    unless @state.page == 'item' || @state.page == 'search'
+      return <div>Routing error for {@state.page}</div>
+
+    showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
+    showItem = @state.page == 'item' && @state.itemId != null
+    if showItem && !Store.state.selection[@state.itemId]
+      showSelection = false
 
     # The overflow-y parameter on the html tag needs to be set BEFORE
     # Results.initialState is called.  That's because having a scrollbar appear
     # doesn't cause a resize event to fire (and even if it did, it'd be too
     # late to properly calculate our desired scroll position)
-    document.documentElement.style.overflowY = if item
+    document.documentElement.style.overflowY = if showItem
       'auto'
     else
       'scroll'
 
     classes = ['react-wrapper']
-    classes.push 'showing-details' if item
+    classes.push 'showing-details' if showItem
 
-    if @state.tags
-      return <TagList/>
-
-    if @state.home
-      return <div><NavBar initialSearch={@state.search}/><Home/></div>
 
     <div className={classes.join ' '}>
       {
-        if !item && !selection
+        if !showItem && !showSelection
           <NavBar initialSearch={@state.search} showZoom={true}/>
-        else if selection
-          <SelectBar showZoom={!item} fixed={!item}/>
+        else if showSelection
+          <SelectBar showZoom={!showItem} fixed={!showItem}/>
       }
       {
-        if item
+        if showItem
           <Details itemId={@state.itemId} search={@state.search}/>
         else
           <Results/>

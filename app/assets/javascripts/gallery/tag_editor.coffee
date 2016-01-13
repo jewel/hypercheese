@@ -1,11 +1,6 @@
 @TagEditor = React.createClass
   getInitialState: ->
-    expanded: false
     newLabel: @props.tag.label
-
-  toggleSize: ->
-    @setState
-      expanded: !@state.expanded
 
   changeLabel: (e) ->
     @setState
@@ -15,33 +10,31 @@
     e.preventDefault()
     @props.tag.label = @state.newLabel
     Store.updateTag(@props.tag)
-    @toggleSize()
 
   deleteTag: (tag) ->
     if tag.item_count == null || tag.item_count <= 0
-      @toggleSize()
       Store.deleteTag(tag.id)
 
   render: ->
     tag = @props.tag
 
+    choices = Store.loadIconChoices tag
+
     tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
     if tag.icon == null
       tagIconURL = "/images/unknown-icon.png"
 
-    classes = ['tag']
-    classes.push 'expanded' if @state.expanded
-    itemCount = if tag.item_count > 0 then tag.item_count else 0
-
-    <div className={classes.join ' '}>
-      <a className="expand-link" onClick={@toggleSize} href="javascript:void(0)">
-        <img className="tag-icon" src={tagIconURL}/>
-      </a>
-
-      <br/>
+    <div className="container-fluid tag-editor-page">
+      <a className="pull-right" href="#/tags"><i className="fa fa-times"/></a>
+      <h1>Hypercheese Tag Editor</h1>
+      <div className="tag-frame">
+        <img src={tagIconURL}/>
+        <h2>&ldquo;{tag.label}&rdquo;</h2>
+        <p>used {tag.item_count.toLocaleString()} times</p>
+      </div>
       <form className="form-inline" onSubmit={@saveNewLabel}>
         {
-          if @state.expanded && tag.item_count <= 0
+          if tag.item_count <= 0
             <div>
               <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)} type="button">
                 <i className="fa fa-trash"/>
@@ -53,5 +46,19 @@
           <i className="fa fa-save"/>
         </button>
       </form>
-      <span className="desc">{" #{tag.label} (#{itemCount}) "}</span>
+
+      <h3>Change Icon</h3>
+      <div className="icon-choice-list">
+      {
+        choices.map (itemId) ->
+          url = "/data/resized/square/#{itemId}.jpg"
+          updateIcon = ->
+            tag.icon = itemId
+            Store.updateTag(tag)
+
+          <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
+            <img src={url}/>
+          </a>
+      }
+      </div>
     </div>

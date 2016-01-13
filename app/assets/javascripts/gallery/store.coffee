@@ -23,6 +23,8 @@ class @Store
       tags: []
       tagsById: {}
       tagsByLabel: {}
+      tagIconChoices: []
+      tagIconChoicesId: null
       details: {}
       searchKey: null
       query: ''
@@ -48,6 +50,7 @@ class @Store
     @state.tagsById = {}
     @state.tagsByLabel = {}
     for tag in @state.tags
+      tag.item_count = 0 if tag.item_count == null
       @state.tagsById[tag.id] = tag
       @state.tagsByLabel[tag.label.toLowerCase()] = tag
 
@@ -425,6 +428,28 @@ class @Store
         @state.searchKey = res.meta.search_key
 
         @forceUpdate()
+
+  @loadIconChoices: (tag) ->
+    if tag.id == @state.tagIconChoicesId
+      return @state.tagIconChoices
+
+    @searching = true
+    @jax
+      url: "/items"
+      data:
+        limit: 100
+        offset: 0
+        query: "only #{tag.label} photo"
+        search_key: null
+      success: (res) =>
+        @searching = false
+        @state.tagIconChoices = []
+        for item in res.items
+          @state.tagIconChoices.push item.id
+        @state.tagIconChoicesId = tag.id
+
+        @forceUpdate()
+    return []
 
   @forceUpdate: ->
     @callback() if @callback

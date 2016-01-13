@@ -1,47 +1,15 @@
-.tag-editor
-  .tag-list
-    :display flex
-    :flex-wrap wrap
-
-  .new-tag
-    i
-      :font-size 100px
-
-  .tag, .new-tag
+.tag-editor-page
+  .tag-frame
     :text-align center
-    :padding 5px
+    :display inline-block
 
-    .expand-link
-      :outline none
-
-    .tag-icon
-      :height 100px
-      :width 100px
-      :transition height 0.5s, width 0.5s, border-width 0.5s
-      :border 0px solid #09f
+    img
       :border-radius 50%
+      :border 5px solid #09f
 
-    input[type=text]
-      :width 10px
-      :transition width 0.5s
-
-    form
-      :margin-top 10px
-      :opacity 0
-      :position absolute
-
-    &.expanded
-      .tag-icon
-        :height 200px
-        :width 200px
-        :border-width 5px
-
-      form
-        :opacity 1
-        :position static
-
-      input[type=text]
-        :width 120px
-
-      .desc
-        :display none
+  .icon-choice-list
+    img
+      :width 75px
+      :height 75px
+      :border-radius 50%
+      :margin 2px

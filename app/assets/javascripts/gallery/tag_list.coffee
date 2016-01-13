@@ -20,22 +20,14 @@
 
   render: ->
     tags = Store.state.tags
-    <div className="container-fluid tag-editor">
+    <div className="container-fluid tag-list-page">
       <a className="pull-right" href="#/"><i className="fa fa-times"/></a>
       <h1>HyperCheese Tag Editor</h1>
-      <ul>
-        <li>Only tags with no images can be deleted.</li>
-        <li>
-          To change the tag icon, go into the infomation sidebar for the new
-          picture and click the link action next to the tag.
-        </li>
-      </ul>
       <div className="col-xs-3 input-group">
         <span className="input-group-addon"><i className="fa fa-search fa-fw"/></span>
         <input type="text" onChange={@updateFilter} className="form-control" placeholder="Filter..." value={@state.filter}/>
       </div>
 
-      <h2>Person Tags</h2>
       <div className="tag-list">
         <div className="new-tag">
           <a href="javascript:void(0)" onClick={@newTag}>
@@ -49,22 +41,13 @@
         {
           tags.map (tag) =>
             if @filterTest(tag)
-              <TagEditor key={tag.id} tag={tag}/>
+              <div key={tag.id} className="tag">
+                <a href={"#/tags/#{tag.id}/#{encodeURI tag.label}"}>
+                  <Tag tag=tag />
+                </a>
+                {" #{tag.label} (#{tag.item_count.toLocaleString()}) "}
+              </div>
         }
       </div>
-      <p>Total: {tags.length}</p>
-      <h2>Place Tags</h2>
-      <p>Total: 0</p>
-
-      <h2>Thing Tags</h2>
-      <p>Total: 0</p>
-
-      <h2>Adjective Tags</h2>
-      <p>Total: 0</p>
-
-      <h2>Meta Tags</h2>
-      <p>Total: 0</p>
-
-      <h2>Other Tags</h2>
-      <p>Total: 0</p>
+      <p>Total: {tags.length.toLocaleString()}</p>
     </div>
