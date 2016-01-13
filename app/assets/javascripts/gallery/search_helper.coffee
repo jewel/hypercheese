@@ -23,7 +23,12 @@
   onSearch: (e) ->
     e.preventDefault()
     @props.close()
-    window.location.hash = '/search/' + encodeURI(@state.query.stringify())
+    str = @state.query.stringify()
+    # Force search since we might be visiting the same URL that we're already
+    # at, with the same search they already did.  (The user might be trying to
+    # refresh the results.)
+    Store.search str, true
+    window.location.hash = '/search/' + encodeURI(str)
 
   optionHelper: (field, options...) ->
     val = ""

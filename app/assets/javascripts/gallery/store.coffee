@@ -353,8 +353,9 @@ class @Store
     @state.zoom = level
     @forceUpdate()
 
-  @search: (q) ->
-    return if q == @state.query
+  @search: (q, force=false) ->
+    unless force
+      return if q == @state.query
     @state.searchKey = null
     @state.query = q
     @state.items = {}
