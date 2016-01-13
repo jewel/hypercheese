@@ -189,7 +189,7 @@
     classes.push 'show-controls' if @state.showControls
 
     <div className="details-wrapper">
-      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onDoubleClick={@onClose}>
         <div ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
