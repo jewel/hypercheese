@@ -14,6 +14,7 @@
       tagging: false
 
   clearSelection: (e) ->
+    Store.state.selectMode = false
     Store.clearSelection()
 
   shareSelection: (e) ->

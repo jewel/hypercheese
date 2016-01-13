@@ -30,6 +30,7 @@ class @Store
       itemsById: {}
       resultCount: null
       selection: {}
+      selectMode: false
       selectionCount: 0
       pendingTags: []
       pendingTagString: ""

@@ -21,7 +21,7 @@
     else if e.shiftKey
       e.preventDefault()
       Store.selectRange @props.item.id
-    else if fakeMouse && Store.state.selectionCount > 0
+    else if Store.state.selectMode || fakeMouse && Store.state.selectionCount > 0
       e.preventDefault()
       Store.toggleSelection @props.item.id
     else if !fakeMouse

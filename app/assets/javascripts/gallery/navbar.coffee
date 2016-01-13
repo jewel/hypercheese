@@ -13,6 +13,10 @@
     Store.state.tagEditor = !Store.state.tagEditor
     Store.forceUpdate()
 
+  onSelectMode: ->
+    Store.state.selectMode = true
+    Store.forceUpdate()
+
   onScroll: (e) ->
     top = window.pageYOffset
 
@@ -73,6 +77,7 @@
             <i className="fa fa-ellipsis-v fa-fw"/>
           </a>
           <ul className="dropdown-menu pull-right">
+            <li><a onClick={@onSelectMode} href="javascript:void(0)">Select Mode</a></li>
             <li><a href="#/tags">Tags</a></li>
             <li>
               <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
