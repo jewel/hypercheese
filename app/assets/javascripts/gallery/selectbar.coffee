@@ -1,6 +1,6 @@
 @SelectBar = React.createClass
   getInitialState: ->
-    newTags: ''
+    Store.state.pendingTags = []
     caretPosition: 0
     tagging: false
     showTagLabel: null
@@ -21,22 +21,23 @@
       window.prompt "The items are available at this link:", url
 
   changeNewTags: (e) ->
+    Store.state.pendingTags = TagMatch.matchMany e.target.value, e.target.selectionStart
+    Store.state.pendingTagString = e.target.value
     @setState
-      newTags: e.target.value
       caretPosition: e.target.selectionStart
       showTagLabel: null
 
   moveCaret: (e) ->
+    Store.state.pendingTags = TagMatch.matchMany Store.state.pendingTagString, e.target.selectionStart
     @setState
       caretPosition: e.target.selectionStart
       showTagLabel: null
 
   addNewTags: (e) ->
     e.preventDefault()
-    res = TagMatch.matchMany @state.newTags
     matches = []
     misses = []
-    for part in res
+    for part in Store.state.pendingTags
       matches.push part.match if part.match?
       misses.push part.miss if part.miss?
 
@@ -44,13 +45,13 @@
       Store.addTagsToSelection matches
 
     if misses.length == 0
+      Store.state.pendingTagString = ""
       Store.clearSelection()
       @setState
-        newTags: ''
         tagging: false
     else
-      @setState
-        newTags: misses.join(', ')
+      Store.state.pendingTagString = misses.join(', ')
+      Store.forceUpdate()
 
   selectedTags: ->
     index = {}
@@ -81,7 +82,7 @@
 
     downloadLink = "/items/download?ids=#{ids.join ','}"
 
-    tags = TagMatch.matchMany @state.newTags, @state.caretPosition
+    tags = Store.state.pendingTags
 
     classes = ['navbar']
     if @props.fixed
@@ -99,7 +100,7 @@
           <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
           <form onSubmit={@addNewTags} style={display: 'inline-block', width: if @state.tagging then '200px' else '120px'}>
-            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus onKeyUp={@moveCaret}/>
+            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={Store.state.pendingTagString} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus onKeyUp={@moveCaret}/>
           </form>
 
           <div className="pull-right">

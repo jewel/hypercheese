@@ -70,7 +70,7 @@
     value = false if (e.metaKey || e.ctrlKey) && Store.state.selection[start]
 
     unless e.metaKey || e.ctrlKey || e.shiftKey
-      Store.clearSelection()
+      Store.addPendingToSelection()
 
     # Use the end of the drag as the start of the next shift-click
     Store.state.rangeStart = Store.state.dragEnd

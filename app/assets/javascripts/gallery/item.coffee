@@ -26,7 +26,7 @@
       Store.toggleSelection @props.item.id
     else if !fakeMouse
       e.preventDefault()
-      Store.clearSelection()
+      Store.addPendingToSelection()
       Store.toggleSelection @props.item.id
 
     null

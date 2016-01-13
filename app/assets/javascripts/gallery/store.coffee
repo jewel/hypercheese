@@ -31,6 +31,8 @@ class @Store
       resultCount: null
       selection: {}
       selectionCount: 0
+      pendingTags: []
+      pendingTagString: ""
       rangeStart: null
       dragStart: null
       dragEnd: null
@@ -276,6 +278,18 @@ class @Store
         @forceUpdate()
 
     null
+
+  @addPendingToSelection: ->
+    matches = []
+    for part in @state.pendingTags
+      matches.push part.match if part.match?
+
+    if matches.length > 0
+      @addTagsToSelection matches
+
+    @state.pendingTags = []
+    @state.pendingTagString = ""
+    @clearSelection()
 
   @addTagsToSelection: (tags) ->
     tagIds = []
