@@ -437,7 +437,7 @@ class @Store
     @jax
       url: "/items"
       data:
-        limit: 100
+        limit: 1000
         offset: 0
         query: "only #{tag.label} photo"
         search_key: null

@@ -28,7 +28,11 @@
       <a className="pull-right" href="#/tags"><i className="fa fa-times"/></a>
       <h1>Hypercheese Tag Editor</h1>
       <div className="tag-frame">
-        <img src={tagIconURL}/>
+        <img className="third" src={tagIconURL}/>
+        <img className="second" src={tagIconURL}/>
+        <img className="first" src={tagIconURL}/>
+        <img className="second" src={tagIconURL}/>
+        <img className="third" src={tagIconURL}/>
         <h2>&ldquo;{tag.label}&rdquo;</h2>
         <p>used {tag.item_count.toLocaleString()} times</p>
       </div>
