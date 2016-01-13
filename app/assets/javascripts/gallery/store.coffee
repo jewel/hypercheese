@@ -293,6 +293,7 @@ class @Store
     @clearSelection()
 
   @addTagsToSelection: (tags) ->
+    return if tags.length == 0
     tagIds = []
     for tag in tags
       tagIds.push tag.id
@@ -304,6 +305,8 @@ class @Store
     itemIds = []
     for id of @state.selection
       itemIds.push id
+
+    return if itemIds.length == 0
 
     @jax
       url: "/items/add_tags"
