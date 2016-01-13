@@ -67,9 +67,9 @@
     e.preventDefault()
 
     value = true
-    value = false if e.ctrlKey && Store.state.selection[start]
+    value = false if (e.metaKey || e.ctrlKey) && Store.state.selection[start]
 
-    unless e.ctrlKey || e.shiftKey
+    unless e.metaKey || e.ctrlKey || e.shiftKey
       Store.clearSelection()
 
     # Use the end of the drag as the start of the next shift-click

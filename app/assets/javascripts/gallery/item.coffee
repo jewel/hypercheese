@@ -11,7 +11,7 @@
       @clickUndo1 = @clickUndo2
       @clickUndo2 = [$.extend({}, Store.state.selection), Store.state.selectionCount]
 
-    if e.ctrlKey
+    if e.ctrlKey || e.metaKey
       e.preventDefault()
       if Store.state.selection[@props.item.id]
         Store.state.rangeStart = null
