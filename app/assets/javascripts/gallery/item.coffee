@@ -1,17 +1,16 @@
 @Item = React.createClass
-  onSelect: (e) ->
-    if e.ctrlKey || e.shiftKey
-      e.stopPropagation()
-      return @onClick(e)
-
-    e.stopPropagation()
-    if Store.state.selection[@props.item.id]
-      Store.state.rangeStart = null
-    else
-      Store.state.rangeStart = @props.item.id
-    Store.toggleSelection @props.item.id
+  componentDidMount: ->
+    @clickUndo1 = null
+    @clickUndo2 = null
 
   onClick: (e) ->
+    # Detect fake mouse clicks made by touch events
+    fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 50
+
+    if !fakeMouse
+      @clickUndo1 = @clickUndo2
+      @clickUndo2 = [$.extend({}, Store.state.selection), Store.state.selectionCount]
+
     if e.ctrlKey
       e.preventDefault()
       if Store.state.selection[@props.item.id]
@@ -22,11 +21,24 @@
     else if e.shiftKey
       e.preventDefault()
       Store.selectRange @props.item.id
-    else if Store.state.selecting
+    else if fakeMouse && Store.state.selectionCount > 0
       e.preventDefault()
       Store.toggleSelection @props.item.id
+    else if !fakeMouse
+      e.preventDefault()
+      Store.clearSelection()
+      Store.toggleSelection @props.item.id
 
-    true
+    null
+
+  # On all browsers but IE, a double click is proceeded by two click
+  # events.  Revert state to how it was two clicks ago.
+  onDoubleClick: (e) ->
+    if @clickUndo1
+      Store.state.selection = @clickUndo1[0]
+      Store.state.selectionCount = @clickUndo1[1]
+
+    window.location.hash = "/items/#{@props.item.id}"
 
   disableDefault: (e) ->
     e.preventDefault()
@@ -47,28 +59,32 @@
       Store.state.dragLeftStart = true
     Store.dragRange()
 
+  onMouseUp: (e) ->
+
   onTouchStart: (e) ->
-    return if Store.state.selecting
+    @disableContextMenu = true
+    return if Store.state.selectionCount > 0
     return if e.touches.length != 1
     window.clearTimeout @touchTimer if @touchTimer
-    @touchTimer = window.setTimeout @onTouchTimer, 1000
+    @touchTimer = window.setTimeout @onTouchTimer, 500
 
   onTouchTimer: ->
-    return if Store.state.selecting
+    return if Store.state.selectionCount > 0
     Store.toggleSelection @props.item.id
-    Store.state.selecting = true
     Store.forceUpdate()
 
   onTouchMove: (e) ->
     window.clearTimeout @touchTimer if @touchTimer
 
   onTouchEnd: (e) ->
+    @lastTouchEvent = Date.now()
     window.clearTimeout @touchTimer if @touchTimer
 
   onContextMenu: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-    false
+    if @disableContextMenu
+      e.preventDefault()
+      e.stopPropagation()
+      return false
 
   render: ->
     item = @props.item
@@ -93,7 +109,6 @@
 
     classes = ["item"]
     classes.push 'selected' if selected
-    classes.push 'selecting' if Store.state.selecting
     classes.push 'dragging' if Store.state.dragging[item.id]
     classes.push 'highlight' if Store.state.highlight? && Store.state.highlight == item.id
 
@@ -114,7 +129,7 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
+      <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onDoubleClick={@onDoubleClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
       </a>
       {

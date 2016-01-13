@@ -37,7 +37,6 @@ class @Store
       dragLeftStart: false
       dragging: {}
       zoom: defaultZoom
-      selecting: false
       lastScrollPosition: null
       highlight: null
       recent: null
@@ -183,8 +182,6 @@ class @Store
 
   @toggleSelection: (id) ->
     @selectItem id, !@state.selection[id]
-    if @state.selectionCount == 0
-      @state.selecting = false
     @forceUpdate()
 
   @findRange: (startId, endId) ->
@@ -232,7 +229,6 @@ class @Store
       res.url
 
   @clearSelection: ->
-    @state.selecting = false
     @state.selection = {}
     @state.selectionCount = 0
     @forceUpdate()

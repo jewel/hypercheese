@@ -99,7 +99,7 @@
           <a className="btn navbar-btn" onClick={@clearSelection}> <i className="fa fa-times fa-fw"/> </a>
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
           <form onSubmit={@addNewTags} style={display: 'inline-block', width: if @state.tagging then '200px' else '120px'}>
-            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text" autoFocus onClick={@moveCaret} onKeyUp={@moveCaret}/>
+            <input className="form-control" onFocus={@startTagging} onBlur={@stopTagging} style={display: 'inline-block'} placeholder="Add tags" value={@state.newTags} onChange={@changeNewTags} type="text" onClick={@moveCaret} onKeyUp={@moveCaret}/>
           </form>
 
           <div className="pull-right">

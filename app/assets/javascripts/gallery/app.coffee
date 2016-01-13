@@ -54,7 +54,7 @@
     }
 
   render: ->
-    selection = Store.state.selectionCount > 0 || Store.state.selecting
+    selection = Store.state.selectionCount > 0
     item = @state.itemId != null
     if item && !Store.state.selection[@state.itemId]
       selection = false
