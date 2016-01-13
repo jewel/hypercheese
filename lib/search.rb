@@ -150,7 +150,7 @@ class Search
       end
 
       if opts[:any]
-        items = items.where 'id in ( select item_id from item_tags where tag_id IN ? )', tags.map { |t| t.id }
+        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', tags.map { |t| t.id }
       else
         tags.each do |tag|
           items = items.where 'id in ( select item_id from item_tags where tag_id = ? )', tag.id
@@ -158,7 +158,7 @@ class Search
       end
 
       if opts[:only]
-        items = items.where 'id not in ( select item_id from item_tags where tag_id not in ? )', tags.map { |t| t.id }
+        items = items.where 'id not in ( select item_id from item_tags where tag_id not in (?) )', tags.map { |t| t.id }
       end
     end
 
