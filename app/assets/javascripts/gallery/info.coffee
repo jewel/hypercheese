@@ -70,7 +70,9 @@
 
             age = details.ages[tag_id]
             <div key={tag_id}>
-              <Tag tag=tag />
+              <a href={"#/tags/#{tag.id}/#{tag.label}"}>
+                <Tag tag=tag />
+              </a>
               {' '}
               <a href="javascript:void(0)" onClick=setTagIcon title="Set current photo as icon for this tag">
                 <i className="fa fa-link"/>

@@ -34,8 +34,13 @@
         <img className="second" src={tagIconURL}/>
         <img className="third" src={tagIconURL}/>
         <h2>&ldquo;{tag.label}&rdquo;</h2>
-        <p>used {tag.item_count.toLocaleString()} times</p>
       </div>
+      <ul>
+        <li>used {tag.item_count.toLocaleString()} times</li>
+        <li>search for <a href={"#/search/#{encodeURI(tag.label)}"}>{tag.label}</a></li>
+        <li>search for <a href={"#/search/#{encodeURI("only #{tag.label}")}"}>{"only #{tag.label}"}</a></li>
+        <li>search for <a href={"#/search/#{encodeURI("video #{tag.label}")}"}>{"video of #{tag.label}"}</a></li>
+      </ul>
       <form className="form-inline" onSubmit={@saveNewLabel}>
         {
           if tag.item_count <= 0
