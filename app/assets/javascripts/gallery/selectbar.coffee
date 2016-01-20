@@ -1,5 +1,8 @@
 @SelectBar = React.createClass
   getInitialState: ->
+    Store.state.pendingTags = []
+    Store.state.pendingTagString = ""
+
     caretPosition: 0
     tagging: false
     showTagLabel: null
