@@ -11,8 +11,11 @@
         :width 200px
         :height 200px
       &.second
-        :width 6vh
-        :height 6vh
+        :width 100px
+        :height 100px
+        @media (max-width: 550px)
+          :display none
+
       &.third
         :width 28px
         :height 28px
