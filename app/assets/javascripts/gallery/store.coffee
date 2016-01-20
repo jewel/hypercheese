@@ -45,6 +45,7 @@ class @Store
       lastScrollPosition: null
       highlight: null
       recent: null
+      hasTouch: false
 
   @_updateTagIndexes: ->
     @state.tagsById = {}

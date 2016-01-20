@@ -54,6 +54,11 @@
       page: 'home'
     }
 
+  onTouchStart: ->
+    # No way to flip-flop on this at the moment, since touch events also create
+    # mouse events for backwards compatibility.
+    Store.state.hasTouch = true
+
   render: ->
     if @state.page == 'home'
       return <div><NavBar initialSearch={@state.search}/><Home/></div>
@@ -92,7 +97,7 @@
     classes.push 'showing-details' if showItem
 
 
-    <div className={classes.join ' '}>
+    <div className={classes.join ' '} onTouchStart={@onTouchStart}>
       {
         if !showItem && !showSelection
           <NavBar initialSearch={@state.search} showZoom={true}/>
