@@ -25,7 +25,7 @@
       tagIconURL = "/images/unknown-icon.png"
 
     <div className="container-fluid tag-editor-page">
-      <a className="pull-right" href="#/tags"><i className="fa fa-times"/></a>
+      <a className="pull-right btn" href="#/tags"><i className="fa fa-times"/></a>
       <h1>Tag Editor</h1>
       <div className="tag-frame">
         <img className="third" src={tagIconURL}/>

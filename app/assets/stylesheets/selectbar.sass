@@ -1,10 +1,29 @@
-#select-navbar
+.select-navbar
   :background #09f
 
   .btn, .navbar-text
     :color #fff
 
+.tag-helper-float
+  :position fixed
+  :z-index 1
+  :left 0
+  :right 0
+  :top 50px
+  :width 100vw
+  :height 50px
+  :padding 5px
+
+  :background rgba(0, 153, 255, 0.5)
+
   .tag-icon
     :width 40px
     :height 40px
     :border-radius 50%
+
+    &.new
+      :border 2px solid #fc0
+
+.tag-helper-static-top
+  :height 49px
+  :background black

@@ -23,9 +23,7 @@
       </tr>
 
     <div className="info">
-      <p>
-        <a href="javascript:void(0)" onClick={@props.onInfo}><i className="btn fa fa-close"/></a>
-      </p>
+      <a className="btn pull-right" href="javascript:void(0)" onClick={@props.onInfo}><i className="fa fa-close"/></a>
       <table className="table">
         <tbody>
           {fact 'calendar', details.taken}

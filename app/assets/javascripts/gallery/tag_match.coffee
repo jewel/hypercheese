@@ -23,6 +23,7 @@ class @TagMatch
       return [ {match: tag, current: true} ]
 
     results = []
+    used = {}
 
     parts = str.split( /\ +/ )
 
@@ -34,8 +35,10 @@ class @TagMatch
 
       tag = @matchOne part
       if tag
-        results.push
-          match: tag
+        unless used[tag.id]
+          results.push
+            match: tag
+          used[tag.id] = true
       else
         results.push
           miss: part

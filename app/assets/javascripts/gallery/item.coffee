@@ -115,13 +115,19 @@
     classes.push 'highlight' if Store.state.highlight? && Store.state.highlight == item.id
 
     if @props.showTagbox
+      used = {}
       tags = []
+      if item.tag_ids
+        for tagId in item.tag_ids
+          tag = Store.state.tagsById[tagId]
+          continue if !tag
+          used[tagId] = true
+          tags.push tag
+
       if selected
         for tag in Store.getPendingMatches()
-          tags.push tag.id
-
-      if item.tag_ids
-        tags = tags.concat item.tag_ids
+          continue if used[tag.id]
+          tags.push tag
 
       maxFit = @props.imageWidth / 33
       tagCount = tags.length
@@ -150,13 +156,14 @@
                 <img src="/images/comment.png" key="comments"/>
             }
             {
-              firstTags.map (tagId) ->
-                tag = Store.state.tagsById[tagId]
-                if tag
-                  tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
-                  if tag.icon == null
-                    tagIconUrl = "/images/unknown-icon.png"
-                  <img title={tag.label} className="tag-icon" key={tagId} src={tagIconUrl}/>
+              firstTags.map (tag) ->
+                tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
+                if tag.icon == null
+                  tagIconUrl = "/images/unknown-icon.png"
+                c = ["tag-icon"]
+                if !used[tag.id]
+                  c.push 'new'
+                <img title={tag.label} className={c.join ' '} key={tag.id} src={tagIconUrl}/>
             }
             {
               if extraTags.length > 0
