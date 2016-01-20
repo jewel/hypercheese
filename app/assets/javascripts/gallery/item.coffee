@@ -4,8 +4,13 @@
     @clickUndo2 = null
 
   onClick: (e) ->
-    @clickUndo1 = @clickUndo2
-    @clickUndo2 = [$.extend({}, Store.state.selection), Store.state.selectionCount]
+    # Detect fake mouse clicks made by touch events
+    fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 500
+
+    if !fakeMouse
+      @clickUndo1 = @clickUndo2
+      @clickUndo2 = [$.extend({}, Store.state.selection), Store.state.selectionCount]
+
     if e.ctrlKey || e.metaKey
       e.preventDefault()
       if Store.state.selection[@props.item.id]
@@ -16,7 +21,7 @@
     else if e.shiftKey
       e.preventDefault()
       Store.selectRange @props.item.id
-    else if Store.state.selectMode || Store.state.selectionCount > 0
+    else if Store.state.selectMode || fakeMouse && Store.state.selectionCount > 0
       e.preventDefault()
       Store.toggleSelection @props.item.id
     else if !fakeMouse
@@ -64,14 +69,17 @@
     @touchTimer = window.setTimeout @onTouchTimer, 500
 
   onTouchTimer: ->
+    @lastTouchEvent = Date.now()
     return if Store.state.selectionCount > 0
     Store.toggleSelection @props.item.id
     Store.forceUpdate()
 
   onTouchMove: (e) ->
+    @lastTouchEvent = Date.now()
     window.clearTimeout @touchTimer if @touchTimer
 
   onTouchEnd: (e) ->
+    @lastTouchEvent = Date.now()
     window.clearTimeout @touchTimer if @touchTimer
 
   onContextMenu: (e) ->
