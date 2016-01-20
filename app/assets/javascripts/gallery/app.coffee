@@ -61,7 +61,7 @@
 
   render: ->
     if @state.page == 'home'
-      return <div><NavBar initialSearch={@state.search}/><Home/></div>
+      return <div><NavBar initialSearch={@state.search} showingResults={false} /><Home/></div>
 
     if @state.page == 'tags'
       return <TagList/>
@@ -100,7 +100,7 @@
     <div className={classes.join ' '} onTouchStart={@onTouchStart}>
       {
         if !showItem && !showSelection
-          <NavBar initialSearch={@state.search} showZoom={true}/>
+          <NavBar initialSearch={@state.search} showingResults={true} />
         else if showSelection
           <SelectBar showZoom={!showItem} fixed={!showItem}/>
       }

@@ -4,16 +4,24 @@
     <div className="container-fluid cheese-home">
       <h1>Welcome to HyperCheese</h1>
 
-      <div className="btn-group">
-        <a className="btn btn-default" href="#/search/">All Photos</a>
+      <div>
+        <div className="btn-group">
+          <a className="btn btn-default btn-primary" href="#/search/">All Photos</a>
+        </div>
+        {' '}
+        <div className="btn-group">
+          {
+            recent.sources.map (source) =>
+              href = "#/search/source:#{source.label}"
+              <a key={source.path} className="btn btn-default" href=href>{source.label} Photos</a>
+          }
+        </div>
       </div>
-      {' '}
-      <div className="btn-group">
-        {
-          recent.sources.map (source) =>
-            href = "#/search/source:#{source.label}"
-            <a key={source.path} className="btn btn-default" href=href>{source.label} Photos</a>
-        }
+      <br/>
+      <div>
+        <div className="btn-group">
+          <a className="btn btn-default" href="#/tags/">Tags</a>
+        </div>
       </div>
 
       <h2>Recent Activity</h2>
