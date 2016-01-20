@@ -74,10 +74,12 @@
             }
           </a>
           <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle pull-right" data-toggle="dropdown">
-            <i className="fa fa-ellipsis-v fa-fw"/>
+            <i className="fa fa-ellipsis-v"/>
+          </a>
+          <a title="Select Mode" href="javascript:void(0)" onClick={@onSelectMode} className="btn navbar-btn pull-right">
+            <i className="fa fa-check-square-o"/>
           </a>
           <ul className="dropdown-menu pull-right">
-            <li><a onClick={@onSelectMode} href="javascript:void(0)">Select Mode</a></li>
             <li><a href="#/tags">Tags</a></li>
             <li>
               <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
