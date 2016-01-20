@@ -36,6 +36,7 @@ class @Store
       selectionCount: 0
       pendingTags: []
       pendingTagString: ""
+      lastTags: []
       rangeStart: null
       dragStart: null
       dragEnd: null
@@ -302,6 +303,8 @@ class @Store
 
   @addTagsToSelection: (tags) ->
     return if tags.length == 0
+    @state.lastTags = tags
+
     tagIds = []
     for tag in tags
       tagIds.push tag.id

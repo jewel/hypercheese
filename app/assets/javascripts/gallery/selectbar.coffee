@@ -24,6 +24,10 @@
       window.prompt "The items are available at this link:", url
 
   changeNewTags: (e) ->
+    if e.target.value == '.'
+      Store.addTagsToSelection Store.state.lastTags
+      return
+
     Store.state.pendingTags = TagMatch.matchMany e.target.value, e.target.selectionStart
     Store.state.pendingTagString = e.target.value
     @setState
@@ -47,6 +51,7 @@
 
     if matches.length > 0
       Store.addTagsToSelection matches
+    Store.state.pendingTags = []
 
     if misses.length == 0
       Store.state.pendingTagString = ""
