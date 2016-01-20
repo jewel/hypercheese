@@ -139,6 +139,9 @@
     newIndex = item.index + dir
     Store.state.items[newIndex]
 
+  suppress: (e) ->
+    e.stopPropagation()
+
   neighborId: (dir) ->
     item = @neighbor dir
     if item
@@ -212,11 +215,11 @@
         }
         {
           if prevLink
-            <a className="control prev-control" href="##{prevLink}" onClick={@stopVideo}><i className="fa fa-arrow-left"/></a>
+            <a className="control prev-control" href="##{prevLink}" onClick={@stopVideo} onDoubleClick={@suppress}><i className="fa fa-arrow-left"/></a>
         }
         {
           if nextLink
-            <a className="control next-control" href="##{nextLink}" onClick={@stopVideo}><i className="fa fa-arrow-right"/></a>
+            <a className="control next-control" href="##{nextLink}" onClick={@stopVideo} onDoubleClick={@suppress}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls">
           {
@@ -224,8 +227,8 @@
               item.tag_ids.map (tag_id) ->
                 tag = Store.state.tagsById[tag_id]
                 if tag
-                  <a href={"#/tags/#{tag.id}/#{tag.label}"}>
-                    <Tag key={tag.id} tag=tag />
+                  <a key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
+                    <Tag tag=tag />
                   </a>
           }
           <a className="control star" href="javascript:void(0)" onClick={@onStar}>
