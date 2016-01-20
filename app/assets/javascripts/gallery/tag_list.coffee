@@ -23,7 +23,7 @@
     <div className="container-fluid tag-list-page">
       <a className="pull-right" href="#/"><i className="fa fa-times"/></a>
       <h1>Tags</h1>
-      <div className="col-xs-3 input-group">
+      <div className="col-md-3 input-group">
         <span className="input-group-addon"><i className="fa fa-search fa-fw"/></span>
         <input type="text" onChange={@updateFilter} className="form-control" placeholder="Filter..." value={@state.filter}/>
       </div>
