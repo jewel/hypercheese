@@ -5,7 +5,7 @@
 
   onClick: (e) ->
     # Detect fake mouse clicks made by touch events
-    fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 50
+    fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 500
 
     if !fakeMouse
       @clickUndo1 = @clickUndo2
@@ -69,11 +69,13 @@
     @touchTimer = window.setTimeout @onTouchTimer, 500
 
   onTouchTimer: ->
+    @lastTouchEvent = Date.now()
     return if Store.state.selectionCount > 0
     Store.toggleSelection @props.item.id
     Store.forceUpdate()
 
   onTouchMove: (e) ->
+    @lastTouchEvent = Date.now()
     window.clearTimeout @touchTimer if @touchTimer
 
   onTouchEnd: (e) ->
