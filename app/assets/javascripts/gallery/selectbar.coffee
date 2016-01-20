@@ -1,6 +1,5 @@
 @SelectBar = React.createClass
   getInitialState: ->
-    Store.state.pendingTags = []
     caretPosition: 0
     tagging: false
     showTagLabel: null
@@ -27,6 +26,7 @@
     @setState
       caretPosition: e.target.selectionStart
       showTagLabel: null
+    Store.forceUpdate()
 
   moveCaret: (e) ->
     Store.state.pendingTags = TagMatch.matchMany Store.state.pendingTagString, e.target.selectionStart

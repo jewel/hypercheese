@@ -114,20 +114,28 @@
     classes.push 'dragging' if Store.state.dragging[item.id]
     classes.push 'highlight' if Store.state.highlight? && Store.state.highlight == item.id
 
-    maxFit = @props.imageWidth / 33
-    tags = item.tag_ids || []
-    tagCount = tags.length
-    numberToShow = maxFit
-    numberToShow-- if item.has_comments
-    if tagCount > numberToShow
-      numberToShow--
-    firstTags = tags.slice 0, numberToShow
-    extraTags = tags.slice numberToShow
-    extraTagsLabels = []
-    for tagId in extraTags
-      tag = Store.state.tagsById[tagId]
-      if tag
-        extraTagsLabels.push tag.label
+    if @props.showTagbox
+      tags = []
+      if selected
+        for tag in Store.getPendingMatches()
+          tags.push tag.id
+
+      if item.tag_ids
+        tags = tags.concat item.tag_ids
+
+      maxFit = @props.imageWidth / 33
+      tagCount = tags.length
+      numberToShow = maxFit
+      numberToShow-- if item.has_comments
+      if tagCount > numberToShow
+        numberToShow--
+      firstTags = tags.slice 0, numberToShow
+      extraTags = tags.slice numberToShow
+      extraTagsLabels = []
+      for tagId in extraTags
+        tag = Store.state.tagsById[tagId]
+        if tag
+          extraTagsLabels.push tag.label
 
 
     <div className={classes.join ' '} key="#{item.index}">

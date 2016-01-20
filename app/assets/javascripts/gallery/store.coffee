@@ -284,10 +284,14 @@ class @Store
 
     null
 
-  @addPendingToSelection: ->
+  @getPendingMatches: ->
     matches = []
     for part in @state.pendingTags
       matches.push part.match if part.match?
+    matches
+
+  @addPendingToSelection: ->
+    matches = @getPendingMatches()
 
     if matches.length > 0
       @addTagsToSelection matches
