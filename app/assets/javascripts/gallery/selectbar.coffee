@@ -96,10 +96,8 @@
       <nav className={classes.join ' '}>
         <div className="container-fluid">
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
-          <form onSubmit={@addNewTags} className="navbar-form navbar-left">
-            <div className="form-group">
-              <input className="form-control" placeholder="Add tags" value={Store.state.pendingTagString} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus={!Store.state.hasTouch} onKeyUp={@moveCaret}/>
-            </div>
+          <form onSubmit={@addNewTags}>
+            <input className="form-control" placeholder="Add tags" value={Store.state.pendingTagString} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus={!Store.state.hasTouch} onKeyUp={@moveCaret}/>
           </form>
 
           <div className="pull-right">
