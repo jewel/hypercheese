@@ -12,15 +12,7 @@
     :width 150px
     :display inline-block
 
-.tag-helper-float
-  :position fixed
-  :z-index 1
-  :left 0
-  :right 0
-  :top 50px
-  :width 100vw
-  :height 50px
-  :padding 5px
+.tag-helper
   :color white
   :text-shadow 0 0 2px black
 
@@ -30,10 +22,24 @@
     :width 40px
     :height 40px
     :border-radius 50%
+    :margin-top 5px
+    :margin-bottom 5px
+    :margin-left 5px
 
     &.new
       :border 2px solid #fc0
 
-.tag-helper-static-top
-  :height 49px
-  :background black
+  .btn
+    :color #fc0
+    :font-size 150%
+
+  &:not(.tag-helper-fixed)
+    :background-color #004c7f
+
+.tag-helper-fixed
+  :position fixed
+  :z-index 1
+  :top 50px
+  :left 0
+  :right 0
+  :width 100vw

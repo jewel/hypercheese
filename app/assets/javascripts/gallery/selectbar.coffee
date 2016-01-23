@@ -4,7 +4,7 @@
     Store.state.pendingTagString = ""
 
     caretPosition: 0
-    showTagLabel: null
+    showTagLabels: false
 
   onExit: (e) ->
     Store.state.selectMode = false
@@ -23,14 +23,14 @@
     Store.state.pendingTagString = e.target.value
     @setState
       caretPosition: e.target.selectionStart
-      showTagLabel: null
+      showTagLabels: false
     Store.forceUpdate()
 
   moveCaret: (e) ->
     Store.state.pendingTags = TagMatch.matchMany Store.state.pendingTagString, e.target.selectionStart
     @setState
       caretPosition: e.target.selectionStart
-      showTagLabel: null
+      showTagLabels: false
 
   addNewTags: (e) ->
     e.preventDefault()
@@ -109,11 +109,12 @@
       </nav>
 
       {
-        if !@props.fixed
-          <div className="tag-helper-static-top"/>
+        classes = ['tag-helper']
+        if @props.fixed
+          classes.push 'tag-helper-fixed'
       }
 
-      <div className="tag-helper-float">
+      <div className={classes.join ' '}>
         {
           @selectedTags().map (match) =>
             tag = match.tag
@@ -122,12 +123,12 @@
               Store.removeTagFromSelection tag.id
 
             select = =>
-              if @state.showTagLabel == tag.id
+              if @state.showTagLabels
                 @setState
-                  showTagLabel: null
+                  showTagLabels: false
               else
                 @setState
-                  showTagLabel: tag.id
+                  showTagLabels: true
 
             tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
             if tag.icon == null
@@ -136,12 +137,12 @@
             <span key={tag.id}>
               {
                 img = <img title={tag.label} className="tag-icon" onClick={select} src={tagIconURL}/>
-                if @state.showTagLabel == tag.id
+                if @state.showTagLabels
                   <div className="selected">
                     {img}
                     <span>
                       {" #{tag.label} (#{match.count}) "}
-                      <a href="javascript:void(0)" className="delete" onClick={del}><i className="fa fa-trash"/></a>
+                      <a href="javascript:void(0)" className="delete btn" onClick={del}><i className="fa fa-trash"/></a>
                     </span>
                   </div>
                 else
