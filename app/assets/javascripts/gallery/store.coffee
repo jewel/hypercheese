@@ -47,6 +47,7 @@ class @Store
       highlight: null
       recent: null
       hasTouch: false
+      showInfo: false
 
   @_updateTagIndexes: ->
     @state.tagsById = {}

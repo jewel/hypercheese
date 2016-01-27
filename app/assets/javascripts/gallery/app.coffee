@@ -7,8 +7,24 @@
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
+    window.addEventListener 'keyup', @onKeyUp
+
     window.addEventListener 'hashchange', =>
       @setState @parseHash()
+
+  onKeyUp: (e) ->
+    if e.keyCode == 27
+      if Store.state.selectionCount > 0 || Store.state.selectMode
+        Store.state.selectMode = false
+        Store.clearSelection()
+      else if @state.page == 'item'
+        if Store.state.showInfo
+          Store.state.showInfo = false
+          Store.forceUpdate()
+        else
+          window.location.hash = '/search/' + encodeURI(@state.search)
+
+
 
   parseHash: ->
     hash = window.location.hash.substr(1)

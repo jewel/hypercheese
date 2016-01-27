@@ -1,12 +1,12 @@
 @Details = React.createClass
   getInitialState: ->
+    Store.state.showInfo = false
     playing: false
-    showInfo: false
     showControls: true
 
   onInfo: (e) ->
-    @setState
-      showInfo: !@state.showInfo
+    Store.state.showInfo = !Store.state.showInfo
+    Store.forceUpdate()
 
   onStar: (e) ->
     Store.toggleItemStar @props.itemId
@@ -184,7 +184,7 @@
     nextLink = @linkTo 1
 
     # preload neighbors details
-    if item && @state.showInfo
+    if item && Store.state.showInfo
       Store.getDetails @neighbor(1)
       Store.getDetails @neighbor(-1)
 
@@ -258,7 +258,7 @@
         </div>
       </div>
       {
-        if item && @state.showInfo
+        if item && Store.state.showInfo
           <Info item={item} onInfo={@onInfo}/>
       }
     </div>
