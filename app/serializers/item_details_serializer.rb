@@ -7,10 +7,6 @@ class ItemDetailsSerializer < ActiveModel::Serializer
     object.comments.order :created_at
   end
 
-  def taken
-    object.taken.strftime('%b %e, %Y %l:%M%p') + " (#{time_ago_in_words(object.taken)} ago)"
-  end
-
   def paths
     object.paths.map &:path
   end

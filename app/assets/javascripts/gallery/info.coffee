@@ -26,7 +26,7 @@
       <a className="btn pull-right" href="javascript:void(0)" onClick={@props.onInfo}><i className="fa fa-close"/></a>
       <table className="table">
         <tbody>
-          {fact 'calendar', details.taken}
+          {fact 'calendar', new Date(details.taken).toLocaleString()}
           {fact 'camera', details.camera}
           {fact 'location-arrow', details.location}
           <tr>
