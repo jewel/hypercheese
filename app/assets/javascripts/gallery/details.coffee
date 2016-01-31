@@ -39,63 +39,59 @@
     touch = e.touches[0]
     @startTouch = touch
     @prevTime = performance.now()
-    @position = 0
-    @speed = 0
     null
 
   onTouchMove: (e) ->
     return unless start = @startTouch
     touch = e.touches[0]
-    position = touch.pageX - start.pageX
-    @showSwipe position
-    now = performance.now()
-    elapsed = now - @prevTime
-    @prevTime = now
-    @speed = (position - @position) / elapsed
-    @position = position
+    @position = touch.pageX - start.pageX
+    @time = performance.now()
+    @showSwipe @position
 
   onTouchEnd: (e) ->
-    return unless @position?
-    window.requestAnimationFrame(@animateSwipe)
+    return unless start = @startTouch
+    elapsed = @time - @prevTime
+    speed = @position / elapsed
+    if Math.abs(speed) > 0.25
+      @target = Math.sign(speed)
+    else
+      @target = 0
+    @prevTime = @time
+    window.requestAnimationFrame @animateSwipe
 
   animateSwipe: (now) ->
     elapsed = now - @prevTime
     @prevTime = now
+    speed = 4.0
+    speed *= -1 if @target < 0
+    speed *= -Math.sign(@position) if @target == 0
     oldPosition = @position
-    @position += @speed * elapsed
+    @position += speed * elapsed
+
     width = document.documentElement.clientWidth
 
-    # accelerate in current direction
-    acc = 0.1 * Math.sign(@position)
-
-    distanceFromStart = Math.abs(@position/width)
-
-    # if close to center, spring back
-    if distanceFromStart < 0.3
-      acc = 0.05 * -Math.sign(@position)
-
-    @speed += acc
-
-    if Math.sign(@position) != Math.sign(oldPosition)
-      # Crossed center position
+    if @target == 0 && Math.sign(@position) != Math.sign(oldPosition)
       @resetSwipe()
       @showSwipe 0
-    else if @position > width * 1.02
-      @moveTo -1, @refs.prevImage
-    else if @position < -(width * 1.02)
-      @moveTo 1, @refs.nextImage
+    else if @target == 1 && @position > width * 1.02
+      @showSwipe width * 1.02
+      window.requestAnimationFrame =>
+        @moveTo -1, @refs.prevImage
+    else if @target == -1 && @position < -width * 1.02
+      @showSwipe -width * 1.02
+      window.requestAnimationFrame =>
+        @moveTo 1, @refs.nextImage
     else
       @showSwipe @position
       window.requestAnimationFrame @animateSwipe
 
   resetSwipe: ->
     @position = null
-    @speed = null
     @prevTime = null
     @startTouch = null
 
-  showSwipe: (amount) ->
-    style = "translate3d(#{amount}px, 0px, 0px)"
+  showSwipe: (position) ->
+    style = "translate3d(#{position}px, 0px, 0px)"
     @refs.prev.style.transform = style if @refs.prev
     @refs.cur.style.transform = style if @refs.cur
     @refs.next.style.transform = style if @refs.next
