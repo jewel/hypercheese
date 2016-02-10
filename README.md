@@ -16,7 +16,8 @@ $ sudo apt-get install bundler ruby-dev libmysqlclient-dev libsqlite3-dev build-
 $ bundle install
 $ rake secret > .secret_key_base
 # seed the database with the default user:pwd of admin@example.com:password
-$ rake db:seed
+$ cp config/database.yml.example config/database.yml
+$ rake db:setup
 $ rails server
 # You can now browse to http://localhost:3000 and login!
 ```

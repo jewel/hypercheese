@@ -1,12 +1,13 @@
+# SQLite version 3.x
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
 development:
-  adapter: mysql2
-  encoding: utf8
-  reconnect: false
-  database: hypercheese
-  pool: 15
-  username: hypercheese
-  password: hyper
-  socket: /var/run/mysqld/mysqld.sock
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -23,6 +24,6 @@ production:
   reconnect: false
   database: hypercheese
   pool: 15
-  username: cheese
-  password: cheesy
+  username: example
+  password: top_secret
   socket: /var/run/mysqld/mysqld.sock
