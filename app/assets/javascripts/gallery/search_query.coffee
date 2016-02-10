@@ -1,16 +1,19 @@
 class @SearchQuery
-  _keywords:
+  @optionList: 'any only reverse untagged comments orientation type year month source'.split ' '
+  @keywords:
     any: true
     only: true
     reverse: true
     untagged: true
     comments: true
 
-  _options:
-    year: true
-    month: true
+  @options:
     orientation: true
     type: true
+
+  @multiple:
+    year: true
+    month: true
     source: true
 
   parse: (str) ->
@@ -19,11 +22,13 @@ class @SearchQuery
     @unknown = []
 
     # pull out options with values
-    str = str.replace /\b(\w+):([-\w]*)\b/g, (match, key, val) =>
+    str = str.replace /\b(\w+):([-\w,]*)\b/g, (match, key, val) =>
       lkey = key.toLowerCase()
       lval = val.toLowerCase()
-      if @_options[lkey]
+      if @constructor.options[lkey]
         @options[lkey] = lval
+      else if @constructor.multiple[lkey]
+        @options[lkey] = lval.split /,/
       else
         @unknown.push "#{key}:#{val}"
       ""
@@ -31,7 +36,7 @@ class @SearchQuery
     # pull out boolean options
     str = str.replace /\b(\w+)\b/g, (match, key) =>
       key = key.toLowerCase()
-      if @_keywords[key]
+      if @constructor.keywords[key]
         @options[key] = true
         ""
       else
@@ -77,6 +82,18 @@ class @SearchQuery
   stringify: ->
     parts = @tags.map (tag) -> tag.label
     for k,v of @options
-      parts.push "#{k}:#{v}"
+      if @constructor.keywords[k]
+        parts.push k if v == "true" || v == true
+      else if @constructor.multiple[k]
+        parts.push "#{k}:#{v.join(',')}" if v.length > 0
+      else
+        parts.push "#{k}:#{v}" if v != ""
     parts = parts.concat @unknown
     parts.join ' '
+
+  as_json: ->
+    json = $.extend {}, @options
+    json.tags = []
+    for tag in @tags
+      json.tags.push tag.id
+    json

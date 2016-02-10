@@ -357,8 +357,8 @@ module Import
     height = [720, info[:height]].min
     rate = [60, info[:rate]].min
 
-    run "ffmpeg -i #{se path} -pass 1 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -strict experimental -vf scale=-1:#{height} -r #{rate} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
-    run "ffmpeg -i #{se path} -pass 2 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -vf scale=-1:#{height} -r #{rate} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
+    run "ffmpeg -v error -i #{se path} -pass 1 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -strict experimental -vf scale=-1:#{height} -r #{rate} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
+    run "ffmpeg -v error -i #{se path} -pass 2 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -vf scale=-1:#{height} -r #{rate} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
 
     File.chmod 0644, tmp
     File.rename tmp, dest

@@ -88,6 +88,10 @@
     else
       classes.push 'navbar-static-top'
 
+    helperClasses = ['tag-helper']
+    if @props.fixed
+      helperClasses.push 'tag-helper-fixed'
+
     <div>
       {
         if @props.fixed
@@ -108,13 +112,7 @@
         </div>
       </nav>
 
-      {
-        classes = ['tag-helper']
-        if @props.fixed
-          classes.push 'tag-helper-fixed'
-      }
-
-      <div className={classes.join ' '}>
+      <div className={helperClasses.join ' '}>
         {
           @selectedTags().map (match) =>
             tag = match.tag

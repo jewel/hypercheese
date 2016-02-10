@@ -9,7 +9,9 @@ class ItemsController < ApplicationController
     path = Rails.root.join('tmp/searches').join search_key if search_key
 
     if search_key == '' || path && !File.exists?( path )
-      search = Search.new params[:query] || ''
+      query = params[:query] || {}
+      query[:tags] = Tag.find (query[:tags] || []).map(&:to_i)
+      search = Search.new query
       ids = search.items.pluck(:id)
       str = ids.join ','
       search_key = Digest::MD5.hexdigest str

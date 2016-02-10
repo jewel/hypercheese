@@ -5,6 +5,36 @@
 
     query: q
     userInput: null
+    showCriteriaPicker: false
+
+  onShowCriteriaPicker: (e) ->
+    e.preventDefault()
+    @setState
+      showCriteriaPicker: !@state.showCriteriaPicker
+
+  onSelectCriteria: (e, opt) ->
+    e.preventDefault()
+    @state.query.options[opt] = if SearchQuery.multiple[opt]
+      []
+    else if SearchQuery.keywords[opt]
+      true
+    else
+      ""
+
+    @setState
+      query: @state.query
+      showCriteriaPicker: false
+
+  onChangeCriteriaValue: (e, opt) ->
+    if SearchQuery.multiple[opt]
+      values = e.target.value.split /,/
+      values = [] if e.target.value == ""
+      @state.query.options[opt] = values
+    else
+      @state.query.options[opt] = e.target.value
+
+    @setState
+      query: @state.query
 
   changeUserInput: (e) ->
     @state.query.parse e.target.value
@@ -54,6 +84,9 @@
           <button className="btn btn-default btn-primary">
             <i className="fa fa-search"/> Search
           </button>
+          <a href="javascript:void(0)" onClick=@onShowCriteriaPicker className="btn">
+            advanced...
+          </a>
         </div>
         {
           if !@state.userInput? && query.unknown.length > 0
@@ -62,11 +95,18 @@
             </div>
         }
         {
-          res = []
-          for k, v of query.options
-            res.push <div key=k>{"#{k}: #{v}"}</div>
-          res
+          Object.keys(@state.query.options).map (key) =>
+            <div key={key}>
+              {key}: <input className="form-control" type="text" value={query.options[key]} onChange={ (e) => @onChangeCriteriaValue e, key }/>
+            </div>
         }
+        <div>
+          {
+            if @state.showCriteriaPicker
+              SearchQuery.optionList.map (opt) =>
+                <button key={opt} className="btn btn-default" onClick={ (e) => @onSelectCriteria e, opt }>{opt}</button>
+          }
+        </div>
       </form>
       <div className="tag-list">
         {

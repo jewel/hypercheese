@@ -10,6 +10,7 @@ class @Store
     @jax
       url: '/tags'
       success: (res) =>
+        @state.tagsLoaded = true
         @state.tags = res.tags
         @_updateTagIndexes()
         @forceUpdate()
@@ -21,6 +22,7 @@ class @Store
 
     @state =
       tags: []
+      tagsLoaded: false
       tagsById: {}
       tagsByLabel: {}
       tagIconChoices: []
@@ -381,6 +383,7 @@ class @Store
     @executeSearch 0, 0
 
   @executeSearch: (start, end) ->
+    return unless @state.tagsLoaded
     batchSize = 100
 
     if @searching
@@ -418,12 +421,15 @@ class @Store
 
     @searching = true
 
+    query = new SearchQuery
+    query.parse @state.query
+
     @searchRequest = @jax
       url: "/items"
       data:
         limit: batchEnd - batchStart + 1
         offset: batchStart
-        query: @state.query
+        query: query.as_json()
         search_key: @state.searchKey
       success: (res) =>
         @searching = false
