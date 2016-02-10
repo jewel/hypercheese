@@ -14,4 +14,4 @@ Tag.all.each do |tag|
   puts "#{tag.label}: #{old < tag.item_count ? '+' : '-'}#{(old-tag.item_count).abs}"
   tag.save
 end
-puts "Total changes: #{count}"
+puts "Total changes: #{count}" if count != 0
