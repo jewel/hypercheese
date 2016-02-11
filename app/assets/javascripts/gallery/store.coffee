@@ -89,11 +89,15 @@ class @Store
     item = @getItem itemId
     return item if item
     return null if @loading
+
+    query = new SearchQuery
+    query.parse @state.query
+
     @loading = true
     @jax
       url: '/items/' + itemId
       data:
-        query: @state.query
+        query: query.as_json()
       success: (res) =>
         @loading = false
         index = res.meta.index
@@ -448,13 +452,18 @@ class @Store
     if tag.id == @state.tagIconChoicesId
       return @state.tagIconChoices
 
+    query = new SearchQuery
+    query.options.only = true
+    query.options.type = 'photo'
+    query.tags = [tag]
+
     @searching = true
     @jax
       url: "/items"
       data:
         limit: 1000
         offset: 0
-        query: "only #{tag.label} photo"
+        query: query.as_json()
         search_key: null
       success: (res) =>
         @searching = false
