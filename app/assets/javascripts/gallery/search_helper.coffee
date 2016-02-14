@@ -53,6 +53,10 @@
   onSearch: (e) ->
     e.preventDefault()
     if @state.query.unknown.length > 0
+      # Show errors
+      @setState
+        userInput: null
+
       return
 
     @props.close()
