@@ -52,6 +52,9 @@
 
   onSearch: (e) ->
     e.preventDefault()
+    if @state.query.unknown.length > 0
+      return
+
     @props.close()
     str = @state.query.stringify()
     # Force search since we might be visiting the same URL that we're already
