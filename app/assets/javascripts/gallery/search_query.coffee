@@ -18,10 +18,16 @@ class @SearchQuery
 
   @months: 'January February March April May June July August September October November December'.split ' '
 
-  parse: (str) ->
+  constructor: ->
+    @reset()
+
+  reset: ->
     @options = {}
     @tags = []
     @unknown = []
+
+  parse: (str) ->
+    @reset()
 
     # pull out options with values
     str = str.replace /\b(\w+):([-\w,]*)\b/g, (match, key, val) =>
