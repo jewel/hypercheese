@@ -16,6 +16,8 @@ class @SearchQuery
     month: true
     source: true
 
+  @months: 'January February March April May June July August September October November December'.split ' '
+
   parse: (str) ->
     @options = {}
     @tags = []
@@ -32,6 +34,17 @@ class @SearchQuery
       else
         @unknown.push "#{key}:#{val}"
       ""
+
+    # parse month strings
+    if @options.month
+      months = []
+      for m in @options.month
+        if m.length < 3
+          continue
+        for month in @constructor.months
+          if month.toLowerCase().indexOf(m.toLowerCase()) == 0
+            months.push month
+      @options.month = months
 
     # pull out boolean options
     str = str.replace /\b(\w+)\b/g, (match, key) =>
@@ -76,10 +89,29 @@ class @SearchQuery
 
     for word in words
       continue unless word
+      word = word.toLowerCase()
       if word.match( /^\d{4}$/ )
         @options.year ?= []
         @options.year.push parseInt(word, 10)
         continue
+
+      if word.match( /^(videos?|movies?)$/ )
+        @options.type = 'video'
+        continue
+
+      if word.match( /^(photos?|pictures?|pics)$/ )
+        @options.type = 'photo'
+        continue
+
+      # Look for bare months
+      if word.length >= 3
+        skip = false
+        for month in @constructor.months
+          if month.toLowerCase().indexOf(word.toLowerCase()) == 0
+            @options.month ?= []
+            @options.month.push month
+            skip = true
+        continue if skip
       @unknown.push word
 
     null
@@ -98,6 +130,8 @@ class @SearchQuery
 
   as_json: ->
     json = $.extend {}, @options
+    if json.month
+      json.month = json.month.map (m) => @constructor.months.indexOf(m) + 1
     json.tags = []
     for tag in @tags
       json.tags.push tag.id
