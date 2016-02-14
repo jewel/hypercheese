@@ -75,7 +75,12 @@ class @SearchQuery
           break
 
     for word in words
-      @unknown.push word if word
+      continue unless word
+      if word.match( /^\d{4}$/ )
+        @options.year ?= []
+        @options.year.push parseInt(word, 10)
+        continue
+      @unknown.push word
 
     null
 
