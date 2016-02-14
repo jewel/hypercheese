@@ -69,10 +69,19 @@ class Search
     end
 
     if @query[:source]
-      source = Source.where( label: @query[:source].to_s ).first
-      source ||= Source.where( path: @query[:source].to_s ).first
-      if source
-        items = items.where 'id in ( select item_id from item_paths where path like ?)', "#{source.path}/%"
+      sources = @query[:source].map do |s|
+        source = Source.where( label: s.to_s ).first
+        source ||= Source.where( path: s.to_s ).first
+      end
+      sources = sources.compact
+
+      unless sources.empty?
+        query = []
+        sources.size.times do
+          query << "path like ?"
+        end
+        sources.map! { |_| "#{_.path}/%" }
+        items = items.where "id in ( select item_id from item_paths where #{query.join ' or '})", sources
       end
     end
 
