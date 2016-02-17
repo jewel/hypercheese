@@ -4,6 +4,29 @@
     playing: false
     showControls: true
 
+  componentDidMount: ->
+    window.addEventListener 'keyup', @onKeyUp
+
+  componentWillUnmount: ->
+    window.removeEventListener 'keyup', @onKeyUp
+
+  onKeyUp: (e) ->
+    unless e.target == document.body
+      return
+
+    switch e.code
+      when 'Space', 'ArrowRight'
+        window.location.hash = @linkTo 1
+      when 'ArrowLeft'
+        window.location.hash = @linkTo -1
+      when 'KeyF'
+        @onFullScreen()
+      when 'KeyI'
+        @onInfo()
+      when 'KeyT'
+        Store.selectItem @props.itemId
+        Store.forceUpdate()
+
   onInfo: (e) ->
     Store.state.showInfo = !Store.state.showInfo
     Store.forceUpdate()
