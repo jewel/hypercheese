@@ -478,5 +478,16 @@ class @Store
   @forceUpdate: ->
     @callback() if @callback
 
+  @navigate: (url) ->
+    history.pushState {}, '', '#' + url
+    @navigateCallback() if @navigateCallback
+
+  @navigateWithoutHistory: (url) ->
+    history.replaceState {}, '', '#' + url
+    @navigateCallback() if @navigateCallback
+
   @onChange: (callback) ->
     @callback = callback
+
+  @onNavigate: (callback) ->
+    @navigateCallback = callback

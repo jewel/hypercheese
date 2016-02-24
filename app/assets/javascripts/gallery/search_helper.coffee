@@ -65,7 +65,7 @@
     # at, with the same search they already did.  (The user might be trying to
     # refresh the results.)
     Store.search str, true
-    window.location.hash = '/search/' + encodeURI(str)
+    Store.navigate '/search/' + encodeURI(str)
 
   optionHelper: (field, options...) ->
     val = ""

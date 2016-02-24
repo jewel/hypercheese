@@ -7,10 +7,14 @@
   componentDidMount: ->
     Store.onChange =>
       @forceUpdate()
-    window.addEventListener 'keyup', @onKeyUp
 
-    window.addEventListener 'hashchange', =>
+    Store.onNavigate =>
       @setState @parseHash()
+
+    window.addEventListener 'popstate', =>
+      @setState @parseHash()
+
+    window.addEventListener 'keyup', @onKeyUp
 
   onKeyUp: (e) ->
     if e.keyCode == 27
@@ -22,9 +26,7 @@
           Store.state.showInfo = false
           Store.forceUpdate()
         else
-          window.location.hash = '/search/' + encodeURI(@state.search)
-
-
+          Store.navigate '/search/' + encodeURI(@state.search)
 
   parseHash: ->
     hash = window.location.hash.substr(1)

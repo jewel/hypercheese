@@ -16,9 +16,9 @@
 
     switch e.code
       when 'Space', 'ArrowRight'
-        window.location.hash = @linkTo 1
+        Store.navigateWithoutHistory @linkTo(1)
       when 'ArrowLeft'
-        window.location.hash = @linkTo -1
+        Store.navigateWithoutHistory @linkTo(-1)
       when 'KeyF'
         @onFullScreen()
       when 'KeyI'
@@ -130,13 +130,13 @@
     else if @refs.video
       @refs.video.poster = image.src
 
-    window.location.hash = @linkTo dir
+    Store.navigateWithoutHistory @linkTo(dir)
     @showSwipe 0
 
   onClose: (e) ->
     e.stopPropagation()
 
-    window.location.hash = '/search/' + encodeURI(@props.search)
+    Store.navigate '/search/' + encodeURI(@props.search)
 
   toggleControls: (e) ->
     @setState
@@ -146,6 +146,16 @@
     @refs.video.play()
     @setState
       playing: true
+
+  navigateNext: (e) ->
+    e.preventDefault()
+    @stopVideo()
+    Store.navigateWithoutHistory @linkTo(1)
+
+  navigatePrev: (e) ->
+    e.preventDefault()
+    @stopVideo()
+    Store.navigateWithoutHistory @linkTo(-1)
 
   stopVideo: ->
     @setState
@@ -234,11 +244,11 @@
         }
         {
           if prevLink
-            <a className="control prev-control" href="##{prevLink}" onClick={@stopVideo} onDoubleClick={@suppress}><i className="fa fa-arrow-left"/></a>
+            <a className="control prev-control" href="##{prevLink}" onClick={@navigatePrev} onDoubleClick={@suppress}><i className="fa fa-arrow-left"/></a>
         }
         {
           if nextLink
-            <a className="control next-control" href="##{nextLink}" onClick={@stopVideo} onDoubleClick={@suppress}><i className="fa fa-arrow-right"/></a>
+            <a className="control next-control" href="##{nextLink}" onClick={@navigateNext} onDoubleClick={@suppress}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls">
           {

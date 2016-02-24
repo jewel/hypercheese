@@ -38,7 +38,7 @@
       Store.state.selection = @clickUndo1[0]
       Store.state.selectionCount = @clickUndo1[1]
 
-    window.location.hash = "/items/#{@props.item.id}"
+    Store.navigate "/items/#{@props.item.id}"
 
   disableDefault: (e) ->
     e.preventDefault()
