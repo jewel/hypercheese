@@ -45,6 +45,12 @@
     null
 
   onMouseDown: (e) ->
+    if e.button == 2
+      e.preventDefault()
+      e.stopPropagation()
+      Store.state.quickPreview = @props.item.id
+      Store.forceUpdate()
+
     return unless e.button == 0
     Store.state.dragStart = @props.item.id
     Store.state.dragEnd = @props.item.id
@@ -62,7 +68,6 @@
   onMouseUp: (e) ->
 
   onTouchStart: (e) ->
-    @disableContextMenu = true
     return if Store.state.selectionCount > 0
     return if e.touches.length != 1
     window.clearTimeout @touchTimer if @touchTimer
@@ -83,10 +88,9 @@
     window.clearTimeout @touchTimer if @touchTimer
 
   onContextMenu: (e) ->
-    if @disableContextMenu
-      e.preventDefault()
-      e.stopPropagation()
-      return false
+    e.preventDefault()
+    e.stopPropagation()
+    return false
 
   render: ->
     item = @props.item
@@ -146,7 +150,7 @@
 
     <div className={classes.join ' '} key="#{item.index}">
       <a href={"#/items/#{@props.item.id}"} onClick={@onClick} onDoubleClick={@onDoubleClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
-        <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault}/>
+        <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault} onContextMenu={@onContextMenu}/>
       </a>
       {
         if @props.showTagbox

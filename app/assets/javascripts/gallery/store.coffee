@@ -50,6 +50,7 @@ class @Store
       recent: null
       hasTouch: false
       showInfo: false
+      quickPreview: null
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
