@@ -15,9 +15,9 @@
       return
 
     switch e.code
-      when 'Space', 'ArrowRight', 'KeyK', 'KeyH'
+      when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
         Store.navigateWithoutHistory @linkTo(1)
-      when 'ArrowLeft', 'KeyL', 'KeyK'
+      when 'ArrowLeft', 'KeyH', 'KeyK'
         Store.navigateWithoutHistory @linkTo(-1)
       when 'KeyF'
         @onFullScreen()
