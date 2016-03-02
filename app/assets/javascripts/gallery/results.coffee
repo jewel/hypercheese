@@ -45,7 +45,7 @@
       Store.state.zoom = 1
     if Store.state.zoom > 10
       Store.state.zoom = 10
-    Store.forceUpdate()
+    Store.needsRedraw()
 
   onTouchEnd: (e) ->
     if @touchStart
@@ -58,10 +58,11 @@
   # users can let go of the mouse button when no longer over an item (most
   # commonly on the black space to the right, but also can be off screen)
   onMouseUp: (e) ->
-    return unless e.button == 0
+    return unless e.button == 2
     return unless start = Store.state.dragStart
     Store.state.dragStart = null
     Store.state.dragging = {}
+    Store.needsRedraw()
 
     return if start == Store.state.dragEnd && !Store.state.dragLeftStart
     e.preventDefault()
@@ -122,7 +123,7 @@
         scrollTop: scrollTop
 
   onResize: ->
-    @forceUpdate()
+    Store.needsRedraw()
 
   # margin represents 1px of margin and 1px of image padding.  When used we
   # double it since it's on both sides of the image

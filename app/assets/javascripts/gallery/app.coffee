@@ -2,11 +2,15 @@
   getInitialState: ->
     state = @parseHash()
     state.search ||= ''
+    state.update = 0
     state
 
   componentDidMount: ->
     Store.onChange =>
-      @forceUpdate()
+      # FIXME React should batch these to only have one render event, but that
+      # does not seem to be working.
+      @setState
+        update: @state.update + 1
 
     Store.onNavigate =>
       @setState @parseHash()
@@ -24,7 +28,7 @@
       else if @state.page == 'item'
         if Store.state.showInfo
           Store.state.showInfo = false
-          Store.forceUpdate()
+          Store.needsRedraw()
         else
           Store.navigate '/search/' + encodeURI(@state.search)
 

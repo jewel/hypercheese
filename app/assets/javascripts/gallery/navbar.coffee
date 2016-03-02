@@ -11,11 +11,11 @@
 
   toggleTags: ->
     Store.state.tagEditor = !Store.state.tagEditor
-    Store.forceUpdate()
+    Store.needsRedraw()
 
   onSelectMode: ->
     Store.state.selectMode = true
-    Store.forceUpdate()
+    Store.needsRedraw()
 
   onScroll: (e) ->
     top = window.pageYOffset

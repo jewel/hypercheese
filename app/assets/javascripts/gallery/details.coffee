@@ -25,11 +25,11 @@
         @onInfo()
       when 'KeyT'
         Store.selectItem @props.itemId
-        Store.forceUpdate()
+        Store.needsRedraw()
 
   onInfo: (e) ->
     Store.state.showInfo = !Store.state.showInfo
-    Store.forceUpdate()
+    Store.needsRedraw()
 
   onStar: (e) ->
     Store.toggleItemStar @props.itemId
@@ -168,9 +168,6 @@
     newIndex = item.index + dir
     Store.state.items[newIndex]
 
-  suppress: (e) ->
-    e.stopPropagation()
-
   neighborId: (dir) ->
     item = @neighbor dir
     if item
@@ -221,7 +218,7 @@
     classes.push 'show-controls' if @state.showControls
 
     <div className="details-wrapper">
-      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onDoubleClick={@onClose}>
+      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
         <div ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
@@ -244,11 +241,11 @@
         }
         {
           if prevLink
-            <a className="control prev-control" href="##{prevLink}" onClick={@navigatePrev} onDoubleClick={@suppress}><i className="fa fa-arrow-left"/></a>
+            <a className="control prev-control" href="##{prevLink}" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
         }
         {
           if nextLink
-            <a className="control next-control" href="##{nextLink}" onClick={@navigateNext} onDoubleClick={@suppress}><i className="fa fa-arrow-right"/></a>
+            <a className="control next-control" href="##{nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls">
           {

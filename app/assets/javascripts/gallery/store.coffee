@@ -13,7 +13,7 @@ class @Store
         @state.tagsLoaded = true
         @state.tags = res.tags
         @_updateTagIndexes()
-        @forceUpdate()
+        @needsRedraw()
 
     if document.documentElement.clientWidth > 960
       defaultZoom = 7
@@ -50,7 +50,6 @@ class @Store
       recent: null
       hasTouch: false
       showInfo: false
-      quickPreview: null
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
@@ -83,7 +82,7 @@ class @Store
             s.user = usersById[s.user_id]
 
         @state.recent = res
-        @forceUpdate()
+        @needsRedraw()
     blank
 
   @fetchItem: (itemId) ->
@@ -106,7 +105,7 @@ class @Store
         item.index = index
         @state.items[index] = itemId
         @state.itemsById[itemId] = item
-        @forceUpdate()
+        @needsRedraw()
     null
 
   @getItem: (itemId) ->
@@ -164,7 +163,7 @@ class @Store
           details.stars.push usersById[user_id]
 
         @state.details[itemId] = details
-        @forceUpdate()
+        @needsRedraw()
 
     return blank
 
@@ -184,7 +183,7 @@ class @Store
           item.has_comments = true
 
         @state.details[itemId].comments.push res.comment
-        @forceUpdate()
+        @needsRedraw()
 
   @selectItem: (id, value=true) ->
     if value
@@ -198,7 +197,7 @@ class @Store
 
   @toggleSelection: (id) ->
     @selectItem id, !@state.selection[id]
-    @forceUpdate()
+    @needsRedraw()
 
   @findRange: (startId, endId) ->
     startIndex = @getIndex startId
@@ -221,7 +220,7 @@ class @Store
     items = @findRange @state.dragEnd, @state.dragStart
     for id in items
       @state.dragging[id] = true
-    @forceUpdate()
+    @needsRedraw()
 
   @selectRange: (itemId, value=true) ->
     if !@state.rangeStart?
@@ -229,7 +228,7 @@ class @Store
     items = @findRange @state.rangeStart, itemId
     for id in items
       @selectItem id, value
-    @forceUpdate()
+    @needsRedraw()
 
   @shareSelection: ->
     ids = []
@@ -247,7 +246,7 @@ class @Store
   @clearSelection: ->
     @state.selection = {}
     @state.selectionCount = 0
-    @forceUpdate()
+    @needsRedraw()
 
   @newTag: (label, icon) ->
     @jax
@@ -260,7 +259,7 @@ class @Store
       success: (res) =>
         @state.tags.push res.tag
         @_updateTagIndexes()
-        @forceUpdate()
+        @needsRedraw()
 
     null
 
@@ -278,7 +277,7 @@ class @Store
             t
         @_updateTagIndexes()
 
-        @forceUpdate()
+        @needsRedraw()
 
     null
 
@@ -289,7 +288,7 @@ class @Store
       success: (res) =>
         @state.tags = @state.tags.filter (tag) -> tag.id != id
         @_updateTagIndexes()
-        @forceUpdate()
+        @needsRedraw()
 
     null
 
@@ -335,7 +334,7 @@ class @Store
       type: "POST"
       success: (res) =>
         @_ingestItemUpdates res.items
-        @forceUpdate()
+        @needsRedraw()
 
     null
 
@@ -359,7 +358,7 @@ class @Store
       type: "POST"
       success: (res) =>
         @_ingestItemUpdates res.items
-        @forceUpdate()
+        @needsRedraw()
 
   @toggleItemStar: (itemId) ->
     @jax
@@ -369,11 +368,11 @@ class @Store
         @_ingestItemUpdates [res.item]
         if @state.details[itemId]
           @getDetails itemId, true
-        @forceUpdate()
+        @needsRedraw()
 
   @setZoom: (level) ->
     @state.zoom = level
-    @forceUpdate()
+    @needsRedraw()
 
   @search: (q, force=false) ->
     unless force
@@ -447,7 +446,7 @@ class @Store
 
         @state.searchKey = res.meta.search_key
 
-        @forceUpdate()
+        @needsRedraw()
 
   @loadIconChoices: (tag) ->
     if tag.id == @state.tagIconChoicesId
@@ -473,10 +472,10 @@ class @Store
           @state.tagIconChoices.push item.id
         @state.tagIconChoicesId = tag.id
 
-        @forceUpdate()
+        @needsRedraw()
     return []
 
-  @forceUpdate: ->
+  @needsRedraw: ->
     @callback() if @callback
 
   @navigate: (url) ->

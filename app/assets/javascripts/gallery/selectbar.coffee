@@ -24,7 +24,7 @@
     @setState
       caretPosition: e.target.selectionStart
       showTagLabels: false
-    Store.forceUpdate()
+    Store.needsRedraw()
 
   moveCaret: (e) ->
     Store.state.pendingTags = TagMatch.matchMany Store.state.pendingTagString, e.target.selectionStart
@@ -49,7 +49,7 @@
       Store.clearSelection()
     else
       Store.state.pendingTagString = misses.join(', ')
-      Store.forceUpdate()
+      Store.needsRedraw()
 
   selectedTags: ->
     index = {}
