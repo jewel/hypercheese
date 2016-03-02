@@ -45,7 +45,8 @@
     null
 
   onMouseDown: (e) ->
-    if e.button == 2
+    fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 1000
+    if e.button == 2 && !fakeMouse
       e.preventDefault()
       e.stopPropagation()
       Store.state.quickPreview = @props.item.id
@@ -68,14 +69,12 @@
   onMouseUp: (e) ->
 
   onTouchStart: (e) ->
-    return if Store.state.selectionCount > 0
+    @lastTouchEvent = Date.now()
     return if e.touches.length != 1
     window.clearTimeout @touchTimer if @touchTimer
     @touchTimer = window.setTimeout @onTouchTimer, 500
 
   onTouchTimer: ->
-    @lastTouchEvent = Date.now()
-    return if Store.state.selectionCount > 0
     Store.toggleSelection @props.item.id
     Store.forceUpdate()
 
