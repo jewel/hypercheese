@@ -130,9 +130,6 @@
         if showItem
           <Details itemId={@state.itemId} search={@state.search}/>
         else
-          [
-            <Results key="res"/>
-            <QuickPreview key="quick"/>
-          ]
+          <Results key="res"/>
       }
     </div>
