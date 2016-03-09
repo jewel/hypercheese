@@ -44,7 +44,7 @@
     Store.dragRange()
 
   onMouseOver: (e) ->
-    return unless e.button == 2
+    # Can't check e.button because it is not set in onMouseOver
     return unless Store.state.dragStart
     Store.state.dragEnd = @props.item.id
     if @props.item.id != Store.state.dragStart
