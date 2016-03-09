@@ -486,6 +486,9 @@ class @Store
     history.replaceState {}, '', '#' + url
     @navigateCallback() if @navigateCallback
 
+  @navigateBack: ->
+    history.back()
+
   @onChange: (callback) ->
     @callback = callback
 

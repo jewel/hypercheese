@@ -136,7 +136,7 @@
   onClose: (e) ->
     e.stopPropagation()
 
-    Store.navigate '/search/' + encodeURI(@props.search)
+    Store.navigateBack()
 
   toggleControls: (e) ->
     @setState
@@ -248,39 +248,45 @@
             <a className="control next-control" href="##{nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls">
-          {
-            if item
-              item.tag_ids.map (tag_id) ->
-                tag = Store.state.tagsById[tag_id]
-                if tag
-                  <a key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
-                    <Tag tag=tag />
-                  </a>
-          }
-          <a className="control star" href="javascript:void(0)" onClick={@onStar}>
+          <a className="control home" href="#/">
+            <img src="/assets/icon.png"/>
+          </a>
+
+          <div className="right-side">
             {
               if item
-                if item.starred
-                  <i className="fa fa-star fa-fw"/>
-                else
-                  <i className="fa fa-star-o fa-fw"/>
+                item.tag_ids.map (tag_id) ->
+                  tag = Store.state.tagsById[tag_id]
+                  if tag
+                    <a key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
+                      <Tag tag=tag />
+                    </a>
             }
-          </a>
-          {
-            # FIXME Only show this on devices without a keyboard
-            if @fullScreenFunction()
-              <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
-          }
-          <a className="control" href="javascript:void(0)" onClick={@onSelect}>
+            <a className="control star" href="javascript:void(0)" onClick={@onStar}>
+              {
+                if item
+                  if item.starred
+                    <i className="fa fa-star fa-fw"/>
+                  else
+                    <i className="fa fa-star-o fa-fw"/>
+              }
+            </a>
             {
-              if Store.state.selection[@props.itemId]
-                <i className="fa fa-check-square-o fa-fw"/>
-              else
-                <i className="fa fa-square-o fa-fw"/>
+              # FIXME Only show this on devices without a keyboard
+              if @fullScreenFunction()
+                <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
             }
-          </a>
-          <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
-          <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
+            <a className="control" href="javascript:void(0)" onClick={@onSelect}>
+              {
+                if Store.state.selection[@props.itemId]
+                  <i className="fa fa-check-square-o fa-fw"/>
+                else
+                  <i className="fa fa-square-o fa-fw"/>
+              }
+            </a>
+            <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
+            <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
+          </div>
         </div>
       </div>
       {
