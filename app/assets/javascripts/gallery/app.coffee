@@ -22,15 +22,15 @@
 
   onKeyUp: (e) ->
     if e.keyCode == 27
-      if Store.state.selectionCount > 0 || Store.state.selectMode
-        Store.state.selectMode = false
-        Store.clearSelection()
-      else if @state.page == 'item'
+      if @state.page == 'item'
         if Store.state.showInfo
           Store.state.showInfo = false
           Store.needsRedraw()
         else
           Store.navigate '/search/' + encodeURI(@state.search)
+      else if Store.state.selectionCount > 0 || Store.state.selectMode
+        Store.state.selectMode = false
+        Store.clearSelection()
 
   parseHash: ->
     hash = window.location.hash.substr(1)
