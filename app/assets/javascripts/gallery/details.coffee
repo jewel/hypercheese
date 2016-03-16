@@ -196,6 +196,12 @@
     if itemId
       return '/items/' + itemId
 
+  siteIcon: ->
+    return @_siteIcon if @_siteIcon?
+    elem = document.querySelector 'link[rel=icon]'
+
+    @_siteIcon = elem.href
+
   render: ->
     Store.state.highlight = @props.itemId
     item = Store.fetchItem @props.itemId
@@ -249,7 +255,7 @@
         }
         <div className="controls">
           <a className="control home" href="#/">
-            <img src="/assets/icon.png"/>
+            <img src={@siteIcon()}/>
           </a>
 
           <div className="right-side">
