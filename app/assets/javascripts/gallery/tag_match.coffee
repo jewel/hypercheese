@@ -49,7 +49,7 @@ class @TagMatch
       pos = posOfParts[index]
 
       # try to match a pair of words to a tag first
-      if index < parts.length - 1
+      if index < parts.length - 1 && parts[index + 1] != ""
         tag = @matchOne part + ' ' + parts[index + 1]
         if tag
           parts[index + 1] = ""
