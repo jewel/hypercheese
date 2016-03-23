@@ -1,16 +1,19 @@
 class @TagMatch
   @matchOne: (str) ->
+    lower = (str) ->
+      str.toLowerCase()
     clean = (str) ->
-      str.replace( ' ', '' ).toLowerCase()
+      lower(str.replace( ' ', '' ))
 
+    str = str.toLowerCase()
     # Check for exact match
     for tag in Store.state.tags
-      continue unless clean(tag.label) == clean(str)
+      continue unless clean(tag.label) == str || lower(tag.label) == str
       return tag
 
-    # Check for prefix  match
+    # Check for prefix match
     for tag in Store.state.tags
-      continue unless clean(tag.label).indexOf( clean(str) ) == 0
+      continue unless clean(tag.label).indexOf( str ) == 0 || lower(tag.label).indexOf( str ) == 0
       return tag
 
     return null
