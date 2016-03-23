@@ -5,7 +5,7 @@ class @TagMatch
     clean = (str) ->
       lower(str.replace( ' ', '' ))
 
-    str = str.toLowerCase()
+    str = lower(str).trim()
     # Check for exact match
     for tag in Store.state.tags
       continue unless clean(tag.label) == str || lower(tag.label) == str
@@ -25,9 +25,6 @@ class @TagMatch
 
     # check for exact match
     tags = Store.state.tags
-
-    tag = @matchOne(str)
-    return [ {match: tag, current: true} ] if tag
 
     results = []
     used = {}
@@ -49,7 +46,7 @@ class @TagMatch
       pos = posOfParts[index]
 
       # try to match a pair of words to a tag first
-      if index < parts.length - 1 && parts[index + 1] != ""
+      if index < parts.length - 1
         tag = @matchOne part + ' ' + parts[index + 1]
         if tag
           parts[index + 1] = ""
