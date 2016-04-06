@@ -11,6 +11,10 @@ class SharesController < ApplicationController
       @has_video = true if item.variety == "video"
     end
 
+    @title = "#{@items.size} Picture#{@items.size == 1 ? '' : 's'}"
+
+    @og_image = request.base_url + @items.first.resized_url(:large)
+
     render layout: 'share'
   end
 
