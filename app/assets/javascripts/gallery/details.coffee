@@ -258,13 +258,15 @@
             <img src={@siteIcon()}/>
           </a>
 
+          <div></div>
+
           <div className="right-side">
             {
               if item
                 item.tag_ids.map (tag_id) ->
                   tag = Store.state.tagsById[tag_id]
                   if tag
-                    <a key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
+                    <a className="tag-link" key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
                       <Tag tag=tag />
                     </a>
             }
