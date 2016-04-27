@@ -1,14 +1,36 @@
 @TagEditor = React.createClass
   getInitialState: ->
+    parent_id = @props.tag.parent_id
+    if parent_id
+      parent = Store.state.tagsById[parent_id]
+      label = parent.label if parent
+
     newLabel: @props.tag.label
+    newParent: label
 
   changeLabel: (e) ->
     @setState
       newLabel: e.target.value
 
-  saveNewLabel: (e) ->
+  changeParent: (e) ->
+    @setState
+      newParent: e.target.value
+
+  saveChanges: (e) ->
     e.preventDefault()
     @props.tag.label = @state.newLabel
+    if @state.newParent
+      parent_id = null
+      parent_label = ''
+      for t in Store.state.tags
+        if t.label.toLowerCase() == @state.newParent.toLowerCase()
+          parent_id = t.id
+          parent_label = t.label
+
+      @props.tag.parent_id = parent_id
+      @setState
+        newParent: parent_label
+
     Store.updateTag(@props.tag)
 
   deleteTag: (tag) ->
@@ -41,7 +63,18 @@
         <li>search for <a href={"#/search/#{encodeURI("only #{tag.label}")}"}>{"only #{tag.label}"}</a></li>
         <li>search for <a href={"#/search/#{encodeURI("video #{tag.label}")}"}>{"video of #{tag.label}"}</a></li>
       </ul>
-      <form className="form-inline" onSubmit={@saveNewLabel}>
+      <form onSubmit={@saveChanges} style={width: "20em"}>
+        <div className="form-group">
+          <label htmlFor="label-input">Label</label>
+          <input id="label-input" onChange={@changeLabel} type="text" className="form-control" value={@state.newLabel}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="parent-input">Parent</label>
+          <input id="parent-input" onChange={@changeParent} type="text" className="form-control" value={@state.newParent}/>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          <i className="fa fa-save"/>
+        </button>
         {
           if tag.item_count <= 0
             <div>
@@ -50,10 +83,6 @@
               </button>
             </div>
         }
-        <input onChange={@changeLabel} type="text" className="form-control" value={@state.newLabel}/>
-        <button type="submit" className="btn btn-primary">
-          <i className="fa fa-save"/>
-        </button>
       </form>
 
       <h3>Change Icon</h3>
