@@ -19,17 +19,19 @@
   saveChanges: (e) ->
     e.preventDefault()
     @props.tag.label = @state.newLabel
+
+    parent_id = null
+    parent_label = ''
+
     if @state.newParent
-      parent_id = null
-      parent_label = ''
       for t in Store.state.tags
         if t.label.toLowerCase() == @state.newParent.toLowerCase()
           parent_id = t.id
           parent_label = t.label
 
-      @props.tag.parent_id = parent_id
-      @setState
-        newParent: parent_label
+    @props.tag.parent_id = parent_id
+    @setState
+      newParent: parent_label
 
     Store.updateTag(@props.tag)
 
