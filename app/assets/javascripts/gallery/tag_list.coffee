@@ -60,7 +60,7 @@
           <div className="tag-list">
             {
               ([tag].concat(tag.children)).map (child) =>
-                if child.children.length == 0
+                if child.children.length == 0 || tag == child
                   <div key={child.id} className="tag">
                     <a href={"#/tags/#{child.id}/#{encodeURI child.label}"}>
                       <Tag tag=child />
