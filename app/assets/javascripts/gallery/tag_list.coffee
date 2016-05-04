@@ -38,7 +38,10 @@
       roots.push tag
 
     setCategory = (tag, parent) ->
-      tag.category = parent + "/" + tag.label
+      if parent == ''
+        tag.category = tag.label
+      else
+        tag.category = parent + "/" + tag.label
       tag.children.forEach (child) ->
         setCategory child, tag.category
 
