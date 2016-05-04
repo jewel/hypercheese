@@ -26,7 +26,7 @@
 
     roots = []
 
-    tags.forEach (tag) ->
+    tags.forEach (tag) =>
       if tag.parent_id
         parent = Store.state.tagsById[tag.parent_id]
         parent.children.push tag
@@ -34,29 +34,44 @@
         roots.push tag
 
     setCategory = (tag, parent) ->
-      tag.category = parent
+      tag.category = parent + "/" + tag.label
       tag.children.forEach (child) ->
-        setCategory child, parent + "/" + tag.label
+        setCategory child, tag.category
 
     roots.forEach (tag) ->
       setCategory tag, ''
 
+    roots.sort (a, b) ->
+      if a.children.length > b.children.length
+        -1
+      else if a.children.length < b.children.length
+        1
+      else
+        0
+
     drawCategory = (tag) =>
-      <div>
-        <h2>{tag.label}</h2>
-        <div className="tag-list">
-          {
-            ([tag].concat(tag.children)).map (tag) =>
-              if @filterTest(tag)
-                <div key={tag.id} className="tag">
-                  <a href={"#/tags/#{tag.id}/#{encodeURI tag.label}"}>
-                    <Tag tag=tag />
-                  </a>
-                  {" #{tag.label} (#{tag.item_count.toLocaleString()}) "}
-                </div>
-          }
+      res = [
+        <div key={tag.id}>
+          <h2>{tag.category}</h2>
+          <div className="tag-list">
+            {
+              ([tag].concat(tag.children)).map (child) =>
+                if @filterTest(child) && child.children.length == 0
+                  <div key={child.id} className="tag">
+                    <a href={"#/tags/#{child.id}/#{encodeURI child.label}"}>
+                      <Tag tag=child />
+                    </a>
+                    {" #{child.label} (#{child.item_count.toLocaleString()}) "}
+                  </div>
+            }
+          </div>
         </div>
-      </div>
+      ]
+      more = tag.children.map (child) =>
+        if child.children.length > 0
+          drawCategory(child)
+      res.concat more
+
 
     <div className="container-fluid tag-list-page">
       <a className="pull-right btn" href="javascript:void(0)" onClick={Store.navigateBack}><i className="fa fa-times"/></a>
