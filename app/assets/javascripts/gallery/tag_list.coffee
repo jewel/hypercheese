@@ -24,6 +24,10 @@
     tags.forEach (tag) ->
       tag.children = []
 
+    tags = tags.filter (tag) =>
+      @filterTest tag
+
+
     roots = []
 
     tags.forEach (tag) =>
@@ -56,7 +60,7 @@
           <div className="tag-list">
             {
               ([tag].concat(tag.children)).map (child) =>
-                if @filterTest(child) && child.children.length == 0
+                if child.children.length == 0
                   <div key={child.id} className="tag">
                     <a href={"#/tags/#{child.id}/#{encodeURI child.label}"}>
                       <Tag tag=child />
