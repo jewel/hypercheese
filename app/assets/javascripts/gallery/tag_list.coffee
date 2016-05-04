@@ -27,15 +27,15 @@
     tags = tags.filter (tag) =>
       @filterTest tag
 
-
     roots = []
 
     tags.forEach (tag) =>
       if tag.parent_id
         parent = Store.state.tagsById[tag.parent_id]
-        parent.children.push tag
-      else
-        roots.push tag
+        if @filterTest parent
+          parent.children.push tag
+          return
+      roots.push tag
 
     setCategory = (tag, parent) ->
       tag.category = parent + "/" + tag.label
