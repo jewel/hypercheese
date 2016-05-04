@@ -88,17 +88,22 @@
       </form>
 
       <h3>Change Icon</h3>
-      <div className="icon-choice-list">
       {
-        choices.map (itemId) ->
-          url = "/data/resized/square/#{itemId}.jpg"
-          updateIcon = ->
-            tag.icon = itemId
-            Store.updateTag(tag)
+        if choices == null
+          <i className="fa fa-spinner fa-spin"/>
+        else
+          <div className="icon-choice-list">
+            {
+              choices.map (itemId) ->
+                url = "/data/resized/square/#{itemId}.jpg"
+                updateIcon = ->
+                  tag.icon = itemId
+                  Store.updateTag(tag)
 
-          <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
-            <img src={url}/>
-          </a>
+                <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
+                  <img src={url}/>
+                </a>
+            }
+          </div>
       }
-      </div>
     </div>

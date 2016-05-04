@@ -25,7 +25,7 @@ class @Store
       tagsLoaded: false
       tagsById: {}
       tagsByLabel: {}
-      tagIconChoices: []
+      tagIconChoices: null
       tagIconChoicesId: null
       details: {}
       searchKey: null
@@ -473,7 +473,7 @@ class @Store
         @state.tagIconChoicesId = tag.id
 
         @needsRedraw()
-    return []
+    return null
 
   @needsRedraw: ->
     @callback() if @callback
