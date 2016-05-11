@@ -25,12 +25,16 @@
     .tag
       :text-align center
       :padding 4px
+      :margin 2px
       :width 72px
+      :overflow ellipsis
+
+      &.selected
+        :background #09f
+        :border-radius 16px
+        :color white
 
     .tag-icon
       :height 64px
       :width 64px
       :border-radius 50%
-
-      &.selected
-        :border 4px solid #09f

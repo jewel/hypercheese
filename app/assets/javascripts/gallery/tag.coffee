@@ -5,11 +5,11 @@
     if tag.icon == null
       tagIconURL = "/images/unknown-icon.png"
 
-    classes = ['tag-icon']
+    classes = ['tag']
     classes.push 'selected' if @props.selected
 
-    <div className="tag" onClick=@props.onClick>
-      <img title={tag.label} className={classes.join ' '} src={tagIconURL}/>
+    <div className={classes.join ' '} onClick=@props.onClick>
+      <img title={tag.label} className="tag-icon" src={tagIconURL}/>
       {
         if @props.label
           <div>{tag.label}</div>
