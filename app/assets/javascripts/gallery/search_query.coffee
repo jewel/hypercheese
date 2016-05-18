@@ -25,17 +25,23 @@ class @SearchQuery
     @options = {}
     @tags = []
     @unknown = []
+    @useOthers = false
+    @others = []
 
-  parse: (str) ->
+  parse: (str, caretPosition) ->
     @reset()
 
-    parts = TagMatch.matchMany(str)
+    parts = TagMatch.matchMany(str, caretPosition)
     unused = []
     for part in parts
       if part.miss
         unused.push part.miss
       else
         @tags.push part.match
+        if part.current
+          @useOthers = true
+          @others = part.otherTags
+
 
     str = unused.join ' '
 

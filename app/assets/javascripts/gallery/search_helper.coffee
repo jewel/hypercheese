@@ -6,6 +6,7 @@
     query: q
     userInput: null
     showCriteriaPicker: false
+    caretPosition: 0
 
   onShowCriteriaPicker: (e) ->
     e.preventDefault()
@@ -37,10 +38,11 @@
       query: @state.query
 
   changeUserInput: (e) ->
-    @state.query.parse e.target.value
+    @state.query.parse e.target.value, e.target.selectionStart
     @setState
       userInput: e.target.value
       query: @state.query
+      caretPosition: e.target.selectionStart
 
   onFocus: ->
     @setState
@@ -67,6 +69,9 @@
     Store.search str, true
     Store.navigate '/search/' + encodeURI(str)
 
+  moveCaret: (e) ->
+    @changeUserInput(e)
+
   optionHelper: (field, options...) ->
     val = ""
     <select className="form-control" defaultValue={val}>
@@ -86,7 +91,7 @@
     <div className="search-helper">
       <form onSubmit={@onSearch} className="form-inline">
         <div className="form-group">
-          <input className="form-control" placeholder="Search" value={string} onChange={@changeUserInput} onFocus={@onFocus} onBlur={@onBlur} type="text"/>
+          <input className="form-control" placeholder="Search" value={string} onChange={@changeUserInput} onClick={@moveCaret} onKeyUp={@moveCaret} onFocus={@onFocus} onBlur={@onBlur} type="text"/>
           {' '}
           <button className="btn btn-default btn-primary">
             <i className="fa fa-search"/> Search
@@ -118,10 +123,15 @@
       <div className="tag-list">
         {
           used = {}
+          others = {}
           query.tags.map (tag) =>
             used[tag.id] = true
+          query.others.map (tag) =>
+            others[tag.id] = true
           Store.state.tags.map (tag) =>
             selected = used[tag.id]
+            if query.useOthers && !others[tag.id] && !used[tag.id]
+              return
             if !used[tag.id]
               onClick = =>
                 query.tags.push tag
