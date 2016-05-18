@@ -51,6 +51,7 @@
   onBlur: ->
     @setState
       userInput: null
+      caretPosition: null
 
   onSearch: (e) ->
     e.preventDefault()
