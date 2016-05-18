@@ -29,6 +29,16 @@ class @SearchQuery
   parse: (str) ->
     @reset()
 
+    parts = TagMatch.matchMany(str)
+    unused = []
+    for part in parts
+      if part.miss
+        unused.push part.miss
+      else
+        @tags.push part.match
+
+    str = unused.join ' '
+
     # pull out options with values
     str = str.replace /\b(\w+):([-\w,]*)\b/g, (match, key, val) =>
       lkey = key.toLowerCase()
@@ -66,32 +76,7 @@ class @SearchQuery
     str = str.replace /\s+/g, ' '
     str = str.trim()
 
-    # tags can have spaces in their name, so some tag names are ambiguous.
-    # Consider the case of tags named "tree", "squirrel", "tree squirrel",
-    # For a search of "squirrel tree" we would find ["tree", "squirrel"]
-    # for "tree squirrel" we would find ["tree", "tree squirrel"]
-    #
-    # FIXME have the tag editor show when a tag is going to be masked or is
-    # going to mask another tag
     words = str.split " "
-
-    usedTags = {}
-    for i in [0...(words.length)]
-      if words[i] == null
-        continue
-
-      parts = []
-      for j in [i...(words.length)]
-        word = words[j]
-        parts.push word
-        name = parts.join(' ').toLowerCase()
-        if tag = Store.state.tagsByLabel[name]
-          if !usedTags[tag.id]
-            @tags.push tag
-            usedTags[tag.id] = true
-          for k in [i..j]
-            words[k] = null
-          break
 
     for word in words
       continue unless word
