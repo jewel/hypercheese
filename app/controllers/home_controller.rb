@@ -1,17 +1,39 @@
 class HomeController < ApplicationController
+  class Group
+    attr :count, true
+    attr :item, true
+    def created_at
+      @item.created_at
+    end
+  end
+
   def index
     render layout: "gallery"
   end
 
   def activity
-    # TODO Take all photos uploaded in the last month, sort into batches (where
-    # a batch is a group of photos all uploaded from the same source where
-    # there is no more than twenty minutes between each photo's upload date.
-    events = []
-    # events += Item.order('created_at desc').limit(5).to_a
     # TODO Add Tag change history
-    events += Comment.includes(:item, :user).where('created_at > ?', 90.days.ago).to_a
-    events += Star.includes(:item, :user).where('created_at > ?', 90.days.ago).to_a
+
+    cutoff = 90.days.ago
+    events = []
+    events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
+    events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
+
+    recent = Item.where('created_at > ?', cutoff).order('created_at')
+
+    groups = []
+    last = Group.new
+    recent.each do |item|
+      if !last.item || item.taken - last.item.taken > 8.hours
+        groups << last if last.item
+        last = Group.new
+      end
+      last.item ||= item
+      last.count ||= 0
+      last.count += 1
+    end
+    groups << last if last.item
+    events += groups
     events = events.sort_by(&:created_at).reverse
 
     sources = Source.where show_on_home: true
@@ -23,10 +45,18 @@ class HomeController < ApplicationController
       items: [],
       sources: sources
     }
+
     json[:activity].map! do |event|
       case event
-      when Item
-        ItemSerializer.new(event).as_json
+      when Group
+        json[:items].push event.item
+        {
+          item_group: {
+            created_at: event.created_at,
+            text: "#{event.count} items imported",
+            item_id: event.item.id
+          }
+        }
       when Comment
         comment = CommentSerializer.new(event).as_json
         comment.delete "users"

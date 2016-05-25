@@ -46,6 +46,14 @@
                 <span className="text"><i className="fa fa-star"></i></span><br/>
                 <em>&mdash; {star.user.name}, {new Date(star.created_at).toLocaleString()}</em>
               </p>
+            else if group = activity.item_group
+              <p className="clearfix group" key="g#{group.item_id}">
+                <a href="#/items/#{group.item_id}">
+                  <img src="/data/resized/square/#{group.item_id}.jpg" />
+                </a>
+                <span className="text">{group.text}</span><br/>
+                <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
+              </p>
         }
       </div>
     </div>
