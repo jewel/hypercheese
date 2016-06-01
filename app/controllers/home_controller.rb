@@ -24,7 +24,7 @@ class HomeController < ApplicationController
     groups = []
     last = Group.new
     recent.each do |item|
-      if !last.item || item.taken - last.item.taken > 8.hours
+      if !last.item || item.created_at - last.item.created_at > 8.hours
         groups << last if last.item
         last = Group.new
       end
