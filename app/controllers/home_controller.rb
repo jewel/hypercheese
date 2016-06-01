@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   class Group
-    attr :count, true
+    attr :photo_count, true
+    attr :video_count, true
     attr :item, true
     def created_at
       @item.created_at
@@ -14,23 +15,32 @@ class HomeController < ApplicationController
   def activity
     # TODO Add Tag change history
 
-    cutoff = 90.days.ago
+    cutoff = 900.days.ago
     events = []
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
 
-    recent = Item.where('created_at > ?', cutoff).order('created_at')
+    recent = Item.includes(:item_paths).where('created_at > ?', cutoff).order('created_at')
+
+    recent = recent.sort_by do |item|
+      item.source
+    end
 
     groups = []
     last = Group.new
     recent.each do |item|
-      if !last.item || item.created_at - last.item.created_at > 8.hours
+      if !last.item || last.item.source != item.source || item.created_at - last.item.created_at > 8.hours
         groups << last if last.item
         last = Group.new
       end
       last.item ||= item
-      last.count ||= 0
-      last.count += 1
+      if item.variety == 'video'
+        last.video_count ||= 0
+        last.video_count += 1
+      else
+        last.photo_count ||= 0
+        last.photo_count += 1
+      end
     end
     groups << last if last.item
     events += groups
@@ -50,11 +60,23 @@ class HomeController < ApplicationController
       case event
       when Group
         json[:items].push event.item
+        msg = []
+        if event.photo_count
+          msg << "#{event.photo_count} photos"
+        end
+
+        if event.video_count
+          msg << "#{event.video_count} videos"
+        end
+
+        label = event.item.source.try(:label) || 'Unknown'
+        msg = "#{msg.join " and "} added to #{label}"
+
         {
           item_group: {
             created_at: event.created_at,
-            text: "#{event.count} photos uploaded",
-            item_id: event.item.id
+            text: msg,
+            item_id: event.item.id,
           }
         }
       when Comment

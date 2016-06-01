@@ -10,7 +10,7 @@ class Item < ActiveRecord::Base
 
   BASE_PATH = File.join Rails.root, "originals"
   def full_path
-    item_paths.first.full_path
+    item_paths.first.try(:full_path)
   end
 
   def paths
@@ -18,7 +18,13 @@ class Item < ActiveRecord::Base
   end
 
   def path
-    item_paths.first.path
+    item_paths.first.try(:path)
+  end
+
+  def source
+    return nil unless path
+    start_of_path = path.split("/").first
+    Source.where(path: start_of_path).first
   end
 
   def resized_path size
@@ -43,10 +49,6 @@ class Item < ActiveRecord::Base
       hash[t.id] = true
     end
     hash
-  end
-
-  def source
-    path.split("/").first
   end
 
   def camera
