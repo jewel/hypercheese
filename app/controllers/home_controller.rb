@@ -15,7 +15,7 @@ class HomeController < ApplicationController
   def activity
     # TODO Add Tag change history
 
-    cutoff = 900.days.ago
+    cutoff = 90.days.ago
     events = []
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
