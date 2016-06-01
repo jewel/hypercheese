@@ -53,7 +53,7 @@ class HomeController < ApplicationController
         {
           item_group: {
             created_at: event.created_at,
-            text: "#{event.count} items imported",
+            text: "#{event.count} photos uploaded",
             item_id: event.item.id
           }
         }
