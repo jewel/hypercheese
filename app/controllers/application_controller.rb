@@ -19,14 +19,26 @@ class ApplicationController < ActionController::Base
   include ActionController::Streaming
   include Zipline
 
+  def maybe_download_item item
+    f = item.full_path
+
+    File.exist?(f) ||
+      # it is a broken symlink, so maybe it is in git annex?
+      (File.symlink?(f) &&
+        system("git -C #{File.dirname(f).shellescape} annex get #{f.shellescape}")
+  end
+
   def download_zip items
     if items.size == 1
-      return send_file items.first.full_path
+      i = items.first
+      maybe_download_item i
+      return send_file i.full_path
     end
 
     # FIXME This won't work with more than 1024 files
 
-    files = items.map do |item|
+    # FIXME complain loudly if some of the files were unavailable
+    files = items.reject{|i| !maybe_download_item(i) }.map do |item|
       path = File.realpath item.full_path
       [File.open(path, 'rb'), File.basename(item.full_path)]
     end
