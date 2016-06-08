@@ -51,7 +51,18 @@
                 <a href="#/items/#{group.item_id}">
                   <img src="/data/resized/square/#{group.item_id}.jpg" />
                 </a>
-                <span className="text">{group.text}</span><br/>
+                <span className="text">
+                  <a href="#/search/item:#{group.ids.join(',')}">
+                    {
+                      msg = []
+                      if group.photo_count
+                        msg.push "#{group.photo_count} photos"
+                      if group.video_count
+                        msg.push "#{group.video_count} videos"
+                      msg.join ' and '
+                    }
+                  </a> added to {group.source}
+                </span><br/>
                 <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
               </p>
         }

@@ -1,5 +1,5 @@
 class @SearchQuery
-  @optionList: 'any only reverse untagged comments orientation type year month source'.split ' '
+  @optionList: 'any only reverse untagged item comments orientation type year month source'.split ' '
   @keywords:
     any: true
     only: true
@@ -15,6 +15,7 @@ class @SearchQuery
     year: true
     month: true
     source: true
+    item: true
 
   @months: 'January February March April May June July August September October November December'.split ' '
 

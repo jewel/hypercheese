@@ -3,6 +3,7 @@ class HomeController < ApplicationController
     attr :photo_count, true
     attr :video_count, true
     attr :item, true
+    attr :ids, true
     def created_at
       @item.created_at
     end
@@ -41,6 +42,8 @@ class HomeController < ApplicationController
         last.photo_count ||= 0
         last.photo_count += 1
       end
+      last.ids ||= []
+      last.ids << item.id
     end
     groups << last if last.item
 
@@ -61,22 +64,16 @@ class HomeController < ApplicationController
       case event
       when Group
         json[:items].push event.item
-        msg = []
-        if event.photo_count
-          msg << "#{event.photo_count} photos"
-        end
-
-        if event.video_count
-          msg << "#{event.video_count} videos"
-        end
 
         label = event.item.source.try(:label) || 'Unknown'
-        msg = "#{msg.join " and "} added to #{label}"
 
         {
           item_group: {
             created_at: event.created_at,
-            text: msg,
+            photo_count: event.photo_count,
+            video_count: event.video_count,
+            source: label,
+            ids: event.ids,
             item_id: event.item.id,
           }
         }

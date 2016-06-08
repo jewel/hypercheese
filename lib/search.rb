@@ -85,6 +85,10 @@ class Search
       end
     end
 
+    if @query[:item]
+      items = items.where 'id in (?)', @query[:item]
+    end
+
     if @query[:path]
       items = items.where [ 'id in ( select item_id from item_paths where path collate utf8_general_ci like ? )', "%#{@query[:path]}%" ]
     end
