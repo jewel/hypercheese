@@ -27,6 +27,13 @@ class Item < ActiveRecord::Base
     Source.where(path: start_of_path).first
   end
 
+  # comparable grand-parent directory (similar to source, but always a string,
+  # may be "")
+  def directory
+    return "" unless path
+    path.split("/").first || ""
+  end
+
   def resized_path size
     "#{Rails.root}/public/data/resized/#{size}/#{id}.jpg"
   end

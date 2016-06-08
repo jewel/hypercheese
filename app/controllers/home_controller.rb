@@ -15,21 +15,21 @@ class HomeController < ApplicationController
   def activity
     # TODO Add Tag change history
 
-    cutoff = 90.days.ago
+    cutoff = 45.days.ago
     events = []
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
 
-    recent = Item.includes(:item_paths).where('created_at > ?', cutoff).order('created_at')
+    recent = Item.includes(:item_paths).where('deleted = 0').where('created_at > ?', cutoff)
 
     recent = recent.sort_by do |item|
-      item.source
+      [item.directory, item.created_at]
     end
 
     groups = []
     last = Group.new
     recent.each do |item|
-      if !last.item || last.item.source != item.source || item.created_at - last.item.created_at > 8.hours
+      if !last.item || last.item.directory != item.directory || item.created_at - last.item.created_at > 8.hours
         groups << last if last.item
         last = Group.new
       end
@@ -43,6 +43,7 @@ class HomeController < ApplicationController
       end
     end
     groups << last if last.item
+
     events += groups
     events = events.sort_by(&:created_at).reverse
 
