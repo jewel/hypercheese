@@ -99,11 +99,11 @@
     else if @target == 1 && @position > width * 1.02
       @showSwipe width * 1.02
       window.requestAnimationFrame =>
-        @moveTo -1, @refs.prevImage
+        @moveTo -1
     else if @target == -1 && @position < -width * 1.02
       @showSwipe -width * 1.02
       window.requestAnimationFrame =>
-        @moveTo 1, @refs.nextImage
+        @moveTo 1
     else
       @showSwipe @position
       window.requestAnimationFrame @animateSwipe
@@ -119,16 +119,10 @@
     @refs.cur.style.transform = style if @refs.cur
     @refs.next.style.transform = style if @refs.next
 
-  moveTo: (dir, image) ->
+  moveTo: (dir) ->
     @stopVideo()
 
     @resetSwipe()
-    # Avoid temporary glitch while swipe is reset by updating the image early
-    # FIXME Nothing is happening for videos
-    if @refs.curImage
-      @refs.curImage.src = image.src
-    else if @refs.video
-      @refs.video.poster = image.src
 
     Store.navigateWithoutHistory @linkTo(dir)
     @showSwipe 0
@@ -225,7 +219,7 @@
 
     <div className="details-wrapper">
       <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
-        <div ref="cur" className="detailed-image">
+        <div key={@props.itemId} ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
               <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
@@ -234,10 +228,10 @@
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
         </div>
-        <div ref="prev" className="detailed-prev">
+        <div key={@neighbor(-1)} ref="prev" className="detailed-prev">
           <img ref="prevImage" src={@largeURL(@neighbor(-1))}/>
         </div>
-        <div ref="next" className="detailed-next">
+        <div key={@neighbor(1)} ref="next" className="detailed-next">
           <img ref="nextImage" src={@largeURL(@neighbor( 1))}/>
         </div>
 
