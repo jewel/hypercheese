@@ -85,3 +85,5 @@ candidates.keys.sort.each do |path|
 end
 
 update_deleted
+
+UpdateActivityJob.perform_now

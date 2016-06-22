@@ -57,6 +57,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.1.1)
+    concurrent-ruby (1.0.2)
     connection_pool (2.2.0)
     curb (0.8.8)
     daemons (1.2.3)
@@ -196,6 +197,8 @@ GEM
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
+    sucker_punch (2.0.2)
+      concurrent-ruby (~> 1.0.0)
     thin (1.6.3)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0)
@@ -239,9 +242,10 @@ DEPENDENCIES
   sass-rails
   sprockets-coffee-react
   sqlite3
+  sucker_punch
   thin
   uglifier
   zipline
 
 BUNDLED WITH
-   1.11.2
+   1.12.2
