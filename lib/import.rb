@@ -18,6 +18,7 @@ module Import
     'mp4' => 'video',
     'mkv' => 'video',
     'vob' => 'video',
+    'dv' => 'video',
   }
 
   def self.check_dependencies

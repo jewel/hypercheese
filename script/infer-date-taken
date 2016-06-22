@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+STDOUT.sync = 1
+
+ItemPath.where( "path LIKE '%.dv'" ).each do |itempath|
+  item = itempath.item
+  next if item.deleted
+  old_date = item.taken
+  filename = File.basename itempath.path
+  next unless filename =~ /^src-(\d{4})\.(\d\d)\.(\d\d)_(\d\d)-(\d\d)-(\d\d)\.dv$/
+  # FIXME Get right timezone
+  item.taken = DateTime.parse( "#$1-#$2-#$3 #$4:#$5:#$6 MST" )
+  item.save
+  puts "#{itempath.path} #{item.taken}"
+end
