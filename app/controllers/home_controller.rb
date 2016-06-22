@@ -1,5 +1,3 @@
-require_dependency 'activity'
-
 class HomeController < ApplicationController
   def index
     render layout: "gallery"
