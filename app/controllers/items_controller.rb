@@ -102,7 +102,7 @@ class ItemsController < ApplicationController
     @item = Item.includes(:stars).find params[:item_id].to_i
     star = @item.stars.where(user_id: current_user.id).first
     if star
-      star.delete
+      star.destroy
     else
       @item.starred_by.push current_user
     end
