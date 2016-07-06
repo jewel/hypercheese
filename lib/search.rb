@@ -86,7 +86,8 @@ class Search
     end
 
     if @query[:item]
-      items = items.where 'id in (?)', @query[:item]
+      ids = expand_list @query[:item]
+      items = items.where 'id in (?)', ids
     end
 
     if @query[:path]
@@ -109,5 +110,16 @@ class Search
 
     @items = items
     @executed = true
+  end
+
+  def expand_list groups
+    ids = []
+    groups.each do |seq|
+      start, finish = seq.split '-'
+      finish ||= start
+
+      ids.concat (start.to_i..finish.to_i).to_a
+    end
+    ids
   end
 end

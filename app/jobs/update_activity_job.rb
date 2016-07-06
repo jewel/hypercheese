@@ -4,17 +4,47 @@ class UpdateActivityJob < ActiveJob::Base
   queue_as :default
 
   class Group
-    attr :photo_count, true
-    attr :video_count, true
-    attr :item, true
-    attr :ids, true
+    attr_accessor :photo_count
+    attr_accessor :video_count
+    attr_accessor :item
+    attr_accessor :ids
     def created_at
       @item.created_at
     end
   end
 
+  # Searches with lots of IDs are too long for GET URIs.  Collapse ranges,
+  # since imported items will usually be in order.
+  def collapse_range nums
+    groups = []
+    cur_seq = []
+    groups << cur_seq
+    nums.each do |num|
+      if cur_seq.last && cur_seq.last + 1 == num
+        cur_seq << num
+      elsif cur_seq.empty?
+        cur_seq << num
+      else
+        cur_seq = [num]
+        groups << cur_seq
+      end
+    end
+
+    groups.map! do |seq|
+      if seq.size == 1
+        "#{seq.first}"
+      elsif seq.size == 2
+        "#{seq.first},#{seq.last}"
+      else
+        "#{seq.first}-#{seq.last}"
+      end
+    end
+
+    groups.join ","
+  end
+
   def perform(*args)
-    cutoff = 45.days.ago
+    cutoff = 900.days.ago
     events = []
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
@@ -52,6 +82,10 @@ class UpdateActivityJob < ActiveJob::Base
       last.ids << item.id
     end
     groups << last if last.item
+
+    groups.each do |group|
+      group.ids = collapse_range group.ids
+    end
 
     events += groups
     events = events.sort_by(&:created_at).reverse

@@ -52,7 +52,7 @@
                   <img src="/data/resized/square/#{group.item_id}.jpg" />
                 </a>
                 <span className="text">
-                  <a href="#/search/item:#{group.ids.join(',')}">
+                  <a href="#/search/item:#{group.ids}">
                     {
                       msg = []
                       if group.photo_count
