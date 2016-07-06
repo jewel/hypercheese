@@ -49,7 +49,7 @@ class UpdateActivityJob < ActiveJob::Base
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
 
-    recent = Item.includes(:item_paths).where('deleted = 0').where('created_at > ?', cutoff).order(:id)
+    recent = Item.includes(:item_paths).where('deleted = 0').where('created_at > ?', cutoff)
     delete_tag = Tag.where( label: 'delete' ).first
     if delete_tag
       recent = recent.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
@@ -84,7 +84,7 @@ class UpdateActivityJob < ActiveJob::Base
     groups << last if last.item
 
     groups.each do |group|
-      group.ids = collapse_range group.ids
+      group.ids = collapse_range group.ids.sort
     end
 
     events += groups
