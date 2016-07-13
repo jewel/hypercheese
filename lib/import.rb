@@ -219,7 +219,7 @@ module Import
     gap = info[:duration] / total
     warn "gap will be #{gap.inspect}"
 
-    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%03d.bmp"
+    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%06d.bmp"
 
     run "montage #{se tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{se tmp}/grid.jpg"
     FileUtils.mkdir_p File.dirname( dest )
