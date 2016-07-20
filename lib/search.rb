@@ -36,12 +36,6 @@ class Search
     if delete_tag && !@query.member?( delete_tag )
       items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
     end
-
-    raise "Invalid 'by'" if @query[:by] && @query[:by] !~ /\A\w+\Z/
-    if @query[:by]
-      @query[:by] = 'md5' if @query[:by] == 'random'
-    end
-    sort_by = (@query[:by] || :taken).to_sym
     @items = Item.none
 
     if @query[:any]
@@ -102,11 +96,28 @@ class Search
       items = items.where 'month(taken) in (?)', @query[:month].map(&:to_i)
     end
 
-    if @query[:reverse]
-      items = items.order sort_by
-    else
-      items = items.order "#{sort_by} desc"
+    raise "Invalid 'by'" if @query[:sort] && @query[:sort] !~ /\A\w+\Z/
+    @query[:sort] = 'md5' if @query[:sort] == 'random'
+
+    if @query[:sort] == 'age'
+      age = "timestampdiff( second, (
+          select tags.birthday
+          from tags join item_tags on tags.id = item_tags.tag_id
+          where item_id = items.id
+            and birthday is not null
+          order by tags.birthday limit 1
+        ), items.taken) AS age
+      "
+      items = items.select("*, #{age}").having( "age is not null" )
     end
+
+    @query[:sort] ||= "taken"
+
+    if @query[:reverse]
+      @query[:sort] += " desc"
+    end
+
+    items = items.order @query[:sort]
 
     @items = items
     @executed = true

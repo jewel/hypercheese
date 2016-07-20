@@ -12,7 +12,7 @@ class ItemsController < ApplicationController
       query = params[:query] || {}
       query[:tags] = Tag.find (query[:tags] || []).map(&:to_i)
       search = Search.new query
-      ids = search.items.pluck(:id)
+      ids = search.items.map { |item| item.id }
       str = ids.join ','
       search_key = Digest::MD5.hexdigest str
       dir = Rails.root.join('tmp/searches')

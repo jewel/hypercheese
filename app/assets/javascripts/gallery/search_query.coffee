@@ -10,6 +10,7 @@ class @SearchQuery
   @options:
     orientation: true
     type: true
+    sort: true
 
   @multiple:
     year: true
