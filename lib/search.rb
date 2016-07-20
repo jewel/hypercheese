@@ -118,7 +118,7 @@ class Search
           order by tags.birthday desc limit 1
         ), items.taken) AS age
       "
-      items = items.select("*, #{age}").having( "age is not null" )
+      items = items.select("*, #{age}").having( "age is not null and age >= 0" )
       @query[:reverse] = !@query[:reverse]
       @pluckable = false
     end
