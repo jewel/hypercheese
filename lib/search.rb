@@ -1,11 +1,21 @@
 class Search
   def initialize query
     @query = query
+    @pluckable = true
   end
 
   def items
     execute
     @items
+  end
+
+  def ids
+    items
+    if @pluckable
+      items.pluck :id
+    else
+      items.map { |item| item.id }
+    end
   end
 
   def execute
@@ -109,11 +119,13 @@ class Search
         ), items.taken) AS age
       "
       items = items.select("*, #{age}").having( "age is not null" )
+      @query[:reverse] = !@query[:reverse]
+      @pluckable = false
     end
 
     @query[:sort] ||= "taken"
 
-    if @query[:reverse]
+    unless @query[:reverse]
       @query[:sort] += " desc"
     end
 
