@@ -115,7 +115,7 @@ class Search
           from tags join item_tags on tags.id = item_tags.tag_id
           where item_id = items.id
             and birthday is not null
-          order by tags.birthday limit 1
+          order by tags.birthday desc limit 1
         ), items.taken) AS age
       "
       items = items.select("*, #{age}").having( "age is not null" )
