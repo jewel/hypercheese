@@ -48,11 +48,12 @@ class Search
     end
     @items = Item.none
 
+    tag_ids = (@query[:tags] || []).map(&:to_i)
     if @query[:any]
-      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', @query[:tags].map { |t| t.id }
+      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', tag_ids
     else
-      @query[:tags].each do |tag|
-        items = items.where 'id in ( select item_id from item_tags where tag_id = ? )', tag.id
+      tag_ids.each do |id|
+        items = items.where 'id in ( select item_id from item_tags where tag_id = ? )', id
       end
     end
 
@@ -70,6 +71,10 @@ class Search
 
     if @query[:untagged]
       items = items.where 'id not in ( select item_id from item_tags )'
+    end
+
+    if @query[:starred]
+      items = items.where 'id in ( select item_id from stars where user_id = ? )', @query[:starred].to_i
     end
 
     if @query[:source]

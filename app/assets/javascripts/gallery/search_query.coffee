@@ -6,6 +6,7 @@ class @SearchQuery
     reverse: true
     untagged: true
     comments: true
+    starred: true
 
   @options:
     orientation: true

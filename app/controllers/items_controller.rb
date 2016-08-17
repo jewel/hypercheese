@@ -10,7 +10,7 @@ class ItemsController < ApplicationController
 
     if search_key == '' || path && !File.exists?( path )
       query = params[:query] || {}
-      query[:tags] = Tag.find (query[:tags] || []).map(&:to_i)
+      query[:starred] = current_user.id if query[:starred]
       search = Search.new query
       ids = search.ids
       str = ids.join ','
@@ -53,7 +53,7 @@ class ItemsController < ApplicationController
     @item = Item.find id
 
     query = params[:query] || {}
-    query[:tags] = Tag.find (query[:tags] || []).map(&:to_i)
+    query[:starred] = current_user.id if query[:starred]
     search = Search.new query
     index = search.ids.index id
 
