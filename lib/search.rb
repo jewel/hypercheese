@@ -58,7 +58,7 @@ class Search
     end
 
     if @query[:only]
-      items = items.where 'id not in ( select item_id from item_tags where tag_id not in (?) )', @query[:tags].map { |t| t.id }
+      items = items.where 'id not in ( select item_id from item_tags where tag_id not in (?) )', tag_ids
     end
 
     if @query[:has_comments]
