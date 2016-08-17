@@ -22,6 +22,10 @@
         <div className="btn-group">
           <a className="btn btn-default" href="#/tags/">Tags</a>
         </div>
+        {' '}
+        <div className="btn-group">
+          <a className="btn btn-default" href="#/search/starred">My Stars</a>
+        </div>
       </div>
 
       <h2>Recent Activity</h2>
