@@ -1,5 +1,5 @@
 class ItemSerializer < ActiveModel::Serializer
-  attributes :id, :has_comments, :variety, :starred
+  attributes :id, :has_comments, :variety, :starred, :rating
   has_many :tags
 
   def has_comments
@@ -11,6 +11,13 @@ class ItemSerializer < ActiveModel::Serializer
       object.stars.select { |_| _.user_id == scope.id }.any?
     else
       false
+    end
+  end
+
+  def rating
+    if scope
+      rating = object.ratings.where(user_id: scope.id).first
+      rating.value if rating
     end
   end
 end

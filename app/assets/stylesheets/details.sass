@@ -86,9 +86,6 @@
   :justify-content flex-end
 
 .details-window .controls
-  :position absolute
-  :right 0
-  :top 0
   :flex-direction row
   :justify-content space-between
   :align-items center
@@ -104,6 +101,12 @@
     :justify-content flex-end
     :align-items center
 
+  .centered
+    :display flex
+    :flex-direction row
+    :justify-content flex-center
+    :align-items center
+
   .control.star i
 
     &.fa-star-o
@@ -113,6 +116,13 @@
     &.fa-star
       :transform rotate(720deg)
       :transition transform 2s, color 2s, text-shadow 2s
+      :color #fc0
+      :text-shadow 0 0 2vh #fc0
+
+  .control.rate i
+    :transition color .5s, text-shawdow .5s
+
+    &.active
       :color #fc0
       :text-shadow 0 0 2vh #fc0
 
@@ -126,6 +136,16 @@
 
     .control
       :opacity 1
+
+.details-window .controls.top
+  :position absolute
+  :right 0
+  :top 0
+
+.details-window .controls.bottom
+  :position absolute
+  :right 0
+  :bottom 0
 
 .details-window.show-controls
   .control, .controls

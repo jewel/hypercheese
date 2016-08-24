@@ -137,35 +137,37 @@ class @Store
         item_id: itemId
       success: (res) =>
         @loading = false
-        details = res.item_details
-
-        usersById = {}
-        if res.users
-          for user in res.users
-            usersById[user.id] = user
-
-        if res.starred_by
-          for user in res.starred_by
-            usersById[user.id] = user
-
-        commentsById = {}
-        for comment in res.comments
-          comment.user = usersById[comment.user_id]
-          commentsById[comment.id] = comment
-
-        details.comments = []
-
-        for comment_id in details.comment_ids
-          details.comments.push commentsById[comment_id]
-
-        details.stars = []
-        for user_id in details.starred_by_ids
-          details.stars.push usersById[user_id]
-
-        @state.details[itemId] = details
+        @_ingestDetails(res)
         @needsRedraw()
 
     return blank
+
+  @_ingestDetails: (res) ->
+    details = res.item_details
+    usersById = {}
+    if res.users
+      for user in res.users
+        usersById[user.id] = user
+
+    if res.starred_by
+      for user in res.starred_by
+        usersById[user.id] = user
+
+    commentsById = {}
+    for comment in res.comments
+      comment.user = usersById[comment.user_id]
+      commentsById[comment.id] = comment
+
+    details.comments = []
+
+    for comment_id in details.comment_ids
+      details.comments.push commentsById[comment_id]
+
+    details.stars = []
+    for user_id in details.starred_by_ids
+      details.stars.push usersById[user_id]
+
+    @state.details[details.id] = details
 
   @newComment: (itemId, text) ->
     @jax
@@ -358,6 +360,16 @@ class @Store
       type: "POST"
       success: (res) =>
         @_ingestItemUpdates res.items
+        @needsRedraw()
+
+  @rate: (itemId, rating) ->
+    @jax
+      url: "/items/#{itemId}/rate"
+      type: "POST"
+      data:
+        value: rating
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
         @needsRedraw()
 
   @toggleItemStar: (itemId) ->

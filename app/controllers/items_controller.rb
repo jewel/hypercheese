@@ -33,7 +33,7 @@ class ItemsController < ApplicationController
 
     subset = ids.slice offset, limit
 
-    res = Item.includes(:comments, :tags, :stars).find subset
+    res = Item.includes(:comments, :tags, :stars, :ratings).find subset
 
     # `find` returns unordered, sort according to desired order
     items_by_id = {}
@@ -109,6 +109,17 @@ class ItemsController < ApplicationController
 
     @item.reload
 
+    render json: @item, serializer: ItemSerializer
+  end
+
+  def rate
+    @item = Item.includes(:ratings).find params[:item_id].to_i
+    rating = @item.ratings.where(user_id: current_user.id).first
+    rating.destroy if rating
+
+    Rating.create!(item: @item, user: current_user, value: params[:value])
+
+    @item.reload
     render json: @item, serializer: ItemSerializer
   end
 

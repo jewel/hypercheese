@@ -247,7 +247,7 @@
           if nextLink
             <a className="control next-control" href="##{nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
-        <div className="controls">
+        <div className="controls top">
           <a className="control home" href="#/">
             <img src={@siteIcon()}/>
           </a>
@@ -289,6 +289,15 @@
             <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
             <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
           </div>
+        </div>
+        <div className="controls bottom">
+          <div></div>
+          <div className="centered">
+            <RateButton type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
+            <RateButton type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
+            <RateButton type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
+          </div>
+          <div></div>
         </div>
       </div>
       {
