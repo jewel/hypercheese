@@ -42,13 +42,13 @@ class Search
       items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
     end
 
+    tag_ids = (@query[:tags] || []).map(&:to_i)
     delete_tag = Tag.where( label: 'delete' ).first
-    if delete_tag && !@query.member?( delete_tag )
+    if delete_tag && !tag_ids.member?( delete_tag.id )
       items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
     end
     @items = Item.none
 
-    tag_ids = (@query[:tags] || []).map(&:to_i)
     if @query[:any]
       items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', tag_ids
     else
