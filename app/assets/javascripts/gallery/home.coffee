@@ -28,7 +28,7 @@
         </div>
         {' '}
         <div className="btn-group">
-          <a className="btn btn-default" href="#/search/unjudged+sort:random">Judge Mode</a>
+          <a className="btn btn-default" href="#/search/unjudged%20sort:random">Judge Mode</a>
         </div>
       </div>
 
