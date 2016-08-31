@@ -5,6 +5,7 @@ class @SearchQuery
     only: true
     reverse: true
     untagged: true
+    unjudged: true
     comments: true
     starred: true
 

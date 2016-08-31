@@ -1,6 +1,7 @@
 @RateButton = React.createClass
   onRate: (rating) ->
     Store.rate @props.itemId, rating
+    @props.onNext()
 
   render: ->
     classes = ["fa", "fa-fw", @props.icon]

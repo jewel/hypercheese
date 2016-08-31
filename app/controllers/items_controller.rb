@@ -11,6 +11,7 @@ class ItemsController < ApplicationController
     if search_key == '' || path && !File.exists?( path )
       query = params[:query] || {}
       query[:starred] = current_user.id if query[:starred]
+      query[:unjudged] = current_user.id if query[:unjudged]
       search = Search.new query
       ids = search.ids
       str = ids.join ','
@@ -54,6 +55,7 @@ class ItemsController < ApplicationController
 
     query = params[:query] || {}
     query[:starred] = current_user.id if query[:starred]
+    query[:unjudged] = current_user.id if query[:unjudged]
     search = Search.new query
     index = search.ids.index id
 

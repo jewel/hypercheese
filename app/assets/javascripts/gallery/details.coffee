@@ -145,12 +145,12 @@
       playing: true
 
   navigateNext: (e) ->
-    e.preventDefault()
+    e.preventDefault() if e
     @stopVideo()
     Store.navigateWithoutHistory @linkTo(1)
 
   navigatePrev: (e) ->
-    e.preventDefault()
+    e.preventDefault() if e
     @stopVideo()
     Store.navigateWithoutHistory @linkTo(-1)
 
@@ -305,9 +305,9 @@
         <div className="controls bottom">
           <div></div>
           <div className="centered">
-            <RateButton type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
-            <RateButton type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
-            <RateButton type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
+            <RateButton onNext={@navigateNext} type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
+            <RateButton onNext={@navigateNext} type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
+            <RateButton onNext={@navigateNext} type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
           </div>
           <div></div>
         </div>

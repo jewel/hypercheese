@@ -73,6 +73,10 @@ class Search
       items = items.where 'id not in ( select item_id from item_tags )'
     end
 
+    if @query[:unjudged]
+      items = items.where 'id not in ( select item_id from ratings where user_id = ? )', @query[:unjudged].to_i
+    end
+
     if @query[:starred]
       items = items.where 'id in ( select item_id from stars where user_id = ? )', @query[:starred].to_i
     end

@@ -26,6 +26,10 @@
         <div className="btn-group">
           <a className="btn btn-default" href="#/search/starred">My Stars</a>
         </div>
+        {' '}
+        <div className="btn-group">
+          <a className="btn btn-default" href="#/search/unjudged+sort:random">Judge Mode</a>
+        </div>
       </div>
 
       <h2>Recent Activity</h2>
