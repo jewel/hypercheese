@@ -41,14 +41,14 @@
                 <span className="text">{comment.text}</span><br/>
                 <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
               </p>
-            else if star = activity.star
+            else if bullhorn = activity.bullhorn
               user = Store.state.userById
-              <p className="clearfix star" key="s#{star.id}">
-                <a href="#/items/#{star.item_id}">
-                  <img src="/data/resized/square/#{star.item_id}.jpg" />
+              <p className="clearfix bullhorn" key="s#{bullhorn.id}">
+                <a href="#/items/#{bullhorn.item_id}">
+                  <img src="/data/resized/square/#{bullhorn.item_id}.jpg" />
                 </a>
-                <span className="text"><i className="fa fa-star"></i></span><br/>
-                <em>&mdash; {star.user.name}, {new Date(star.created_at).toLocaleString()}</em>
+                <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
+                <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
               </p>
             else if group = activity.item_group
               <p className="clearfix group" key="g#{group.item_id}">

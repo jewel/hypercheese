@@ -47,7 +47,7 @@ class UpdateActivityJob < ActiveJob::Base
     cutoff = 45.days.ago
     events = []
     events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
-    events += Star.includes(:item, :user).where('created_at > ?', cutoff).to_a
+    events += Bullhorn.includes(:item, :user).where('created_at > ?', cutoff).to_a
 
     recent = Item.includes(:item_paths).where('deleted = 0').where('created_at > ?', cutoff)
     delete_tag = Tag.where( label: 'delete' ).first
@@ -123,16 +123,19 @@ class UpdateActivityJob < ActiveJob::Base
         json[:users].push event.user
         json[:items].push event.item
         comment
-      when Star
-        star = StarSerializer.new(event).as_json
-        star.delete "users"
+      when Bullhorn
+        bullhorn = BullhornSerializer.new(event).as_json
+        bullhorn.delete "users"
         json[:users].push event.user
         json[:items].push event.item
-        star
+        bullhorn
       end
     end
     json[:users].uniq!
     json[:items].uniq!
+
+    json[:users].map! { |_| UserSerializer.new(_).as_json["user"] }
+    json[:items].map! { |_| ItemSerializer.new(_).as_json["item"] }
 
     cache_path = Rails.root.join "tmp/activities"
     tmp = "#{cache_path}.#$$.tmp"

@@ -1,7 +1,6 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
   attributes :id, :taken, :width, :height, :camera, :paths, :ages
   has_many :comments, include: true
-  has_many :starred_by, include: true
 
   def comments
     object.comments.order :created_at

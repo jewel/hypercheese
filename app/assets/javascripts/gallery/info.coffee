@@ -45,17 +45,6 @@
               </div>
             </td>
           </tr>
-          <tr>
-            <th><i className="fa fa-star-o"/></th>
-            <td>
-              {
-                details.stars.map (user) =>
-                  <div key={user.id}>
-                    {user.name || "user ##{user.id}"}
-                  </div>
-              }
-            </td>
-          </tr>
         </tbody>
       </table>
       {

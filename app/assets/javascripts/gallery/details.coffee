@@ -34,6 +34,9 @@
   onStar: (e) ->
     Store.toggleItemStar @props.itemId
 
+  onBullhorn: (e) ->
+    Store.toggleItemBullhorn @props.itemId
+
   fullscreenFunctions: [
       'requestFullscreen'
       'mozRequestFullScreen'
@@ -264,7 +267,16 @@
                       <Tag tag=tag />
                     </a>
             }
-            <a className="control star" href="javascript:void(0)" onClick={@onStar}>
+            <a className="control bullhorn" title="Tells others about this item" href="javascript:void(0)" onClick={@onBullhorn}>
+              {
+                if item
+                  if item.bullhorned
+                    <i className="fa fa-bullhorn fa-fw active"/>
+                  else
+                    <i className="fa fa-bullhorn fa-fw"/>
+              }
+            </a>
+            <a className="control star" title="Bookmark for future reference" href="javascript:void(0)" onClick={@onStar}>
               {
                 if item
                   if item.starred

@@ -5,6 +5,8 @@ class Item < ActiveRecord::Base
   has_many :item_paths
   has_many :stars
   has_many :starred_by, through: :stars, source: :user
+  has_many :bullhorns
+  has_many :bullhorned_by, through: :bullhorns, source: :user
   has_many :ratings
   belongs_to :group
   belongs_to :event

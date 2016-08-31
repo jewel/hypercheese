@@ -11,14 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151231231251) do
+ActiveRecord::Schema.define(version: 20160831025219) do
+
+  create_table "bullhorns", force: :cascade do |t|
+    t.integer  "user_id",    limit: 4, null: false
+    t.integer  "item_id",    limit: 4, null: false
+    t.datetime "created_at"
+  end
+
+  add_index "bullhorns", ["item_id"], name: "index_bullhorns_on_item_id", using: :btree
+  add_index "bullhorns", ["user_id"], name: "index_bullhorns_on_user_id", using: :btree
 
   create_table "comments", force: :cascade do |t|
     t.text     "text",       limit: 65535
     t.integer  "user_id",    limit: 4
     t.integer  "item_id",    limit: 4
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "comments", ["item_id"], name: "index_comments_on_item_id", using: :btree
@@ -29,13 +38,13 @@ ActiveRecord::Schema.define(version: 20151231231251) do
     t.datetime "finish"
     t.text     "description", limit: 65535
     t.integer  "location_id", limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "groups", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "item_paths", force: :cascade do |t|
@@ -65,8 +74,8 @@ ActiveRecord::Schema.define(version: 20151231231251) do
     t.integer  "view_count",  limit: 4
     t.integer  "event_id",    limit: 4
     t.integer  "group_id",    limit: 4
-    t.datetime "created_at",                                null: false
-    t.datetime "updated_at",                                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string   "variety",     limit: 255
     t.boolean  "deleted",                   default: false, null: false
@@ -77,9 +86,19 @@ ActiveRecord::Schema.define(version: 20151231231251) do
 
   create_table "locations", force: :cascade do |t|
     t.string   "name",       limit: 255
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
+
+  create_table "ratings", force: :cascade do |t|
+    t.string   "value",      limit: 255
+    t.integer  "user_id",    limit: 4
+    t.integer  "item_id",    limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ratings", ["item_id"], name: "index_ratings_on_item_id", using: :btree
 
   create_table "share_items", force: :cascade do |t|
     t.integer "share_id", limit: 4
@@ -112,8 +131,8 @@ ActiveRecord::Schema.define(version: 20151231231251) do
     t.integer  "item_count",    limit: 4
     t.integer  "icon_item_id",  limit: 4
     t.integer  "parent_tag_id", limit: 4
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "tags", ["label"], name: "index_tags_on_label", using: :btree
@@ -129,8 +148,8 @@ ActiveRecord::Schema.define(version: 20151231231251) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "role",                   limit: 255
     t.string   "provider",               limit: 255
     t.string   "uid",                    limit: 255

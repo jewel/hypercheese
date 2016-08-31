@@ -77,9 +77,9 @@ class @Store
           c = activity.comment
           if c && c.user_id
             c.user = usersById[c.user_id]
-          s = activity.star
-          if s && s.user_id
-            s.user = usersById[s.user_id]
+          b = activity.bullhorn
+          if b && b.user_id
+            b.user = usersById[b.user_id]
 
         @state.recent = res
         @needsRedraw()
@@ -120,7 +120,7 @@ class @Store
     return if !itemId
 
     item = @getItem itemId
-    blank = { comments: [], paths: [], ages: {}, stars: [] }
+    blank = { comments: [], paths: [], ages: {} }
     if !item
       return blank
 
@@ -149,10 +149,6 @@ class @Store
       for user in res.users
         usersById[user.id] = user
 
-    if res.starred_by
-      for user in res.starred_by
-        usersById[user.id] = user
-
     commentsById = {}
     for comment in res.comments
       comment.user = usersById[comment.user_id]
@@ -162,10 +158,6 @@ class @Store
 
     for comment_id in details.comment_ids
       details.comments.push commentsById[comment_id]
-
-    details.stars = []
-    for user_id in details.starred_by_ids
-      details.stars.push usersById[user_id]
 
     @state.details[details.id] = details
 
@@ -378,8 +370,14 @@ class @Store
       type: "POST"
       success: (res) =>
         @_ingestItemUpdates [res.item]
-        if @state.details[itemId]
-          @getDetails itemId, true
+        @needsRedraw()
+
+  @toggleItemBullhorn: (itemId) ->
+    @jax
+      url: "/items/#{itemId}/toggle_bullhorn"
+      type: "POST"
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
         @needsRedraw()
 
   @setZoom: (level) ->

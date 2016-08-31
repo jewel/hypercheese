@@ -33,7 +33,7 @@ class ItemsController < ApplicationController
 
     subset = ids.slice offset, limit
 
-    res = Item.includes(:comments, :tags, :stars, :ratings).find subset
+    res = Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find subset
 
     # `find` returns unordered, sort according to desired order
     items_by_id = {}
@@ -105,6 +105,20 @@ class ItemsController < ApplicationController
       star.destroy
     else
       @item.starred_by.push current_user
+    end
+
+    @item.reload
+
+    render json: @item, serializer: ItemSerializer
+  end
+
+  def toggle_bullhorn
+    @item = Item.includes(:bullhorns).find params[:item_id].to_i
+    bullhorn = @item.bullhorns.where(user_id: current_user.id).first
+    if bullhorn
+      bullhorn.destroy
+    else
+      @item.bullhorned_by.push current_user
     end
 
     @item.reload
