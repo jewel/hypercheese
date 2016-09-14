@@ -2,6 +2,7 @@
   getInitialState: ->
     Store.state.showInfo = false
     playing: false
+    playStarted: false
     showControls: true
 
   componentDidMount: ->
@@ -136,6 +137,8 @@
     Store.navigateBack()
 
   toggleControls: (e) ->
+    # Note: this preventDefault() causes the controls to be inoperable in FF
+    e.preventDefault()
     @setState
       showControls: !@state.showControls
 
@@ -143,6 +146,13 @@
     @refs.video.play()
     @setState
       playing: true
+      playStarted: true
+      showControls: @state.playStarted
+
+  onPause: (e) ->
+    @refs.video.pause()
+    @setState
+      playing: false
 
   navigateNext: (e) ->
     e.preventDefault() if e
@@ -157,6 +167,7 @@
   stopVideo: ->
     @setState
       playing: false
+      playStarted: false
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
@@ -221,11 +232,11 @@
     classes.push 'show-controls' if @state.showControls
 
     <div className="details-wrapper">
-      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd}>
+      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onMouseMove={@onMouseMove}>
         <div key={@props.itemId} ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
-              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.playing}} preload="none" poster={@largeURL(@props.itemId)}/>
+              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.playStarted}} preload="none" poster={@largeURL(@props.itemId)}/>
 
             else
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
@@ -239,8 +250,11 @@
         </div>
 
         {
-          if item && item.variety == 'video' && !@state.playing
-            <a title="Play video" className="control play-control" href="javascript:void(0)" onClick={@onPlay}>&#9654;</a>
+          if item && item.variety == 'video'
+            if @state.playing
+              <a title="Pause video" className="control video-control" href="javascript:void(0)" onClick={@onPause}><i className="fa fa-fw fa-pause"></i></a>
+            else
+              <a title="Play video" className="control video-control" href="javascript:void(0)" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></a>
         }
         {
           if prevLink

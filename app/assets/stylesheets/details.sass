@@ -35,6 +35,10 @@
   // Make sure video's controls are above the judge bar
   video
     :height calc(100% - 5vh - 40px)
+    :transition height 0.5s
+
+.details-window:not(.show-controls) .detailed-image video
+  :height 100%
 
 .detailed-image
   :left 0
@@ -54,13 +58,11 @@
   :padding 20px
   :outline none
   :opacity 0
-  :transition opacity 0.5s
+  :visibility hidden
+  :transition visibility 0s linear 0.5s, opacity 0.5s
 
   i
     :text-shadow 0 0 2vh black
-
-  &:hover
-    :opacity 1
 
 .details-window .control.home img
   :height 5vh
@@ -72,14 +74,13 @@
   :left 0
   :width 20%
 
-.details-window .play-control
+.details-window .video-control
   :position absolute
   :top 45%
   :bottom 45%
   :left 45%
   :right 45%
   :justify-content center
-  :opacity 0.5
 
 .details-window .next-control
   :position absolute
@@ -96,8 +97,9 @@
   :display flex
   :width 100%
   :opacity 0
+  :visibility hidden
   :background-color rgba(0,0,0,0.3)
-  :transition opacity 0.5s
+  :transition visibility 0s linear 0.5s, opacity 0.5s
 
   .right-side
     :display flex
@@ -142,12 +144,6 @@
     :border-radius 3vh
     :margin-right 1vh
 
-  &:hover
-    :opacity 1
-
-    .control
-      :opacity 1
-
 .details-window .controls.top
   :position absolute
   :right 0
@@ -161,6 +157,8 @@
 .details-window.show-controls
   .control, .controls
     :opacity 1
+    :visibility visible
+    :transition-delay 0s
 
 @media (max-width: 750px)
   .control.home
