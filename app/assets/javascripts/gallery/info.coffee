@@ -57,7 +57,7 @@
 
             age = details.ages[tag_id]
             <div key={tag_id}>
-              <a href={"#/tags/#{tag.id}/#{tag.label}"}>
+              <a href={"/tags/#{tag.id}/#{tag.label}"}>
                 <Tag tag=tag />
               </a>
               {' '}

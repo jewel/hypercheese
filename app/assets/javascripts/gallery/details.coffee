@@ -265,7 +265,7 @@
             <a className="control next-control" href="##{nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls top">
-          <a className="control home" href="#/">
+          <a className="control home" href="/">
             <img src={@siteIcon()}/>
           </a>
 
@@ -277,7 +277,7 @@
                 item.tag_ids.map (tag_id) ->
                   tag = Store.state.tagsById[tag_id]
                   if tag
-                    <a className="tag-link" key={tag.id} href={"#/tags/#{tag.id}/#{tag.label}"}>
+                    <a className="tag-link" key={tag.id} href={"/tags/#{tag.id}/#{tag.label}"}>
                       <Tag tag=tag />
                     </a>
             }

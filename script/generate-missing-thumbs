@@ -47,7 +47,7 @@ puts "Missing exploded: #{missing_exploded.size}"
 errors = {}
 
 (missing_square + missing_large + missing_mp4 + missing_exploded).sort.uniq.reverse.each do |item_id|
-  puts "Fixing http://hypercheese.com/#/items/#{item_id}"
+  puts "Fixing http://hypercheese.com/items/#{item_id}"
 
   item = Item.find item_id
   begin
@@ -61,7 +61,7 @@ end
 warn ""
 warn "#{errors.size} errors"
 errors.each do |item_id,paths|
-  warn "http://hypercheese.com/#/items/#{item_id}"
+  warn "http://hypercheese.com/items/#{item_id}"
   paths.each do |path|
     warn "  originals/#{path.path}"
   end

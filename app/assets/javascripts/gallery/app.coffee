@@ -1,6 +1,6 @@
 @GalleryApp = React.createClass
   getInitialState: ->
-    state = @parseHash()
+    state = @parseUrl()
     state.search ||= ''
     state.update = 0
     state
@@ -13,10 +13,10 @@
         update: @state.update + 1
 
     Store.onNavigate =>
-      @setState @parseHash()
+      @setState @parseUrl()
 
     window.addEventListener 'popstate', =>
-      @setState @parseHash()
+      @setState @parseUrl()
 
     window.addEventListener 'keyup', @onKeyUp
 
@@ -32,16 +32,16 @@
         Store.state.selectMode = false
         Store.clearSelection()
 
-  parseHash: ->
-    hash = window.location.hash.substr(1)
-    if hash == '' || hash == '/'
+  parseUrl: ->
+    path = window.location.pathname
+    if path == '' || path == '/'
       return {
         page: 'home'
       }
 
-    parts = hash.split('/')
+    parts = path.split('/')
     if parts.length == 1 || parts[0] != ''
-      console.warn "Invalid URL: #{hash}"
+      console.warn "Invalid URL: #{path}"
       return {
         page: 'home'
       }
@@ -71,7 +71,7 @@
         search: str
       }
 
-    console.warn "Invalid URL: #{hash}"
+    console.warn "Invalid URL: #{path}"
     return {
       page: 'home'
     }

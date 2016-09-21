@@ -6,13 +6,13 @@
 
       <div>
         <div className="btn-group">
-          <a className="btn btn-default btn-primary" href="#/search/">All Photos</a>
+          <a className="btn btn-default btn-primary" href="/search/">All Photos</a>
         </div>
         {' '}
         <div className="btn-group">
           {
             recent.sources.map (source) =>
-              href = "#/search/source:#{source.label}"
+              href = "/search/source:#{source.label}"
               <a key={source.path} className="btn btn-default" href=href>{source.label} Photos</a>
           }
         </div>
@@ -20,15 +20,15 @@
       <br/>
       <div>
         <div className="btn-group">
-          <a className="btn btn-default" href="#/tags/">Tags</a>
+          <a className="btn btn-default" href="/tags/">Tags</a>
         </div>
         {' '}
         <div className="btn-group">
-          <a className="btn btn-default" href="#/search/starred">My Stars</a>
+          <a className="btn btn-default" href="/search/starred">My Stars</a>
         </div>
         {' '}
         <div className="btn-group">
-          <a className="btn btn-default" href="#/search/unjudged%20sort:random">Judge Mode</a>
+          <a className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</a>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
             if comment = activity.comment
               user = Store.state.userById
               <p className="clearfix comment" key="c#{comment.id}">
-                <a href="#/items/#{comment.item_id}">
+                <a href="/items/#{comment.item_id}">
                   <img src="/data/resized/square/#{comment.item_id}.jpg" />
                 </a>
                 <span className="text">{comment.text}</span><br/>
@@ -48,7 +48,7 @@
             else if bullhorn = activity.bullhorn
               user = Store.state.userById
               <p className="clearfix bullhorn" key="s#{bullhorn.id}">
-                <a href="#/items/#{bullhorn.item_id}">
+                <a href="/items/#{bullhorn.item_id}">
                   <img src="/data/resized/square/#{bullhorn.item_id}.jpg" />
                 </a>
                 <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
@@ -56,11 +56,11 @@
               </p>
             else if group = activity.item_group
               <p className="clearfix group" key="g#{group.item_id}">
-                <a href="#/items/#{group.item_id}">
+                <a href="/items/#{group.item_id}">
                   <img src="/data/resized/square/#{group.item_id}.jpg" />
                 </a>
                 <span className="text">
-                  <a href="#/search/item:#{group.ids}">
+                  <a href="/search/item:#{group.ids}">
                     {
                       msg = []
                       if group.photo_count

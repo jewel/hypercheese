@@ -490,11 +490,11 @@ class @Store
     @callback() if @callback
 
   @navigate: (url) ->
-    history.pushState {}, '', '#' + url
+    history.pushState {}, '', url
     @navigateCallback() if @navigateCallback
 
   @navigateWithoutHistory: (url) ->
-    history.replaceState {}, '', '#' + url
+    history.replaceState {}, '', url
     @navigateCallback() if @navigateCallback
 
   @navigateBack: ->
