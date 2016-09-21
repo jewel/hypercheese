@@ -13,12 +13,16 @@ class @SearchQuery
     orientation: true
     type: true
     sort: true
+    shared: true
 
   @multiple:
     year: true
     month: true
     source: true
     item: true
+
+  @caseSensitive:
+    shared: true
 
   @months: 'January February March April May June July August September October November December'.split ' '
 
@@ -52,7 +56,10 @@ class @SearchQuery
     # pull out options with values
     str = str.replace /\b(\w+):([-\w,]*)\b/g, (match, key, val) =>
       lkey = key.toLowerCase()
-      lval = val.toLowerCase()
+      if @constructor.caseSensitive[lkey]
+        lval = val
+      else
+        lval = val.toLowerCase()
       if @constructor.options[lkey]
         @options[lkey] = lval
       else if @constructor.multiple[lkey]

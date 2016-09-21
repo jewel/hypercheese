@@ -103,6 +103,11 @@ class Search
       items = items.where 'id in (?)', ids
     end
 
+    if @query[:shared]
+      share = Share.find_by_code( @query[:shared].to_s )
+      items = items.where "id in (?)", share.item_ids
+    end
+
     if @query[:path]
       items = items.where [ 'id in ( select item_id from item_paths where path collate utf8_general_ci like ? )', "%#{@query[:path]}%" ]
     end
