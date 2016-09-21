@@ -4,6 +4,7 @@ class @Store
     params.error ||= (xhr, status, error) ->
       alert "Problem with server: #{error}"
 
+    params.url = '/api' + params.url
     $.ajax params
 
   @init: ->
