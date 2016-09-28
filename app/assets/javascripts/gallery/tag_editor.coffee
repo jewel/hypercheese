@@ -61,9 +61,9 @@
       </div>
       <ul>
         <li>used {tag.item_count.toLocaleString()} times</li>
-        <li>search for <a href={"/search/#{encodeURI(tag.label)}"}>{tag.label}</a></li>
-        <li>search for <a href={"/search/#{encodeURI("only #{tag.label}")}"}>{"only #{tag.label}"}</a></li>
-        <li>search for <a href={"/search/#{encodeURI("video #{tag.label}")}"}>{"video of #{tag.label}"}</a></li>
+        <li>search for <Link href={"/search/#{encodeURI(tag.label)}"}>{tag.label}</Link></li>
+        <li>search for <Link href={"/search/#{encodeURI("only #{tag.label}")}"}>{"only #{tag.label}"}</Link></li>
+        <li>search for <Link href={"/search/#{encodeURI("video #{tag.label}")}"}>{"video of #{tag.label}"}</Link></li>
       </ul>
       <form onSubmit={@saveChanges} style={width: "20em"}>
         <div className="form-group">

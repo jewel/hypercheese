@@ -258,16 +258,16 @@
         }
         {
           if prevLink
-            <a className="control prev-control" href="##{prevLink}" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
+            <a className="control prev-control" href={prevLink}" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
         }
         {
           if nextLink
-            <a className="control next-control" href="##{nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
+            <a className="control next-control" href={nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls top">
-          <a className="control home" href="/">
+          <Link className="control home" href="/">
             <img src={@siteIcon()}/>
-          </a>
+          </Link>
 
           <div></div>
 
@@ -277,9 +277,9 @@
                 item.tag_ids.map (tag_id) ->
                   tag = Store.state.tagsById[tag_id]
                   if tag
-                    <a className="tag-link" key={tag.id} href={"/tags/#{tag.id}/#{tag.label}"}>
+                    <Link className="tag-link" key={tag.id} href={"/tags/#{tag.id}/#{tag.label}"}>
                       <Tag tag=tag />
-                    </a>
+                    </Link>
             }
             <a className="control bullhorn" title="Tells others about this item" href="javascript:void(0)" onClick={@onBullhorn}>
               {

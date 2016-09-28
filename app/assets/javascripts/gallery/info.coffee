@@ -39,7 +39,7 @@
                   </div>
               }
               <div>
-                <a href="/items/download?ids=#{@props.item.id}">
+                <a href="/api/items/download?ids=#{@props.item.id}">
                   <i className="fa fa-download"/> Download
                 </a>
               </div>
@@ -57,9 +57,9 @@
 
             age = details.ages[tag_id]
             <div key={tag_id}>
-              <a href={"/tags/#{tag.id}/#{tag.label}"}>
+              <Link href={"/tags/#{tag.id}/#{tag.label}"}>
                 <Tag tag=tag />
-              </a>
+              </Link>
               {' '}
               <a href="javascript:void(0)" onClick=setTagIcon title="Set current photo as icon for this tag">
                 <i className="fa fa-link"/>

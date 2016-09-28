@@ -6,29 +6,29 @@
 
       <div>
         <div className="btn-group">
-          <a className="btn btn-default btn-primary" href="/search/">All Photos</a>
+          <Link className="btn btn-default btn-primary" href="/search/">All Photos</Link>
         </div>
         {' '}
         <div className="btn-group">
           {
             recent.sources.map (source) =>
               href = "/search/source:#{source.label}"
-              <a key={source.path} className="btn btn-default" href=href>{source.label} Photos</a>
+              <Link key={source.path} className="btn btn-default" href=href>{source.label} Photos</Link>
           }
         </div>
       </div>
       <br/>
       <div>
         <div className="btn-group">
-          <a className="btn btn-default" href="/tags/">Tags</a>
+          <Link className="btn btn-default" href="/tags/">Tags</Link>
         </div>
         {' '}
         <div className="btn-group">
-          <a className="btn btn-default" href="/search/starred">My Stars</a>
+          <Link className="btn btn-default" href="/search/starred">My Stars</Link>
         </div>
         {' '}
         <div className="btn-group">
-          <a className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</a>
+          <Link className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</Link>
         </div>
       </div>
 
@@ -39,28 +39,28 @@
             if comment = activity.comment
               user = Store.state.userById
               <p className="clearfix comment" key="c#{comment.id}">
-                <a href="/items/#{comment.item_id}">
+                <Link href="/items/#{comment.item_id}">
                   <img src="/data/resized/square/#{comment.item_id}.jpg" />
-                </a>
+                </Link>
                 <span className="text">{comment.text}</span><br/>
                 <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
               </p>
             else if bullhorn = activity.bullhorn
               user = Store.state.userById
               <p className="clearfix bullhorn" key="s#{bullhorn.id}">
-                <a href="/items/#{bullhorn.item_id}">
+                <Link href="/items/#{bullhorn.item_id}">
                   <img src="/data/resized/square/#{bullhorn.item_id}.jpg" />
-                </a>
+                </Link>
                 <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
                 <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
               </p>
             else if group = activity.item_group
               <p className="clearfix group" key="g#{group.item_id}">
-                <a href="/items/#{group.item_id}">
+                <Link href="/items/#{group.item_id}">
                   <img src="/data/resized/square/#{group.item_id}.jpg" />
-                </a>
+                </Link>
                 <span className="text">
-                  <a href="/search/item:#{group.ids}">
+                  <Link href="/search/item:#{group.ids}">
                     {
                       msg = []
                       if group.photo_count
@@ -69,7 +69,7 @@
                         msg.push "#{group.video_count} videos"
                       msg.join ' and '
                     }
-                  </a> added to {group.source}
+                  </Link> added to {group.source}
                 </span><br/>
                 <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
               </p>

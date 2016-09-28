@@ -131,9 +131,9 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <a href={"/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
+      <Link href={"/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault} onContextMenu={@onContextMenu}/>
-      </a>
+      </Link>
       {
         if @props.showTagbox
           <div className="tagbox">

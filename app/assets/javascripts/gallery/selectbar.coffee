@@ -78,7 +78,7 @@
     for id of Store.state.selection
       ids.push id
 
-    downloadLink = "/items/download?ids=#{ids.join ','}"
+    downloadLink = "/api/items/download?ids=#{ids.join ','}"
 
     tags = Store.state.pendingTags
 

@@ -62,9 +62,9 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
-          <a className="navbar-brand" href="/">
+          <Link className="navbar-brand" href="/">
             <img style={height: '20px'} src={@siteIcon()}/>
-          </a>
+          </Link>
           <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default search-button">
             <i className="fa fa-search fa-fw"/>
             {" #{Store.state.query} "}
@@ -83,7 +83,7 @@
               </a>
           }
           <ul className="dropdown-menu pull-right">
-            <li><a href="/tags">Tags</a></li>
+            <li><Link href="/tags">Tags</Link></li>
             <li>
               <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
             </li>
