@@ -24,6 +24,7 @@ HyperCheese::Application.routes.draw do
         post :add_tags
         post :remove_tag
         get :download
+        post :shares
       end
       get :details
       post :toggle_star
@@ -35,9 +36,10 @@ HyperCheese::Application.routes.draw do
 
     resources :tags
 
-    resources :shares do
-      get :download
-    end
+  end
+
+  resources :shares do
+    get :download
   end
 
   root to: 'home#index'

@@ -49,6 +49,25 @@ class ItemsController < ApplicationController
     render json: res, each_serializer: ItemSerializer, meta: { search_key: search_key, total: ids.size }
   end
 
+  def shares
+    code = SecureRandom.urlsafe_base64 8
+
+    Share.transaction do
+      share = Share.new
+      share.user = current_user
+      share.code = code
+      share.save
+
+      items_params[:items].each do |item_id|
+        ShareItem.create share: share, item_id: item_id
+      end
+    end
+
+    url = "#{request.protocol}#{request.host_with_port}/shares/#{code}"
+
+    render json: { url: url }
+  end
+
   def show
     id = params[:id].to_i
     @item = Item.find id
@@ -152,6 +171,10 @@ class ItemsController < ApplicationController
   end
 
   private
+
+  def items_params
+    params.permit items: []
+  end
 
   def item_tag_params
     params.permit items: [], tags: []

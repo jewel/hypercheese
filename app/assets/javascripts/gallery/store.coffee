@@ -232,7 +232,7 @@ class @Store
 
     @jax(
       type: "POST"
-      url: "/shares"
+      url: "/items/shares"
       data:
         items: ids
     ).then (res) ->
