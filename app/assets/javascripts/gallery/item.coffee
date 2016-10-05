@@ -1,11 +1,16 @@
 @Item = React.createClass
   onClick: (e) ->
     if e.button == 0
+      e.preventDefault()
+
       # Detect fake mouse clicks made by touch events
       fakeMouse = @lastTouchEvent && Date.now() - @lastTouchEvent < 500
       if fakeMouse && (Store.state.selectionCount > 0 || Store.state.selectMode)
-        e.preventDefault()
         Store.toggleSelection @props.item.id
+
+      else
+        e.preventDefault()
+        Store.navigate "/items/#{@props.item.id}"
 
   onMouseUp: (e) ->
     return unless e.button == 2
@@ -131,9 +136,9 @@
 
 
     <div className={classes.join ' '} key="#{item.index}">
-      <Link href={"/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
+      <a href={"/items/#{@props.item.id}"} onClick={@onClick} onMouseDown={@onMouseDown} onMouseOver={@onMouseOver} onMouseUp={@onMouseUp} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onContextMenu={@onContextMenu}>
         <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={@disableDefault} onContextMenu={@onContextMenu}/>
-      </Link>
+      </a>
       {
         if @props.showTagbox
           <div className="tagbox">
