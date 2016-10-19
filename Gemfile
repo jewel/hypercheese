@@ -13,7 +13,6 @@ group :assets do
   gem 'uglifier'
   gem 'jquery-rails'
   gem 'react-rails'
-  gem 'lightbox2-rails'
   gem 'sprockets-coffee-react'
   gem 'font-awesome-rails'
   gem 'bootstrap-sass'

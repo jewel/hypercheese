@@ -1,6 +1,5 @@
 @Details = React.createClass
   getInitialState: ->
-    Store.state.showInfo = false
     playing: false
     playStarted: false
     showControls: true
@@ -17,26 +16,13 @@
 
     switch e.code
       when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
-        Store.navigateWithoutHistory @linkTo(1)
+        Store.navigateToItem @neighbor(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
-        Store.navigateWithoutHistory @linkTo(-1)
+        Store.navigateToItem @neighbor(-1)
       when 'KeyF'
         @onFullScreen()
       when 'KeyI'
         @onInfo()
-      when 'KeyT'
-        Store.selectItem @props.itemId
-        Store.needsRedraw()
-
-  onInfo: (e) ->
-    Store.state.showInfo = !Store.state.showInfo
-    Store.needsRedraw()
-
-  onStar: (e) ->
-    Store.toggleItemStar @props.itemId
-
-  onBullhorn: (e) ->
-    Store.toggleItemBullhorn @props.itemId
 
   fullscreenFunctions: [
       'requestFullscreen'
@@ -57,9 +43,6 @@
     html = document.documentElement
     if func = @fullScreenFunction()
       html[func].apply html
-
-  onSelect: (e) ->
-    Store.toggleSelection @props.itemId
 
   onTouchStart: (e) ->
     return unless e.touches.length == 1
@@ -128,13 +111,14 @@
 
     @resetSwipe()
 
-    Store.navigateWithoutHistory @linkTo(dir)
+    Store.navigateToItem @neighbor(dir)
     @showSwipe 0
 
   onClose: (e) ->
     e.stopPropagation()
 
-    Store.navigateBack()
+    Store.state.showItem = null
+    Store.needsRedraw()
 
   toggleControls: (e) ->
     # Note: this preventDefault() causes the controls to be inoperable in FF
@@ -157,12 +141,12 @@
   navigateNext: (e) ->
     e.preventDefault() if e
     @stopVideo()
-    Store.navigateWithoutHistory @linkTo(1)
+    Store.navigateToItem @neighbor(1)
 
   navigatePrev: (e) ->
     e.preventDefault() if e
     @stopVideo()
-    Store.navigateWithoutHistory @linkTo(-1)
+    Store.navigateToItem @neighbor(-1)
 
   stopVideo: ->
     @setState
@@ -190,11 +174,6 @@
 
     return "/data/resized/#{size}/#{itemId}.jpg"
 
-  linkTo: (dir) ->
-    itemId = @neighbor(dir)
-    if itemId
-      return '/items/' + itemId
-
   siteIcon: ->
     return @_siteIcon if @_siteIcon?
     elem = document.querySelector 'link[rel=icon]'
@@ -202,7 +181,6 @@
     @_siteIcon = elem.href
 
   render: ->
-    Store.state.highlight = @props.itemId
     item = Store.fetchItem @props.itemId
 
     # make sure that the next batch is loaded if they are a fast clicker
@@ -210,14 +188,6 @@
 
     if item
       Store.executeSearch item.index - margin, item.index + margin
-
-    prevLink = @linkTo -1
-    nextLink = @linkTo 1
-
-    # preload neighbors details
-    if item && Store.state.showInfo
-      Store.getDetails @neighbor(1)
-      Store.getDetails @neighbor(-1)
 
     classes = ['details-window']
     classes.push 'show-controls' if @state.showControls
@@ -248,77 +218,24 @@
               <a title="Play video" className="control video-control" href="javascript:void(0)" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></a>
         }
         {
-          if prevLink
-            <a className="control prev-control" href={prevLink}" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
+          if @neighbor(-1)
+            <a className="control prev-control" href="javascript:void(0)" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
         }
         {
-          if nextLink
-            <a className="control next-control" href={nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
+          if @neighbor(1)
+            <a className="control next-control" href="javascript:void(0)" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls top">
-          <Link className="control home" href="/">
-            <img src={@siteIcon()}/>
-          </Link>
-
           <div></div>
 
           <div className="right-side">
-            {
-              if item
-                item.tag_ids.map (tag_id) ->
-                  tag = Store.state.tagsById[tag_id]
-                  if tag
-                    <Link className="tag-link" key={tag.id} href={"/tags/#{tag.id}/#{tag.label}"}>
-                      <Tag tag=tag />
-                    </Link>
-            }
-            <a className="control bullhorn" title="Tells others about this item" href="javascript:void(0)" onClick={@onBullhorn}>
-              {
-                if item
-                  if item.bullhorned
-                    <i className="fa fa-bullhorn fa-fw active"/>
-                  else
-                    <i className="fa fa-bullhorn fa-fw"/>
-              }
-            </a>
-            <a className="control star" title="Bookmark for future reference" href="javascript:void(0)" onClick={@onStar}>
-              {
-                if item
-                  if item.starred
-                    <i className="fa fa-star fa-fw"/>
-                  else
-                    <i className="fa fa-star-o fa-fw"/>
-              }
-            </a>
             {
               # FIXME Only show this on devices without a keyboard
               if @fullScreenFunction()
                 <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
             }
-            <a className="control" href="javascript:void(0)" onClick={@onSelect}>
-              {
-                if Store.state.selection[@props.itemId]
-                  <i className="fa fa-check-square-o fa-fw"/>
-                else
-                  <i className="fa fa-square-o fa-fw"/>
-              }
-            </a>
-            <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
             <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
           </div>
         </div>
-        <div className="controls bottom">
-          <div></div>
-          <div className="centered">
-            <RateButton onNext={@navigateNext} type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
-            <RateButton onNext={@navigateNext} type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
-            <RateButton onNext={@navigateNext} type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
-          </div>
-          <div></div>
-        </div>
       </div>
-      {
-        if item && Store.state.showInfo
-          <Info item={item} onInfo={@onInfo}/>
-      }
     </div>
