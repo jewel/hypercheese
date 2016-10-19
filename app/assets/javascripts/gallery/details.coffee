@@ -179,10 +179,11 @@
     Store.navigateWithoutHistory @linkTo(-1)
 
   stopVideo: ->
-    @refs.video.pause()
-    @setState
-      playing: false
-      showVideoControls: false
+    if @refs.video
+      @refs.video.pause()
+      @setState
+        playing: false
+        showVideoControls: false
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
