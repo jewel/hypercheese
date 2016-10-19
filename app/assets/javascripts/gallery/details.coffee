@@ -2,7 +2,7 @@
   getInitialState: ->
     Store.state.showInfo = false
     playing: false
-    playStarted: false
+    showVideoControls: false
     showControls: true
 
   componentDidMount: ->
@@ -145,14 +145,26 @@
   onPlay: (e) ->
     @refs.video.play()
     @setState
-      playing: true
-      playStarted: true
-      showControls: @state.playStarted
+      showControls: false
+      showVideoControls: true
 
   onPause: (e) ->
     @refs.video.pause()
     @setState
+      showVideoControls: false
+
+  onVideoPlaying: (e) ->
+    @setState
+      playing: true
+
+  onVideoPause: (e) ->
+    @setState
       playing: false
+
+  onVideoEnded: (e) ->
+    @setState
+      showVideoControls: false
+      showControls: true
 
   navigateNext: (e) ->
     e.preventDefault() if e
@@ -166,8 +178,6 @@
 
   stopVideo: ->
     @setState
-      playing: false
-      playStarted: false
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
@@ -227,7 +237,7 @@
         <div key={@props.itemId} ref="cur" className="detailed-image">
           {
             if item && item.variety == 'video'
-              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.playStarted}} preload="none" poster={@largeURL(@props.itemId)}/>
+              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.showVideoControls}} preload="none" poster={@largeURL(@props.itemId)} onPause={@onVideoPause} onPlaying={@onVideoPlaying} onEnded={@onVideoEnded} />
 
             else
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
