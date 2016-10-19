@@ -48,8 +48,8 @@
           <div className="navbar-brand">
             <img style={height: '20px'} src={@siteIcon()}/>
           </div>
-          <div className="navbar-text">
-            Hypercheese Shared Photos
+          <div className="navbar-brand" style={color: 'white'}>
+             {Store.state.items.length} items
           </div>
           <a href="/shares/#{Store.state.shareCode}/download" className="btn navbar-btn pull-right">
             <i className="fa fa-download"/> Download
