@@ -3,7 +3,7 @@ class SharesController < ApplicationController
   skip_before_filter :verify_approval!, only: [:show, :download]
 
   def show
-    @share = Share.find_by_code params[:id]
+    @share = Share.find_by_code params[:id].to_s
     @items = @share.items
 
     @title = "#{@items.size} Picture#{@items.size == 1 ? '' : 's'}"
@@ -14,14 +14,21 @@ class SharesController < ApplicationController
   end
 
   def items
-    @share = Share.find_by_code params[:share_id]
+    @share = Share.find_by_code params[:share_id].to_s
     @items = @share.items
 
     render json: @items, each_serializer: SharedItemSerializer
   end
 
   def download
-    @share = Share.find_by_code params[:share_id]
+    @share = Share.find_by_code params[:share_id].to_s
     download_zip @share.items
+  end
+
+  def download_item
+    @share = Share.find_by_code params[:share_id].to_s
+    item = @share.items.find params[:item_id].to_i
+
+    download_zip [item]
   end
 end

@@ -27,6 +27,9 @@
         if showItem
           <Details itemId={showItem.id} search={@state.search} viewonly=true />
         else
-          <Results />
+          [
+            <NavBar key="navbar" />
+            <Results key="results" />
+          ]
       }
     </div>

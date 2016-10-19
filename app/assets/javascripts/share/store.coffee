@@ -11,7 +11,6 @@ class @Store
     $.ajax params
 
   @init: (shareCode) ->
-
     @jax
       url: "/shares/#{shareCode}/items"
       success: (res) =>
@@ -29,8 +28,8 @@ class @Store
     @state =
       items: []
       itemsById: {}
-      selection: {}
       showItem: null
+      shareCode: shareCode
 
   @fetchItem: (itemId) ->
     @getItem itemId

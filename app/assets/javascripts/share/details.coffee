@@ -229,6 +229,7 @@
           <div></div>
 
           <div className="right-side">
+            <a className="control" href="/shares/#{Store.state.shareCode}/download_item/#{@props.itemId}"><i className="fa fa-download fa-fw" /></a>
             {
               # FIXME Only show this on devices without a keyboard
               if @fullScreenFunction()
