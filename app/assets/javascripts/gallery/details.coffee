@@ -17,8 +17,10 @@
 
     switch e.code
       when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
+        @stopVideo()
         Store.navigateWithoutHistory @linkTo(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
+        @stopVideo()
         Store.navigateWithoutHistory @linkTo(-1)
       when 'KeyF'
         @onFullScreen()
@@ -177,7 +179,10 @@
     Store.navigateWithoutHistory @linkTo(-1)
 
   stopVideo: ->
+    @refs.video.pause()
     @setState
+      playing: false
+      showVideoControls: false
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
