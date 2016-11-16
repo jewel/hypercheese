@@ -243,6 +243,7 @@
             <a className="control next-control" href="javascript:void(0)" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
         }
         <div className="controls top">
+          <div className="details-label">{item.filename}</div>
           <div></div>
 
           <div className="right-side">
