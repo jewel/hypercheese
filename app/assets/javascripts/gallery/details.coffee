@@ -83,25 +83,9 @@
     @refs.video.play()
     @setState
       showControls: false
-      showVideoControls: true
 
   onPause: (e) ->
     @refs.video.pause()
-    @setState
-      showVideoControls: false
-
-  onVideoPlaying: (e) ->
-    @setState
-      playing: true
-
-  onVideoPause: (e) ->
-    @setState
-      playing: false
-
-  onVideoEnded: (e) ->
-    @setState
-      showVideoControls: false
-      showControls: true
 
   navigateNext: (e) ->
     e.preventDefault() if e
@@ -118,7 +102,6 @@
       @refs.video.pause()
       @setState
         playing: false
-        showVideoControls: false
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
@@ -145,6 +128,14 @@
     itemId = @neighbor(dir)
     if itemId
       return '/items/' + itemId
+
+  showControls: ->
+    @setState
+      showControls: true
+
+  setPlaying: (val)->
+    @setState
+      playing: val
 
   siteIcon: ->
     return @_siteIcon if @_siteIcon?
@@ -178,7 +169,7 @@
         <Swiper  curKey={@props.itemId} prevKey={@neighbor(-1)} nextKey={@neighbor(1)} prevSrc={@largeURL(@neighbor(-1))} nextSrc={@largeURL(@neighbor(1))} moveTo={@moveTo}>
           {
             if item && item.variety == 'video'
-              <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.showVideoControls}} preload="none" poster={@largeURL(@props.itemId)} onPause={@onVideoPause} onPlaying={@onVideoPlaying} onEnded={@onVideoEnded} />
+              <Video ref="video" setPlaying={@setPlaying} toggleControls={@toggleControls} showControls={@showControls} poster={@largeURL(@props.itemId)} itemId={@props.itemId} />
 
             else
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
