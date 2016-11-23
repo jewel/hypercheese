@@ -63,75 +63,10 @@
   onSelect: (e) ->
     Store.toggleSelection @props.itemId
 
-  onTouchStart: (e) ->
-    return unless e.touches.length == 1
-    touch = e.touches[0]
-    @startTouch = touch
-    @prevTime = performance.now()
-    null
-
-  onTouchMove: (e) ->
-    return unless start = @startTouch
-    touch = e.touches[0]
-    @position = touch.pageX - start.pageX
-    @time = performance.now()
-    @showSwipe @position
-
-  onTouchEnd: (e) ->
-    return unless start = @startTouch
-    elapsed = @time - @prevTime
-    speed = @position / elapsed
-    if Math.abs(speed) > 0.25
-      @target = Math.sign(speed)
-    else
-      @target = 0
-    @prevTime = @time
-    window.requestAnimationFrame @animateSwipe
-
-  animateSwipe: (now) ->
-    elapsed = now - @prevTime
-    @prevTime = now
-    speed = 4.0
-    speed *= -1 if @target < 0
-    speed *= -Math.sign(@position) if @target == 0
-    oldPosition = @position
-    @position += speed * elapsed
-
-    width = document.documentElement.clientWidth
-
-    if @target == 0 && Math.sign(@position) != Math.sign(oldPosition)
-      @resetSwipe()
-      @showSwipe 0
-    else if @target == 1 && @position > width * 1.02
-      @showSwipe width * 1.02
-      window.requestAnimationFrame =>
-        @moveTo -1
-    else if @target == -1 && @position < -width * 1.02
-      @showSwipe -width * 1.02
-      window.requestAnimationFrame =>
-        @moveTo 1
-    else
-      @showSwipe @position
-      window.requestAnimationFrame @animateSwipe
-
-  resetSwipe: ->
-    @position = null
-    @prevTime = null
-    @startTouch = null
-
-  showSwipe: (position) ->
-    style = "translate3d(#{position}px, 0px, 0px)"
-    @refs.prev.style.transform = style if @refs.prev
-    @refs.cur.style.transform = style if @refs.cur
-    @refs.next.style.transform = style if @refs.next
-
   moveTo: (dir) ->
     @stopVideo()
 
-    @resetSwipe()
-
     Store.navigateWithoutHistory @linkTo(dir)
-    @showSwipe 0
 
   onClose: (e) ->
     e.stopPropagation()
@@ -239,8 +174,8 @@
     classes.push 'show-controls' if @state.showControls
 
     <div className="details-wrapper">
-      <div className={classes.join ' '} onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onMouseMove={@onMouseMove}>
-        <div key={@props.itemId} ref="cur" className="detailed-image">
+      <div className={classes.join ' '}>
+        <Swiper  curKey={@props.itemId} prevKey={@neighbor(-1)} nextKey={@neighbor(1)} prevSrc={@largeURL(@neighbor(-1))} nextSrc={@largeURL(@neighbor(1))} moveTo={@moveTo}>
           {
             if item && item.variety == 'video'
               <video src={"/data/resized/stream/#{@props.itemId}.mp4"} ref="video" onClick={@toggleControls} controls={@state.showVideoControls}} preload="none" poster={@largeURL(@props.itemId)} onPause={@onVideoPause} onPlaying={@onVideoPlaying} onEnded={@onVideoEnded} />
@@ -248,13 +183,7 @@
             else
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
-        </div>
-        <div key={@neighbor(-1)} ref="prev" className="detailed-prev">
-          <img ref="prevImage" src={@largeURL(@neighbor(-1))}/>
-        </div>
-        <div key={@neighbor(1)} ref="next" className="detailed-next">
-          <img ref="nextImage" src={@largeURL(@neighbor( 1))}/>
-        </div>
+        </Swiper>
 
         {
           if item && item.variety == 'video'
