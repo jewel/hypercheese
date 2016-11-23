@@ -65,9 +65,7 @@
               ([tag].concat(tag.children)).map (child) =>
                 if child.children.length == 0 || tag == child
                   <div key={child.id} className="tag">
-                    <Link href={"/tags/#{child.id}/#{encodeURI child.label}"}>
-                      <Tag tag=child />
-                    </Link>
+                    <TagLink tag=child />
                     {" #{child.label} (#{child.item_count.toLocaleString()}) "}
                   </div>
             }

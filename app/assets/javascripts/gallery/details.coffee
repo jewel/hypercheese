@@ -284,9 +284,7 @@
                 item.tag_ids.map (tag_id) ->
                   tag = Store.state.tagsById[tag_id]
                   if tag
-                    <Link className="tag-link" key={tag.id} href={"/tags/#{tag.id}/#{tag.label}"}>
-                      <Tag tag=tag />
-                    </Link>
+                    <TagLink key={tag.id} className="tag-link" tag=tag />
             }
             <a className="control bullhorn" title="Tells others about this item" href="javascript:void(0)" onClick={@onBullhorn}>
               {
