@@ -166,10 +166,24 @@
 
     <div className="details-wrapper">
       <div className={classes.join ' '}>
-        <Swiper  curKey={@props.itemId} prevKey={@neighbor(-1)} nextKey={@neighbor(1)} prevSrc={@largeURL(@neighbor(-1))} nextSrc={@largeURL(@neighbor(1))} moveTo={@moveTo}>
+        <Swiper
+          curKey={@props.itemId}
+          prevKey={@neighbor(-1)}
+          nextKey={@neighbor(1)}
+          prevSrc={@largeURL(@neighbor(-1))}
+          nextSrc={@largeURL(@neighbor(1))}
+          moveTo={@moveTo}
+        >
           {
             if item && item.variety == 'video'
-              <Video ref="video" setPlaying={@setPlaying} toggleControls={@toggleControls} showControls={@showControls} poster={@largeURL(@props.itemId)} itemId={@props.itemId} />
+              <Video
+                ref="video"
+                setPlaying={@setPlaying}
+                toggleControls={@toggleControls}
+                showControls={@showControls}
+                poster={@largeURL(@props.itemId)}
+                itemId={@props.itemId}
+              />
 
             else
               <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
@@ -179,18 +193,12 @@
         {
           if item && item.variety == 'video'
             if @state.playing
-              <a title="Pause video" className="control video-control" href="javascript:void(0)" onClick={@onPause}><i className="fa fa-fw fa-pause"></i></a>
+              <ControlIcon title="Pause video" className="video-control" onClick={@onPause} icon="fa-pause"/>
             else
-              <a title="Play video" className="control video-control" href="javascript:void(0)" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></a>
+              <ControlIcon title="Play video" className="video-control" onClick={@onPlay} icon="fa-play"/>
         }
-        {
-          if prevLink
-            <a className="control prev-control" href={prevLink}" onClick={@navigatePrev}><i className="fa fa-arrow-left"/></a>
-        }
-        {
-          if nextLink
-            <a className="control next-control" href={nextLink}" onClick={@navigateNext}><i className="fa fa-arrow-right"/></a>
-        }
+        <ControlIcon condition=prevLink className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
+        <ControlIcon condition=nextLink className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
         <div className="controls top">
           <Link className="control home" href="/">
             <img src={@siteIcon()}/>
@@ -206,24 +214,18 @@
                   if tag
                     <TagLink key={tag.id} className="tag-link" tag=tag />
             }
-            <a className="control bullhorn" title="Tells others about this item" href="javascript:void(0)" onClick={@onBullhorn}>
-              {
-                if item
-                  if item.bullhorned
-                    <i className="fa fa-bullhorn fa-fw active"/>
-                  else
-                    <i className="fa fa-bullhorn fa-fw"/>
-              }
-            </a>
-            <a className="control star" title="Bookmark for future reference" href="javascript:void(0)" onClick={@onStar}>
-              {
-                if item
-                  if item.starred
-                    <i className="fa fa-star fa-fw"/>
-                  else
-                    <i className="fa fa-star-o fa-fw"/>
-              }
-            </a>
+            <ControlIcon
+              className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
+              title="Tells others about this item"
+              onClick={@onBullhorn}
+              icon="fa-bullhorn"
+            />
+            <ControlIcon
+              className="star"
+              title="Bookmark for future reference"
+              onClick={@onStar}
+              icon={if item && item.starred then "fa-star" else "fa-star-o"}
+            />
             {
               # FIXME Only show this on devices without a keyboard
               if @fullScreenFunction()
