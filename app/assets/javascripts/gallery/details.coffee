@@ -12,7 +12,7 @@
     window.removeEventListener 'keyup', @onKeyUp
 
   onKeyUp: (e) ->
-    unless e.target == document.body
+    if e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
       return
 
     switch e.code
