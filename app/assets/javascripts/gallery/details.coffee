@@ -7,6 +7,7 @@
 
   componentDidMount: ->
     window.addEventListener 'keyup', @onKeyUp
+    Store.state.openStack.push 'item'
 
   componentWillUnmount: ->
     window.removeEventListener 'keyup', @onKeyUp

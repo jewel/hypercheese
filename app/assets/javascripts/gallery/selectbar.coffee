@@ -6,6 +6,9 @@
     caretPosition: 0
     showTagLabels: false
 
+  componentDidMount: ->
+    Store.state.openStack.push 'select'
+
   onExit: (e) ->
     Store.state.selectMode = false
     Store.clearSelection()

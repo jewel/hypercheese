@@ -14,6 +14,7 @@
     Store.needsRedraw()
 
   onSelectMode: ->
+    Store.state.openStack.push 'select'
     Store.state.selectMode = true
     Store.needsRedraw()
 

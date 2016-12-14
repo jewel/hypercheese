@@ -22,15 +22,20 @@
 
   onKeyUp: (e) ->
     if e.keyCode == 27
-      if @state.page == 'item'
-        if Store.state.showInfo
+      while lastOpened = Store.state.openStack.pop()
+        page = @state.page
+        if lastOpened == 'info' && page == 'item' && Store.state.showInfo
           Store.state.showInfo = false
           Store.needsRedraw()
-        else
-          Store.navigate '/search/' + encodeURI(@state.search)
-      else if Store.state.selectionCount > 0 || Store.state.selectMode
-        Store.state.selectMode = false
-        Store.clearSelection()
+          break
+        if lastOpened == 'item' && page == 'item'
+          Store.navigateBack()
+          break
+        if lastOpened == 'select' && Store.state.selectionCount > 0 || Store.state.selectMode
+          Store.state.selectMode = false
+          Store.clearSelection()
+          break
+
 
   parseUrl: ->
     path = window.location.pathname
@@ -103,8 +108,6 @@
 
     showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
     showItem = @state.page == 'item' && @state.itemId != null
-    if showItem && !Store.state.selection[@state.itemId]
-      showSelection = false
 
     # The overflow-y parameter on the html tag needs to be set BEFORE
     # Results.initialState is called.  That's because having a scrollbar appear

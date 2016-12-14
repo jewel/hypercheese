@@ -2,6 +2,9 @@
   getInitialState: ->
     newComment: ''
 
+  componentDidMount: ->
+    Store.state.openStack.push 'info'
+
   onChangeNewComment: (e) ->
     @setState
       newComment: e.target.value

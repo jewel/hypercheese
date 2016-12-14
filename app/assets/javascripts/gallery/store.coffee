@@ -51,6 +51,7 @@ class @Store
       recent: null
       hasTouch: false
       showInfo: false
+      openStack: []
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
