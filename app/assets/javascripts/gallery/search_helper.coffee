@@ -26,6 +26,13 @@
       query: @state.query
       showCriteriaPicker: false
 
+  onClearText: (e) ->
+    @state.query.parse '', 0
+    @setState
+      userInput: ''
+      query: @state.query
+    @refs.search.focus()
+
   onChangeCriteriaValue: (e, opt) ->
     if SearchQuery.multiple[opt]
       values = e.target.value.split /,/
@@ -92,7 +99,23 @@
     <div className="search-helper">
       <form onSubmit={@onSearch} className="form-inline">
         <div className="form-group">
-          <input className="form-control" placeholder="Search" value={string} onChange={@changeUserInput} onClick={@moveCaret} onKeyUp={@moveCaret} onFocus={@onFocus} onBlur={@onBlur} type="text"/>
+          <div className="input-group">
+            <input
+              ref="search"
+              className="form-control"
+              placeholder="Search"
+              value={string}
+              onChange={@changeUserInput}
+              onClick={@moveCaret}
+              onKeyUp={@moveCaret}
+              onFocus={@onFocus}
+              onBlur={@onBlur}
+              type="text"
+            />
+            <span className="input-group-btn">
+              <button type="button" className="btn btn-secondary" onClick=@onClearText>&times;</button>
+            </span>
+          </div>
           {' '}
           <button className="btn btn-default btn-primary">
             <i className="fa fa-search"/> Search
