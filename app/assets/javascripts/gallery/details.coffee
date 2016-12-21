@@ -18,12 +18,15 @@
 
     switch e.code
       when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
+        @hideControls()
         @stopVideo()
         Store.navigateWithoutHistory @linkTo(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
+        @hideControls()
         @stopVideo()
         Store.navigateWithoutHistory @linkTo(-1)
       when 'KeyF'
+        @hideControls()
         @onFullScreen()
       when 'KeyI'
         @onInfo()
@@ -82,8 +85,7 @@
 
   onPlay: (e) ->
     @refs.video.play()
-    @setState
-      showControls: false
+    @hideControls()
 
   onPause: (e) ->
     @refs.video.pause()
@@ -133,6 +135,10 @@
   showControls: ->
     @setState
       showControls: true
+
+  hideControls: ->
+    @setState
+      showControls: false
 
   setPlaying: (val)->
     @setState
