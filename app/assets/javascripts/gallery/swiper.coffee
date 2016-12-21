@@ -7,6 +7,9 @@
     null
 
   onTouchMove: (e) ->
+    unless e.touches.length == 1
+      @startTouch = null
+      return
     return unless start = @startTouch
     touch = e.touches[0]
     @position = touch.pageX - start.pageX
