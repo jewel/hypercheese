@@ -49,26 +49,23 @@ class Search
     end
     @items = Item.none
 
-    tag_descendants = Hash.new { |h, k| h[k] = [] }
-    Tag.all.each do |tag|
-      parent = tag
-      while parent = parent.parent
-        tag_descendants[parent.id] << tag
-      end
-    end
-
     if @query[:any]
-      ids = tag_ids + tag_ids.map { |_| tag_descendants[_] }.flatten
-      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', ids
+      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', descendants(tag_ids)
     else
       tag_ids.each do |id|
-        descendants = tag_descendants[id] || []
-        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', [id] + descendants
+        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', descendants([id])
       end
     end
 
     if @query[:only]
       items = items.where 'id not in ( select item_id from item_tags where tag_id not in (?) )', tag_ids
+    end
+
+    if @query[:not]
+      tag = Tag.find_by_label @query[:not]
+      if tag
+        items = items.where 'id not in ( select item_id from item_tags where tag_id in (?))', descendants([tag.id]) - tag_ids
+      end
     end
 
     if @query[:has_comments]
@@ -168,5 +165,18 @@ class Search
       ids.concat (start.to_i..finish.to_i).to_a
     end
     ids
+  end
+
+  def descendants tag_ids
+    if !@descendants
+      @descendants = Hash.new { |h, k| h[k] = [] }
+      Tag.all.each do |tag|
+        parent = tag
+        while parent = parent.parent
+          @descendants[parent.id] << tag.id
+        end
+      end
+    end
+    tag_ids + tag_ids.map { |_| @descendants[_] || [] }.flatten
   end
 end
