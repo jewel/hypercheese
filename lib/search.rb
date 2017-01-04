@@ -63,7 +63,7 @@ class Search
     else
       tag_ids.each do |id|
         descendants = tag_descendants[id] || []
-        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', [id] + descendents
+        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', [id] + descendants
       end
     end
 
