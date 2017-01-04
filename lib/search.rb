@@ -49,11 +49,21 @@ class Search
     end
     @items = Item.none
 
+    tag_descendants = Hash.new { |h, k| h[k] = [] }
+    Tag.all.each do |tag|
+      parent = tag
+      while parent = parent.parent
+        tag_descendants[parent.id] << tag
+      end
+    end
+
     if @query[:any]
-      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', tag_ids
+      ids = tag_ids + tag_ids.map { |_| tag_descendants[_] }.flatten
+      items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', ids
     else
       tag_ids.each do |id|
-        items = items.where 'id in ( select item_id from item_tags where tag_id = ? )', id
+        descendants = tag_descendants[id] || []
+        items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', [id] + descendents
       end
     end
 
