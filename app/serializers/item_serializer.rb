@@ -24,7 +24,10 @@ class ItemSerializer < ActiveModel::Serializer
 
   def rating
     if scope
-      rating = object.ratings.where(user_id: scope.id).first
+      # Rating should already be loaded from database using "includes", so
+      # don't use a "where" here or rails will run another query
+
+      rating = object.ratings.to_a.select{ |rating| rating.user_id == scope.id }.first
       rating.value if rating
     end
   end
