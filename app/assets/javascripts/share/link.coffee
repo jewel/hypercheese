@@ -2,7 +2,6 @@
   onClick: (e) ->
     if e.button == 0
       e.preventDefault()
-      console.log "Going to #{@props.href}!"
 
   render: ->
     attrs = {}
