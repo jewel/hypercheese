@@ -39,6 +39,7 @@ class ApplicationController < ActionController::Base
     else
       image = MiniMagick::Image.open path
       temp = Tempfile.new ['hypercheese-convert', '.jpg']
+      image.format 'jpg'
       image.write temp.path
       fh = File.open temp.path, 'rb'
       [fh, File.basename(item.full_path) + ".JPG"]
