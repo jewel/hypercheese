@@ -24,6 +24,7 @@ HyperCheese::Application.routes.draw do
         post :add_tags
         post :remove_tag
         get :download
+        get :convert
         post :shares
       end
       get :details

@@ -160,8 +160,14 @@ class ItemsController < ApplicationController
 
   def download
     ids = params[:ids].split(/,/).map { |_| _.to_i }
-    items = Item.where id: ids
+    items = Item.where(id: ids).includes(:item_paths)
     download_zip items
+  end
+
+  def convert
+    ids = params[:ids].split(/,/).map { |_| _.to_i }
+    items = Item.where(id: ids).includes(:item_paths)
+    convert_to_jpeg_and_zip items
   end
 
   # GET /items/:id/details

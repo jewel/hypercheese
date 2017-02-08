@@ -24,14 +24,38 @@ class ApplicationController < ActionController::Base
       return send_file items.first.full_path
     end
 
-    # FIXME This won't work with more than 1024 files
-
-    files = items.map do |item|
+    files = items.lazy.map do |item|
       path = File.realpath item.full_path
       [File.open(path, 'rb'), File.basename(item.full_path)]
     end
 
     zipline files, "#{files.size}-from-hypercheese.zip"
+  end
+
+  def convert_to_jpeg item
+    path = File.realpath item.full_path
+    if path =~ /\.(jpg|jpeg)$/i
+      [File.open(path, 'rb'), File.basename(item.full_path)]
+    else
+      image = MiniMagick::Image.open path
+      temp = Tempfile.new ['hypercheese-convert', '.jpg']
+      image.write temp.path
+      fh = File.open temp.path, 'rb'
+      [fh, File.basename(item.full_path) + ".JPG"]
+    end
+  end
+
+  def convert_to_jpeg_and_zip items
+    if items.size == 1
+      res = convert_to_jpeg items.first
+      return send_file res.first
+    end
+
+    files = items.lazy.map do |item|
+      convert_to_jpeg item
+    end
+
+    zipline files, "#{files.size}-converted-from-hypercheese.zip"
   end
 
   def configure_permitted_parameters

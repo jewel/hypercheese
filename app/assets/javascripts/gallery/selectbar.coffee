@@ -83,6 +83,8 @@
 
     downloadLink = "/api/items/download?ids=#{ids.join ','}"
 
+    convertLink = "/api/items/convert?ids=#{ids.join ','}"
+
     tags = Store.state.pendingTags
 
     classes = ['navbar', 'select-navbar']
@@ -109,7 +111,8 @@
 
           <div className="pull-right">
             <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
-            <a title="Download" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
+            <a title="Download Originals" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
+            <a title="Convert to JPEG and Download" className="btn navbar-btn" href={convertLink}><i className="fa fa-flask"/></a>
             <a title="Close" className="btn navbar-btn" onClick={@onExit}> <i className="fa fa-times fa-fw"/> </a>
           </div>
         </div>
