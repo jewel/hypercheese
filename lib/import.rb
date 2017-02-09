@@ -164,9 +164,7 @@ module Import
     end
     if !item.height
       if type == 'photo'
-        image = Magick::Image.ping path
-        item.width = image.first.columns
-        item.height = image.first.rows
+        item.width, item.height = MiniMagick::Image.open(path)[:dimensions]
       else
         data = Probe.video path
         item.width = data[:width]
@@ -295,6 +293,7 @@ module Import
     FileUtils.mkdir_p File.dirname( dest )
 
     image = MiniMagick::Image.open source
+    image.format 'jpeg'
     temp = "#{dest}.#$$.jpg"
     image.combine_options do |c|
       if rotation
@@ -314,9 +313,10 @@ module Import
         # The '>' flag means to never enlarge
         c.thumbnail size_spec
       end
+      c.trim
+      c.colorspace 'sRGB'
       c.quality 88
     end
-    image.format 'jpeg'
     image.write temp
     if size == :large
       run "jpegtran -progressive #{se temp} > #{se temp}P"
