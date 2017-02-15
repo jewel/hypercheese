@@ -52,6 +52,7 @@ class @Store
       hasTouch: false
       showInfo: false
       openStack: []
+      judgeIcons: false
 
   @_updateTagIndexes: ->
     @state.tagsById = {}

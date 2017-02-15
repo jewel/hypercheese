@@ -163,6 +163,12 @@
     prevLink = @linkTo -1
     nextLink = @linkTo 1
 
+    judgeMode = false
+    if Store.state.query
+      q = new SearchQuery
+      q.parse Store.state.query
+      judgeMode = true if q.options.unjudged
+
     # preload neighbors details
     if item && Store.state.showInfo
       Store.getDetails @neighbor(1)
@@ -250,15 +256,18 @@
             <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
           </div>
         </div>
-        <div className="controls bottom">
-          <div></div>
-          <div className="centered">
-            <RateButton onNext={@navigateNext} type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
-            <RateButton onNext={@navigateNext} type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
-            <RateButton onNext={@navigateNext} type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
-          </div>
-          <div></div>
-        </div>
+        {
+          if judgeMode
+            <div className="controls bottom">
+              <div></div>
+              <div className="centered">
+                <RateButton onNext={@navigateNext} type="down" itemId={@props.itemId} icon="fa-thumbs-o-down"/>
+                <RateButton onNext={@navigateNext} type="meh" itemId={@props.itemId} icon="fa-meh-o"/>
+                <RateButton onNext={@navigateNext} type="up" itemId={@props.itemId} icon="fa-thumbs-o-up"/>
+              </div>
+              <div></div>
+            </div>
+        }
       </div>
       {
         if item && Store.state.showInfo
