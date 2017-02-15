@@ -14,9 +14,13 @@
 
     Store.onNavigate =>
       @setState @parseUrl()
+      window.scrollTo 0, 0
 
-    window.addEventListener 'popstate', =>
+    window.addEventListener 'popstate', (e) =>
       @setState @parseUrl()
+      if e.state.scrollPos?
+        window.requestAnimationFrame ->
+          window.scrollTo 0, e.state.scrollPos
 
     window.addEventListener 'keyup', @onKeyUp
 

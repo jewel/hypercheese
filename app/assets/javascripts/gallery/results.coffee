@@ -1,20 +1,6 @@
 @Results = React.createClass
   getInitialState: ->
-    scrollStart = Store.state.lastScrollPosition || 0
-    if highlight = Store.state.highlight
-      if item = Store.getItem highlight
-        row = Math.floor item.index / @imagesPerRow()
-        rowHeight = @rowHeight()
-        itemTop = row * rowHeight
-        itemBottom = itemTop + rowHeight
-        scrollBottom = scrollStart + @html.clientHeight
-
-        # If image is off current screen, change scroll position
-        if itemTop < scrollStart || itemBottom > scrollBottom
-          scrollStart = row * rowHeight - @html.clientHeight / 2 + rowHeight / 2
-
     scrollTop: 0
-    scrollStart: scrollStart
     showScrollButton: false
     haveScrolled: false
 
@@ -82,15 +68,6 @@
     window.addEventListener 'resize', @onResize, false
     window.addEventListener 'scroll', @onScroll, false
     window.addEventListener 'mouseup', @onMouseUp, false
-    @initialScroll()
-
-  # We can either restore scroll position to its last known position, or we can
-  # scroll to a specific item
-  initialScroll: ->
-    window.scroll 0, @state.scrollStart
-
-    @setState
-      haveScrolled: true
 
   componentWillUnmount: ->
     window.removeEventListener 'resize', @onResize, false
@@ -109,7 +86,6 @@
     # don't want to rebuild our entire screen every scroll event, to save
     # battery.
     scrollTop = window.pageYOffset
-    Store.state.lastScrollPosition = scrollTop
 
     if !@state.showScrollButton
       @setState

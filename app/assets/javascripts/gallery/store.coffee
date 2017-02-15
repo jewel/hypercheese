@@ -46,7 +46,6 @@ class @Store
       dragLeftStart: false
       dragging: {}
       zoom: defaultZoom
-      lastScrollPosition: null
       highlight: null
       recent: null
       hasTouch: false
@@ -492,6 +491,8 @@ class @Store
     @callback() if @callback
 
   @navigate: (url) ->
+    # Save off scroll position in old state
+    history.replaceState {scrollPos: window.scrollY}, '', window.location
     history.pushState {}, '', url
     @navigateCallback() if @navigateCallback
 
