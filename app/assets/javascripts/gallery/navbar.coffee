@@ -63,7 +63,7 @@
       <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
-          <Link className="navbar-brand" href="/">
+          <Link className="navbar-brand" href="/" onClick={@closeSearchHelper}>
             <img style={height: '20px'} src={@siteIcon()}/>
           </Link>
           <a href="javascript:void(0)" onClick={@onToggleSearchHelper} className="btn navbar-btn btn-default search-button">
