@@ -2,7 +2,6 @@
   getInitialState: ->
     scrollTop: 0
     showScrollButton: false
-    haveScrolled: false
 
   html: document.documentElement
 

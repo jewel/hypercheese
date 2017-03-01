@@ -1,6 +1,7 @@
 @Item = React.createClass
-  onClick: ->
-    Store.state.showItem = @props.item
+  onClick: (e) ->
+    e.preventDefault()
+    Store.navigate "/shares/#{Store.state.shareCode}/#{@props.item.id}"
     Store.needsRedraw()
 
   render: ->

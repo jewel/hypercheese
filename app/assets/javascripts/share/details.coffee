@@ -18,11 +18,11 @@
       when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
         @hideControls()
         @stopVideo()
-        Store.navigateToItem @neighbor(1)
+        Store.navigateWithoutHistory @linkTo(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
         @hideControls()
         @stopVideo()
-        Store.navigateToItem @neighbor(-1)
+        Store.navigateWithoutHistory @linkTo(-1)
       when 'KeyF'
         @hideControls()
         @onFullScreen()
@@ -74,12 +74,12 @@
   navigateNext: (e) ->
     e.preventDefault() if e
     @stopVideo()
-    Store.navigateToItem @neighbor(1)
+    Store.navigateWithoutHistory @linkTo(1)
 
   navigatePrev: (e) ->
     e.preventDefault() if e
     @stopVideo()
-    Store.navigateToItem @neighbor(-1)
+    Store.navigateWithoutHistory @linkTo(-1)
 
   stopVideo: ->
     if @refs.video
@@ -111,7 +111,7 @@
   linkTo: (dir) ->
     itemId = @neighbor(dir)
     if itemId
-      return '/items/' + itemId
+      return "/shares/#{Store.state.shareCode}/#{itemId}"
 
   showControls: ->
     @setState
@@ -139,6 +139,7 @@
 
     if item
       Store.executeSearch item.index - margin, item.index + margin
+
 
     prevLink = @linkTo -1
     nextLink = @linkTo 1
@@ -181,7 +182,7 @@
         <ControlIcon condition=prevLink className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
         <ControlIcon condition=nextLink className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
         <div className="controls top">
-          <div className="details-label">{item.filename}</div>
+          <div className="details-label">{item && item.filename}</div>
           <div></div>
 
           <div className="right-side">

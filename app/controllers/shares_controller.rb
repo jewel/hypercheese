@@ -3,7 +3,7 @@ class SharesController < ApplicationController
   skip_before_filter :verify_approval!
 
   def show
-    @share = Share.find_by_code params[:id].to_s
+    @share = Share.find_by_code params[:share_id].to_s
     @items = @share.items
 
     @title = "#{@items.size} Picture#{@items.size == 1 ? '' : 's'}"

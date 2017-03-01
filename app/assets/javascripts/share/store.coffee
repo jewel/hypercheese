@@ -50,11 +50,22 @@ class @Store
   @needsRedraw: ->
     @callback() if @callback
 
+  @navigate: (url) ->
+    # Save off scroll position in old state
+    history.replaceState {scrollPos: window.scrollY}, '', window.location
+    history.pushState {}, '', url
+    @navigateCallback() if @navigateCallback
+
+  @navigateWithoutHistory: (url) ->
+    history.replaceState {}, '', url
+    @navigateCallback() if @navigateCallback
+
+  @navigateBack: ->
+    history.back()
+
   @onChange: (callback) ->
     @callback = callback
 
-  @navigateToItem: (itemId) ->
-    item = @getItem itemId
-    @state.showItem = item
+  @onNavigate: (callback) ->
+    @navigateCallback = callback
 
-    @needsRedraw()

@@ -39,10 +39,12 @@ HyperCheese::Application.routes.draw do
 
   end
 
-  resources :shares do
-    get :download
-    get :items
-    get 'download_item/:item_id' => 'shares#download_item'
+  scope :shares do
+    get ':share_id' => 'shares#show'
+    get ':share_id/download' => 'shares#download'
+    get ':share_id/items' => 'shares#items'
+    get ':share_id/download_item/:item_id' => 'shares#download_item'
+    get ':share_id/(*path)' => 'shares#show'
   end
 
   root to: 'home#index'
