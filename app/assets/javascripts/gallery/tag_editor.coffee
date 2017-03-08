@@ -44,7 +44,7 @@
 
     choices = Store.loadIconChoices tag
 
-    tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+    tagIconURL = "/data/resized/s200/#{tag.icon}.jpg"
     if tag.icon == null
       tagIconURL = "/images/unknown-icon.png"
 
@@ -95,7 +95,7 @@
           <div className="icon-choice-list">
             {
               choices.map (itemId) ->
-                url = "/data/resized/square/#{itemId}.jpg"
+                url = "/data/resized/s50/#{itemId}.jpg"
                 updateIcon = ->
                   tag.icon = itemId
                   Store.updateTag(tag)

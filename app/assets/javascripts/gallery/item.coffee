@@ -93,7 +93,14 @@
       else
         "large"
     else
-      "square"
+      if @props.imageWidth > 200
+        "s400"
+      else if @props.imageWidth > 100
+        "s200"
+      else if @props.imageWidth > 50
+        "s100"
+      else
+        "s50"
 
     if item.id?
       squareImage = "/data/resized/#{size}/#{item.id}.jpg"
@@ -148,7 +155,7 @@
             }
             {
               firstTags.map (tag) ->
-                tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
+                tagIconUrl = "/data/resized/s50/#{tag.icon}.jpg"
                 if tag.icon == null
                   tagIconUrl = "/images/unknown-icon.png"
                 c = ["tag-icon"]

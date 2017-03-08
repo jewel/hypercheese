@@ -124,7 +124,10 @@ module Import
   end
 
   SIZES = {
-    :square => "200",
+    :s50 => "50",
+    :s100 => "100",
+    :s200 => "200",
+    :s400 => "400",
     :large => "1850x1000"
   }
 
@@ -302,7 +305,7 @@ module Import
         c.auto_orient
       end
       size_spec = SIZES[size]
-      if size == :square
+      if size =~ /^s\d+/ # square
         size_spec = size_spec.to_i
         c.thumbnail "x#{size_spec*2}"
         c.resize "#{size_spec*2}x<"

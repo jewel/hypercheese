@@ -134,7 +134,7 @@
                 @setState
                   showTagLabels: true
 
-            tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+            tagIconURL = "/data/resized/s50/#{tag.icon}.jpg"
             if tag.icon == null
               tagIconURL = "/images/unknown-icon.png"
 
@@ -158,7 +158,7 @@
           tags.map (part) ->
             if part.match?
               tag = part.match
-              tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+              tagIconURL = "/data/resized/s50/#{tag.icon}.jpg"
               if tag.icon == null
                 tagIconURL = "/images/unknown-icon.png"
 

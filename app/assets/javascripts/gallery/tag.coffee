@@ -1,7 +1,7 @@
 @Tag = React.createClass
   render: ->
     tag = @props.tag
-    tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
+    tagIconURL = "/data/resized/s100/#{tag.icon}.jpg"
     if tag.icon == null
       tagIconURL = "/images/unknown-icon.png"
 
