@@ -176,6 +176,7 @@
 
     classes = ['details-window']
     classes.push 'show-controls' if @state.showControls
+    classes.push 'judge-bar' if judgeMode
 
     <div className="details-wrapper">
       <div className={classes.join ' '}>
