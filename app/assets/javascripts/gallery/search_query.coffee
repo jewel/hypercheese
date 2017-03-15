@@ -15,6 +15,7 @@ class @SearchQuery
     sort: true
     shared: true
     not: true
+    age: true
 
   @multiple:
     year: true

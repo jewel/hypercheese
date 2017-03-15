@@ -127,6 +127,17 @@ class Search
       items = items.where 'month(taken) in (?)', @query[:month].map(&:to_i)
     end
 
+    if @query[:age]
+      tag = Tag.where(id: tag_ids).where.not(birthday: nil).order('birthday desc').first
+      age = @query[:age].to_i
+      if tag
+        birthday = tag.birthday
+        start = birthday + age.years
+        finish = start + 1.years
+        items = items.where('taken between ? AND ?', start, finish)
+      end
+    end
+
     raise "Invalid 'by'" if @query[:sort] && @query[:sort] !~ /\A\w+\Z/
     @query[:sort] = 'md5' if @query[:sort] == 'random'
 
