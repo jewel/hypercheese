@@ -36,7 +36,7 @@ gem 'active_model_serializers'
 gem 'haml-rails'
 
 gem 'devise'
-gem 'omniauth'
+gem 'omniauth', '=1.4.2'
 gem 'omniauth-facebook'
 
 gem 'sucker_punch'
