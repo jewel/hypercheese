@@ -16,6 +16,7 @@ class @SearchQuery
     shared: true
     not: true
     age: true
+    path: true
 
   @multiple:
     year: true

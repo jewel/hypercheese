@@ -116,7 +116,7 @@ class Search
     end
 
     if @query[:path]
-      items = items.where [ 'id in ( select item_id from item_paths where path collate utf8_general_ci like ? )', "%#{@query[:path]}%" ]
+      items = items.where [ 'id in ( select item_id from item_paths where path like ? )', "%#{@query[:path]}%" ]
     end
 
     if @query[:year]
