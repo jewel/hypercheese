@@ -88,7 +88,10 @@
   onTouchStart: ->
     # No way to flip-flop on this at the moment, since touch events also create
     # mouse events for backwards compatibility.
-    Store.state.hasTouch = true
+
+    # For larger touch screens such as tablets or laptops, we want autofocus on
+    # the select bar
+    Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 800
 
   render: ->
     if @state.page == 'home'
