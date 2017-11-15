@@ -91,7 +91,7 @@
 
     # For larger touch screens such as tablets or laptops, we want autofocus on
     # the select bar
-    Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 800
+    Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 600
 
   render: ->
     if @state.page == 'home'
