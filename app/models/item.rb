@@ -61,10 +61,9 @@ class Item < ActiveRecord::Base
     hash
   end
 
-  def camera
+  def exif
     begin
-      exif = EXIFR::JPEG.new full_path
-      exif.model
+      EXIFR::JPEG.new full_path
     rescue
       nil
     end

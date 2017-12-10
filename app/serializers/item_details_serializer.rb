@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :camera, :paths, :ages
+  attributes :id, :taken, :width, :height, :exif, :paths, :ages
   has_many :comments, include: true
 
   def comments

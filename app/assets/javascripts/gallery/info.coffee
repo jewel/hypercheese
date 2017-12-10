@@ -25,13 +25,27 @@
         <td>{info}</td>
       </tr>
 
+    frac = (str) ->
+      return nil unless str
+      parts = str.split '/'
+      parts[0] / parts[1]
+
     <div className="info">
       <a className="btn pull-right" href="javascript:void(0)" onClick={@props.onInfo}><i className="fa fa-close"/></a>
       <table className="table">
         <tbody>
           {fact 'calendar', new Date(details.taken).toLocaleString()}
-          {fact 'camera', details.camera}
           {fact 'location-arrow', details.location}
+          {
+            if exif = details.exif
+              data = []
+              data.push <div key="model">{exif.model}</div>
+              data.push <div key="iso">ISO {exif.iso_speed_ratings}</div>
+              data.push <div key="flen">{frac exif.focal_length} mm</div>
+              data.push <div key="fnum">&fnof;/{frac exif.f_number}</div>
+              data.push <div key="time">{exif.exposure_time} sec</div>
+              fact 'camera', data
+          }
           <tr>
             <th><i className="fa fa-folder-o"/></th>
             <td>
