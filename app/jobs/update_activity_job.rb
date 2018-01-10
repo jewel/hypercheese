@@ -46,7 +46,7 @@ class UpdateActivityJob < ActiveJob::Base
   def perform(*args)
     cutoff = 45.days.ago
     events = []
-    events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
+    # events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Bullhorn.includes(:item, :user).where('created_at > ?', cutoff).to_a
 
     recent = Item.includes(:item_paths).where('deleted = 0').where('created_at > ?', cutoff)
