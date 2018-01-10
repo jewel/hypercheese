@@ -139,10 +139,7 @@ class Search
     end
 
     raise "Invalid 'by'" if @query[:sort] && @query[:sort] !~ /\A\w+\Z/
-    # Random needs to be somewhat deterministic otherwise people can't go
-    # forward and back and get consistent results.  Use current date so that
-    # the random order changes once a day.
-    @query[:sort] = 'rand(dayofyear(now()) * items.id)' if @query[:sort] == 'random'
+    @query[:sort] = 'rand()' if @query[:sort] == 'random'
 
     if @query[:sort] == 'age'
       age = "timestampdiff( second, (
