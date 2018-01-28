@@ -25,7 +25,6 @@ class @Store
       tags: []
       tagsLoaded: false
       tagsById: {}
-      tagsByLabel: {}
       tagIconChoices: null
       tagIconChoicesId: null
       details: {}
@@ -55,11 +54,9 @@ class @Store
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
-    @state.tagsByLabel = {}
     for tag in @state.tags
       tag.item_count = 0 if tag.item_count == null
       @state.tagsById[tag.id] = tag
-      @state.tagsByLabel[tag.label.toLowerCase()] = tag
 
   @fetchRecent: ->
     return @state.recent if @state.recent

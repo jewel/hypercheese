@@ -80,7 +80,7 @@
                 <i className="fa fa-link"/>
               </a>
               {' '}
-              <strong>{tag.label}</strong>
+              <strong>{tag.alias || tag.label}</strong>
               {' '}
               {
                 if age

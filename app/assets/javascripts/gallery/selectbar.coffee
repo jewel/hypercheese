@@ -140,12 +140,12 @@
 
             <span key={tag.id}>
               {
-                img = <img title={tag.label} className="tag-icon" onClick={select} src={tagIconURL}/>
+                img = <img title={tag.alias || tag.label} className="tag-icon" onClick={select} src={tagIconURL}/>
                 if @state.showTagLabels
                   <div className="selected">
                     {img}
                     <span>
-                      {" #{tag.label} (#{match.count}) "}
+                      {" #{tag.alias || tag.label} (#{match.count}) "}
                       <a href="javascript:void(0)" className="delete btn" onClick={del}><i className="fa fa-trash"/></a>
                     </span>
                   </div>
@@ -163,10 +163,10 @@
                 tagIconURL = "/images/unknown-icon.png"
 
               <span key={tag.id}>
-                <img title={tag.label} className="tag-icon new" src={tagIconURL}/>
+                <img title={tag.alias || tag.label} className="tag-icon new" src={tagIconURL}/>
                 {
                   if part.current
-                    " #{tag.label}"
+                    " #{tag.alias || tag.label}"
                 }
               </span>
             else

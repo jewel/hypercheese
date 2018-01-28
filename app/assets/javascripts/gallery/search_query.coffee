@@ -128,7 +128,7 @@ class @SearchQuery
     null
 
   stringify: ->
-    parts = @tags.map (tag) -> tag.label
+    parts = @tags.map (tag) -> tag.alias || tag.label
     for k,v of @options
       if @constructor.keywords[k]
         parts.push k if v == "true" || v == true

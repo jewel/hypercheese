@@ -132,7 +132,7 @@
       for tagId in extraTags
         tag = Store.state.tagsById[tagId]
         if tag
-          extraTagsLabels.push tag.label
+          extraTagsLabels.push(tag.alias || tag.label)
 
 
     <div className={classes.join ' '} key="#{item.index}">
@@ -154,7 +154,7 @@
                 c = ["tag-icon"]
                 if !used[tag.id]
                   c.push 'new'
-                <img title={tag.label} className={c.join ' '} key={tag.id} src={tagIconUrl}/>
+                <img title={tag.alias || tag.label} className={c.join ' '} key={tag.id} src={tagIconUrl}/>
             }
             {
               if extraTags.length > 0

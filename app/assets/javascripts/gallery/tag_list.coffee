@@ -9,7 +9,7 @@
   filterTest: (tag) ->
     for part in @state.filter.split(/\s+/)
       part = part.toLowerCase()
-      return false if tag.label.toLowerCase().indexOf(part) == -1
+      return false if (tag.alias || tag.label).toLowerCase().indexOf(part) == -1
 
     true
 
@@ -39,9 +39,9 @@
 
     setCategory = (tag, parent) ->
       if parent == ''
-        tag.category = tag.label
+        tag.category = tag.alias || tag.label
       else
-        tag.category = parent + "/" + tag.label
+        tag.category = parent + "/" + (tag.alias || tag.label)
       tag.children.forEach (child) ->
         setCategory child, tag.category
 
@@ -66,7 +66,7 @@
                 if child.children.length == 0 || tag == child
                   <div key={child.id} className="tag">
                     <TagLink tag=child />
-                    {" #{child.label} (#{child.item_count.toLocaleString()}) "}
+                    {" #{(child.alias || child.label)} (#{child.item_count.toLocaleString()}) "}
                   </div>
             }
           </div>

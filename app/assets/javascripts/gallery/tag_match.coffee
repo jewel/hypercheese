@@ -9,12 +9,12 @@ class @TagMatch
     tags = []
     # Check for exact match
     for tag in Store.state.tags
-      continue unless clean(tag.label) == str || lower(tag.label) == str
+      continue unless clean(tag.alias || tag.label) == str || lower(tag.alias || tag.label) == str
       tags.push tag
 
     # Check for prefix match
     for tag in Store.state.tags
-      continue unless clean(tag.label).indexOf( str ) == 0 || lower(tag.label).indexOf( str ) == 0
+      continue unless clean(tag.alias || tag.label).indexOf( str ) == 0 || lower(tag.alias || tag.label).indexOf( str ) == 0
       tags.push tag
 
     return tags
