@@ -26,8 +26,8 @@ ActiveRecord::Schema.define(version: 20180111021455) do
     t.text     "text",       limit: 65535
     t.integer  "user_id",    limit: 4
     t.integer  "item_id",    limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   add_index "comments", ["item_id"], name: "index_comments_on_item_id", using: :btree
@@ -38,13 +38,13 @@ ActiveRecord::Schema.define(version: 20180111021455) do
     t.datetime "finish"
     t.text     "description", limit: 65535
     t.integer  "location_id", limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   create_table "groups", force: :cascade do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "item_paths", force: :cascade do |t|
@@ -74,8 +74,8 @@ ActiveRecord::Schema.define(version: 20180111021455) do
     t.integer  "view_count",  limit: 4
     t.integer  "event_id",    limit: 4
     t.integer  "group_id",    limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                null: false
+    t.datetime "updated_at",                                null: false
     t.datetime "deleted_at"
     t.string   "variety",     limit: 255
     t.boolean  "deleted",                   default: false, null: false
@@ -86,8 +86,8 @@ ActiveRecord::Schema.define(version: 20180111021455) do
 
   create_table "locations", force: :cascade do |t|
     t.string   "name",       limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "ratings", force: :cascade do |t|
@@ -137,8 +137,8 @@ ActiveRecord::Schema.define(version: 20180111021455) do
     t.integer  "item_count",    limit: 4
     t.integer  "icon_item_id",  limit: 4
     t.integer  "parent_tag_id", limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
   end
 
   add_index "tags", ["label"], name: "index_tags_on_label", using: :btree
@@ -154,8 +154,8 @@ ActiveRecord::Schema.define(version: 20180111021455) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip",     limit: 255
     t.string   "last_sign_in_ip",        limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
     t.string   "role",                   limit: 255
     t.string   "provider",               limit: 255
     t.string   "uid",                    limit: 255

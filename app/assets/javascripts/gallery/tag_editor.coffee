@@ -7,6 +7,7 @@
 
     newLabel: @props.tag.label
     newParent: label
+    newAlias: @props.tag.alias
 
   changeLabel: (e) ->
     @setState

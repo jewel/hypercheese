@@ -1,7 +1,10 @@
 class TagsController < ApplicationController
   def index
-    @tags = Tag.all.joins("LEFT JOIN tag_aliases ON tags.id = tag_id").order '!!alias asc, item_count desc'
-    render json: @tags
+    aliases = TagAlias.where(user: current_user).index_by &:tag_id
+    # Aliased tags should come first so that they take priority when tagging.
+    tags = Tag.all.order 'item_count desc'
+    aliased, unaliased = tags.partition { |_| aliases[ _.id ] }
+    render json: aliased + unaliased
   end
 
   def create
@@ -18,8 +21,12 @@ class TagsController < ApplicationController
 
     tag_alias = TagAlias.where(user: current_user, tag: @tag).first
     if tag_alias
-      tag_alias.alias = alias_params[:alias]
-      tag_alias.save
+      if alias_params[:alias] == ''
+        tag_alias.delete
+      else
+        tag_alias.alias = alias_params[:alias]
+        tag_alias.save
+      end
     else
       TagAlias.create user: current_user, tag: @tag, alias: alias_params[:alias]
     end
