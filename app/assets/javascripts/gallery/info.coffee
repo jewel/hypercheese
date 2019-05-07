@@ -26,7 +26,7 @@
       </tr>
 
     frac = (str) ->
-      return nil unless str
+      return null unless str
       parts = str.split '/'
       parts[0] / parts[1]
 
