@@ -72,12 +72,12 @@
     window.removeEventListener 'resize', @onResize, false
     window.removeEventListener 'scroll', @onScroll, false
     window.removeEventListener 'mouseup', @onMouseUp, false
+    window.clearTimeout @scrollButtonTimer if @scrollButtonTimer
 
   hideScrollButton: ->
     @scrollButtonTimer = null
-    if @isMounted()
-      @setState
-        showScrollButton: false
+    @setState
+      showScrollButton: false
 
   onScroll: (e) ->
     # Only redraw once we have scrolled past an entire row.  We overdraw so
