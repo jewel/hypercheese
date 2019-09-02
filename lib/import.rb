@@ -200,7 +200,12 @@ module Import
 
     Dir.mkdir tmp
     info = Probe.video item.full_path
-    total_w, total_h = Scaler.scale info[:width], info[:height], 1920, 1080
+    target_w, target_h = [1920, 1080]
+    if info[:width] < info[:height]
+      target_w, target_h = [target_h, target_w]
+    end
+
+    total_w, total_h = Scaler.scale info[:width], info[:height], target_w, target_h
 
     # Have a frame about every three seconds
     target_frame_count = info[:duration] / 3
@@ -217,7 +222,7 @@ module Import
     gap = info[:duration] / total
     warn "gap will be #{gap.inspect}"
 
-    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -r #{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%06d.bmp"
+    run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -vf fps=#{1.0/gap} -vframes #{total} -s #{thumb_w}x#{thumb_h} -y #{se tmp}/out%06d.bmp"
 
     run "montage #{se tmp}/*.bmp -geometry #{thumb_w}x#{thumb_h}+0+0 -tile #{grid_w}x#{grid_h} #{se tmp}/grid.jpg"
     FileUtils.mkdir_p File.dirname( dest )
@@ -358,8 +363,8 @@ module Import
     height = [720, info[:height]].min
     rate = [60, info[:rate]].min
 
-    run "ffmpeg -v error -i #{se path} -pass 1 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -strict experimental -vf scale=-1:#{height} -r #{rate} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
-    run "ffmpeg -v error -i #{se path} -pass 2 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -vf scale=-1:#{height} -r #{rate} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
+    run "ffmpeg -v error -i #{se path} -pass 1 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -strict experimental -vf scale=-2:#{height} -r #{rate} -an -vcodec libx264 -pix_fmt yuv420p -f mp4 -y /dev/null"
+    run "ffmpeg -v error -i #{se path} -pass 2 -passlogfile /tmp/ffmpegfirstpass.#$$.log -preset veryslow -b:v 3000k -b:a 128k -ar 48000 -strict experimental -vf scale=-2:#{height} -r #{rate} -acodec aac -vcodec libx264 -pix_fmt yuv420p -f mp4 -y #{se tmp}"
 
     File.chmod 0644, tmp
     File.rename tmp, dest

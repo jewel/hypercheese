@@ -19,6 +19,11 @@ module Probe
       rate = stream[:r_frame_rate].split( '/' )
       info[:rate] = Rational(rate.first) / Rational(rate.second)
 
+      rotate = stream[:tags]&.[](:rotate)
+      if rotate == "270" || rotate == "90"
+        info[:width], info[:height] = [info[:height], info[:width]]
+      end
+
       break # use first video stream only
     end
 
