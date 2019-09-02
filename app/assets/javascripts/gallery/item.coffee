@@ -1,4 +1,4 @@
-@Item = React.createClass
+@Item = createReactClass
   onClick: (e) ->
     if e.button == 0
       e.preventDefault()

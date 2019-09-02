@@ -1,4 +1,4 @@
-@Swiper = React.createClass
+@Swiper = createReactClass
   onTouchStart: (e) ->
     return unless e.touches.length == 1
     touch = e.touches[0]

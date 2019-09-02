@@ -1,4 +1,4 @@
-@GalleryApp = React.createClass
+@GalleryApp = createReactClass
   getInitialState: ->
     state = @parseUrl()
     state.search ||= ''

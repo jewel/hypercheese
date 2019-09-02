@@ -1,4 +1,4 @@
-@Results = React.createClass
+@Results = createReactClass
   getInitialState: ->
     scrollTop: 0
     showScrollButton: false

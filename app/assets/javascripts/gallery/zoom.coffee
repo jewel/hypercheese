@@ -1,4 +1,4 @@
-@Zoom = React.createClass
+@Zoom = createReactClass
   getInitialState: ->
     zoom: Store.state.zoom
 
@@ -36,7 +36,7 @@
       {' '}
       {
         if !@props.small
-          <input className="form-control" type="range" min="1" max="10" step="1" defaultValue="5" value={@state.zoom} onChange={@onChange}/>
+          <input className="form-control" type="range" min="1" max="10" step="1" value={@state.zoom} onChange={@onChange}/>
       }
       {' '}
       {button @grow, <i onClick={@grow} className="fa fa-search-plus"/>}

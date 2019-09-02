@@ -1,4 +1,4 @@
-@Home = React.createClass
+@Home = createReactClass
   render: ->
     recent = Store.fetchRecent()
     <div className="container-fluid cheese-home">

@@ -1,4 +1,4 @@
-@SearchHelper = React.createClass
+@SearchHelper = createReactClass
   getInitialState: ->
     q = new SearchQuery
     q.parse Store.state.query

@@ -1,4 +1,4 @@
-@Info = React.createClass
+@Info = createReactClass
   getInitialState: ->
     newComment: ''
 

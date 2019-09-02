@@ -1,4 +1,4 @@
-@Link = React.createClass
+@Link = createReactClass
   onClick: (e) ->
     if @props.onClick
       @props.onClick e

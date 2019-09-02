@@ -1,4 +1,4 @@
-@ShareApp = React.createClass
+@ShareApp = createReactClass
   getInitialState: ->
     state = @parseUrl()
     state.search ||= ''

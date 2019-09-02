@@ -1,4 +1,4 @@
-@Results = React.createClass
+@Results = createReactClass
   render: ->
     <div className="share-results">
       {

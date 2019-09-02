@@ -1,5 +1,5 @@
 class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
-  skip_before_filter :verify_approval!
+  skip_before_action :verify_approval!
 
   def facebook
     @user = User.find_for_facebook_oauth(request.env['omniauth.auth'], current_user)

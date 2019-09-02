@@ -1,4 +1,4 @@
-@ControlIcon = React.createClass
+@ControlIcon = createReactClass
   render: ->
     return null if @props.condition? && !@props.condition
     iconClasses = "fa fa-fw #{@props.icon}"

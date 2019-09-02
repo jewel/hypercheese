@@ -1,4 +1,4 @@
-@Item = React.createClass
+@Item = createReactClass
   onClick: (e) ->
     e.preventDefault()
     Store.navigate "/shares/#{Store.state.shareCode}/#{@props.item.id}"

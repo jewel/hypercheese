@@ -1,4 +1,4 @@
-@ScrollButton = React.createClass
+@ScrollButton = createReactClass
   getInitialState: ->
     position: null
 

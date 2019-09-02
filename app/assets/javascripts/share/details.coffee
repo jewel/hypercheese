@@ -1,4 +1,4 @@
-@Details = React.createClass
+@Details = createReactClass
   getInitialState: ->
     playing: false
     showVideoControls: false

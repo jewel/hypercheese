@@ -1,6 +1,6 @@
 class SharesController < ApplicationController
-  skip_before_filter :authenticate_user!
-  skip_before_filter :verify_approval!
+  skip_before_action :authenticate_user!
+  skip_before_action :verify_approval!
 
   def show
     @share = Share.find_by_code params[:share_id].to_s

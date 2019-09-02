@@ -1,4 +1,4 @@
-@RateButton = React.createClass
+@RateButton = createReactClass
   onRate: (rating) ->
     Store.rate @props.itemId, rating
     @props.onNext()

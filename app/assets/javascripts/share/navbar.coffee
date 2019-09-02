@@ -1,4 +1,4 @@
-@NavBar = React.createClass
+@NavBar = createReactClass
   getInitialState: ->
     hidden: false
 

@@ -1,4 +1,4 @@
-@Tag = React.createClass
+@Tag = createReactClass
   render: ->
     tag = @props.tag
     tagIconURL = "/data/resized/square/#{tag.icon}.jpg"

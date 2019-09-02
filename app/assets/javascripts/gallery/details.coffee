@@ -1,4 +1,4 @@
-@Details = React.createClass
+@Details = createReactClass
   getInitialState: ->
     Store.state.showInfo = false
     playing: false

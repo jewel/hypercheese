@@ -1,4 +1,4 @@
-@SelectBar = React.createClass
+@SelectBar = createReactClass
   getInitialState: ->
     Store.state.pendingTags = []
     Store.state.pendingTagString = ""

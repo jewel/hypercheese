@@ -1,4 +1,4 @@
-@TagLink = React.createClass
+@TagLink = createReactClass
 
   render: ->
     <Link className={@props.className} href={"/tags/#{@props.tag.id}/#{encodeURI(@props.tag.alias || @props.tag.label)}"}>

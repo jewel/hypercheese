@@ -1,4 +1,4 @@
-@TagList = React.createClass
+@TagList = createReactClass
   getInitialState: ->
     filter: ""
 

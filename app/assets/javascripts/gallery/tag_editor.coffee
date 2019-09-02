@@ -1,4 +1,4 @@
-@TagEditor = React.createClass
+@TagEditor = createReactClass
   getInitialState: ->
     parent_id = @props.tag.parent_id
     if parent_id

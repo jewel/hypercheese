@@ -1,6 +1,5 @@
 class ItemSerializer < ActiveModel::Serializer
-  attributes :id, :has_comments, :variety, :starred, :bullhorned, :rating
-  has_many :tags
+  attributes :id, :has_comments, :variety, :starred, :bullhorned, :rating, :tag_ids
 
   def has_comments
     object.comments.any?
