@@ -4,6 +4,7 @@ require 'pathname'
 require 'shellwords'
 require_relative 'probe'
 require_relative 'scaler'
+require 'exifr/jpeg'
 
 module Import
   EXTS = {
