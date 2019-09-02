@@ -1,4 +1,10 @@
 @Home = createReactClass
+  pluralize: (count, obj) ->
+    if count == 1
+      "#{count} #{obj}"
+    else
+      "#{count} #{obj}s"
+
   render: ->
     recent = Store.fetchRecent()
     <div className="container-fluid cheese-home">
@@ -64,9 +70,9 @@
                     {
                       msg = []
                       if group.photo_count
-                        msg.push "#{group.photo_count} photos"
+                        msg.push @pluralize(group.photo_count, "photo")
                       if group.video_count
-                        msg.push "#{group.video_count} videos"
+                        msg.push @pluralize(group.video_count, "video")
                       msg.join ' and '
                     }
                   </Link> added to {group.source}
