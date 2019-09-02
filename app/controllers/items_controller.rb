@@ -173,7 +173,7 @@ class ItemsController < ApplicationController
   # GET /items/:id/details
   def details
     @item = Item.includes(:comments, :stars).find params[:item_id].to_i
-    render json: @item, serializer: ItemDetailsSerializer
+    render json: @item, serializer: ItemDetailsSerializer, include: 'comments.user'
   end
 
   private

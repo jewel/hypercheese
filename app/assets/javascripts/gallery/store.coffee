@@ -136,29 +136,10 @@ class @Store
         item_id: itemId
       success: (res) =>
         @loading = false
-        @_ingestDetails(res)
+        @state.details[res.item.id] = res.item
         @needsRedraw()
 
     return blank
-
-  @_ingestDetails: (res) ->
-    details = res.item_details
-    usersById = {}
-    if res.users
-      for user in res.users
-        usersById[user.id] = user
-
-    commentsById = {}
-    for comment in res.comments
-      comment.user = usersById[comment.user_id]
-      commentsById[comment.id] = comment
-
-    details.comments = []
-
-    for comment_id in details.comment_ids
-      details.comments.push commentsById[comment_id]
-
-    @state.details[details.id] = details
 
   @newComment: (itemId, text) ->
     @jax
