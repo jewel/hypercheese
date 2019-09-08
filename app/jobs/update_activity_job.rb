@@ -91,7 +91,7 @@ class UpdateActivityJob < ActiveJob::Base
     events = events.sort_by(&:created_at).reverse
 
     sources = Source.where show_on_home: true
-    sources = ActiveModel::ArraySerializer.new sources, each_serializer: SourceSerializer
+    sources = ActiveModel::Serializer::CollectionSerializer.new sources, each_serializer: SourceSerializer
 
     json = {
       activity: events,
@@ -134,8 +134,8 @@ class UpdateActivityJob < ActiveJob::Base
     json[:users].uniq!
     json[:items].uniq!
 
-    json[:users].map! { |_| UserSerializer.new(_).as_json["user"] }
-    json[:items].map! { |_| ItemSerializer.new(_).as_json["item"] }
+    json[:users].map! { |_| UserSerializer.new(_).as_json }
+    json[:items].map! { |_| ItemSerializer.new(_).as_json }
 
     cache_path = Rails.root.join "tmp/activities"
     tmp = "#{cache_path}.#$$.tmp"

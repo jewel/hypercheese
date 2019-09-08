@@ -46,7 +46,7 @@ class ItemsController < ApplicationController
       items_by_id[item_id.to_i]
     end
 
-    render json: res, each_serializer: ItemSerializer, meta: { search_key: search_key, total: ids.size }
+    render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: ids.size }
   end
 
   def shares
