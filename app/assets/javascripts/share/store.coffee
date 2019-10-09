@@ -16,7 +16,7 @@ class @Store
       success: (res) =>
         @state.items = []
         index = 0
-        for item in res.shares
+        for item in res.items
           @state.items[index] = item.id
           item.index = index
           item.tag_ids = []
