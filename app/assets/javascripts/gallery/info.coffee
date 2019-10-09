@@ -93,7 +93,7 @@
           <p key={comment.id} className="comment">
             {comment.text}<br/>
             <small>
-              <strong>{comment.user.name}</strong> &mdash;
+              <strong>{comment.username}</strong> &mdash;
               <em>{new Date(comment.created_at).toLocaleString()}</em>
             </small>
           </p>

@@ -30,6 +30,7 @@ class @Store
       itemsById: {}
       showItem: null
       shareCode: shareCode
+      showInfo: false
 
   @fetchItem: (itemId) ->
     @getItem itemId
