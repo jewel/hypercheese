@@ -60,7 +60,7 @@ class @Store
 
   @fetchRecent: ->
     return @state.recent if @state.recent
-    blank = {activity: [], sources: []}
+    blank = {activity: [], sources: [], taggings: []}
     return blank if @loading
     @loading = true
     @jax

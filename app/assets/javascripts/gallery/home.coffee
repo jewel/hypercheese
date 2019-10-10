@@ -79,6 +79,20 @@
                 </span><br/>
                 <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
               </p>
+            else if tagging = activity.tagging
+              <p className="clearfix tagging" key="t#{tagging.created_at}">
+                <div className="tagging-list">
+                  {
+                    tagging.list.map (t) =>
+                      tag = Store.state.tagsById[t.tag_id]
+                      return unless tag
+                      <Tag key=t.tag_id tag=tag>
+                        +{t.count}
+                      </Tag>
+                  }
+                </div>
+                <em>&mdash; {new Date(tagging.created_at).toLocaleString()}</em>
+              </p>
         }
       </div>
     </div>

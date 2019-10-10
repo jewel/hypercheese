@@ -128,7 +128,9 @@ class UpdateActivityJob < ActiveJob::Base
         bullhorn.delete "users"
         json[:users].push event.user
         json[:items].push event.item
-        bullhorn
+        {
+          bullhorn: bullhorn
+        }
       end
     end
     json[:users].uniq!
