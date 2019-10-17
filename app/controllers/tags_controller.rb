@@ -1,10 +1,27 @@
 class TagsController < ApplicationController
   def index
-    aliases = TagAlias.where(user: current_user).index_by &:tag_id
-    # Aliased tags should come first so that they take priority when tagging.
-    tags = Tag.all.order 'item_count desc'
-    aliased, unaliased = tags.partition { |_| aliases[ _.id ] }
-    render json: aliased + unaliased
+    # Tags are sent in "priority" order.  Higher priority tags will be the
+    # first match for a partial string.
+    # Aliased tags come first.
+    # Then any tag ever used by a user comes next.
+    # Finally, the remainder of tags 
+    query = Tag.sanitize_sql_array ["
+      SELECT tags.id, label, icon_item_id icon, item_count, parent_tag_id parent_id, alias, uses
+      FROM tags
+      LEFT OUTER JOIN tag_aliases ON tag_id = tags.id AND user_id = ?
+      LEFT OUTER JOIN (
+        SELECT tag_id, SUM(1) uses
+        FROM item_tags
+        WHERE added_by = ?
+        GROUP BY 1
+      ) tag_uses ON tag_uses.tag_id = tags.id
+      ORDER BY !alias, uses DESC, item_count DESC
+    ", current_user.id, current_user.id ]
+    tags = ActiveRecord::Base.connection.select_all(query)
+
+    render json: {
+      tags: tags
+    }
   end
 
   def create
