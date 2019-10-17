@@ -11,6 +11,7 @@
 
   onComment: (e) ->
     e.preventDefault()
+    return unless @state.newComment
     Store.newComment @props.item.id, @state.newComment
     @setState
       newComment: ''
