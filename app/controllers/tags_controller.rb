@@ -19,16 +19,19 @@ class TagsController < ApplicationController
     @tag = tag
     @tag.update(tag_params)
 
+    new_alias = alias_params[:alias]
+    new_alias = nil if new_alias == ''
+
     tag_alias = TagAlias.where(user: current_user, tag: @tag).first
     if tag_alias
-      if alias_params[:alias] == ''
+      if !new_alias
         tag_alias.delete
       else
-        tag_alias.alias = alias_params[:alias]
+        tag_alias.alias = new_alias
         tag_alias.save
       end
-    else
-      TagAlias.create user: current_user, tag: @tag, alias: alias_params[:alias]
+    elsif new_alias
+      TagAlias.create user: current_user, tag: @tag, alias: new_alias
     end
 
     render json: @tag
