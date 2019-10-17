@@ -15,7 +15,7 @@ class TagsController < ApplicationController
         WHERE added_by = ?
         GROUP BY 1
       ) tag_uses ON tag_uses.tag_id = tags.id
-      ORDER BY !alias, uses DESC, item_count DESC
+      ORDER BY alias IS NULL, uses DESC, item_count DESC
     ", current_user.id, current_user.id ]
     tags = ActiveRecord::Base.connection.select_all(query)
 
