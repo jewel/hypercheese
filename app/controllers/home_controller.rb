@@ -13,9 +13,9 @@ class HomeController < ApplicationController
     taggings = ActiveRecord::Base.connection.select_all("
       SELECT tag_id, DATE(created_at) date, MAX(created_at) created_at, SUM(1) count
       FROM item_tags
-      WHERE created_at > DATE_SUB(NOW(), INTERVAL 7 DAY)
+      WHERE created_at > DATE_SUB(NOW(), INTERVAL 45 DAY)
       GROUP BY 1, 2
-      ORDER BY count DESC
+      ORDER BY created_at DESC
     ")
 
     taggings_by_day = {}
@@ -28,7 +28,7 @@ class HomeController < ApplicationController
       {
         "tagging" => {
           "created_at" => list.first["created_at"],
-          "list" => list,
+          "list" => list.sort_by { |_| _["count"] }.reverse,
         },
       }
     end
