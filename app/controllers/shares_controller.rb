@@ -15,7 +15,7 @@ class SharesController < ApplicationController
 
   def items
     @share = Share.find_by_code params[:share_id].to_s
-    @items = @share.items.includes(:item_paths)
+    @items = @share.items.includes(:item_paths).order(:taken)
 
     render json: @items, each_serializer: SharedItemSerializer
   end
