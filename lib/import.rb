@@ -12,6 +12,7 @@ module Import
     'jpeg' => 'photo',
     'tiff' => 'photo',
     'tif' => 'photo',
+    'png' => 'photo',
     'avi' => 'video',
     'mov' => 'video',
     'mpg' => 'video',
