@@ -1,12 +1,12 @@
 class @SearchQuery
-  @optionList: 'not any only reverse untagged item comments orientation type year month day source'.split ' '
+  @optionList: 'not any only reverse untagged item comment has_comments orientation type year month day source'.split ' '
   @keywords:
     any: true
     only: true
     reverse: true
     untagged: true
     unjudged: true
-    comments: true
+    has_comments: true
     starred: true
 
   @options:
@@ -17,6 +17,7 @@ class @SearchQuery
     not: true
     age: true
     path: true
+    comment: true
 
   @multiple:
     year: true
