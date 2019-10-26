@@ -127,6 +127,10 @@ class Search
       items = items.where 'month(taken) in (?)', @query[:month].map(&:to_i)
     end
 
+    if @query[:day]
+      items = items.where 'day(taken) in (?)', @query[:day].map(&:to_i)
+    end
+
     if @query[:age]
       tag = Tag.where(id: tag_ids).where.not(birthday: nil).order('birthday desc').first
       age = @query[:age].to_i
