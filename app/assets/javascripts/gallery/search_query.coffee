@@ -1,5 +1,5 @@
 class @SearchQuery
-  @optionList: 'not any only reverse untagged item comment has_comments orientation type year month day source'.split ' '
+  @optionList: 'not any only reverse untagged item path comment has_comments orientation type year month day source'.split ' '
   @keywords:
     any: true
     only: true
