@@ -59,7 +59,7 @@ class @SearchQuery
     str = unused.join ' '
 
     # pull out options with values
-    str = str.replace /\b(\w+):([-\w,]*)\b/g, (match, key, val) =>
+    str = str.replace /\b(\w+):(.*?)(?: |$)/g, (match, key, val) =>
       lkey = key.toLowerCase()
       if @constructor.caseSensitive[lkey]
         lval = val
