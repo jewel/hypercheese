@@ -10,7 +10,7 @@ class Item < ActiveRecord::Base
   has_many :bullhorns
   has_many :bullhorned_by, through: :bullhorns, source: :user
   has_many :ratings
-  has_many :sources, through: :item_path
+  has_many :sources, through: :item_paths
   belongs_to :group
   belongs_to :event
 

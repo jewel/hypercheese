@@ -105,7 +105,7 @@ class UpdateActivityJob < ActiveJob::Base
       when Group
         json[:items].push event.item
 
-        label = event.item.source.try(:label) || 'Unknown'
+        label = event.item.sources.first.try(:label) || 'Unknown'
 
         {
           item_group: {

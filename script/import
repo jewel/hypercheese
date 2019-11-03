@@ -21,7 +21,7 @@ dir += "/" unless dir =~ /\/\Z/
 basepath = dir.sub %r{\A(originals/(.*?)/)}, ''
 prefix = $1
 source_path = $2
-source = Source.find_by_path( source_path ).first
+source = Source.find_by_path( source_path )
 raise "No source set up for #{dir}" unless source
 
 @warned = false

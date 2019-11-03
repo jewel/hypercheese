@@ -51,11 +51,11 @@ module Import
     raise "File extension not supported" unless type
     raise "Empty file" unless File.size(path) > 0
 
-    partial_path = path.sub %r{\A(originals/(.*?)/)}, ''
-    prefix = $1
-    source_path = $2
-    source = Source.find_by_path( source_path ).first
-    raise "No source set up for #{dir}" unless source
+    normalized_path = path.delete_prefix ItemPath::BASE_PATH + "/"
+    partial_path = normalized_path.sub %r{\A(.*?)/}, ''
+    source_path = $1
+    source = Source.find_by_path source_path
+    raise "No source set up for #{source_path}" unless source
 
     old = ItemPath.where(source: source).where( path: partial_path ).first
     if old
