@@ -96,12 +96,7 @@ class Search
       sources = sources.compact
 
       unless sources.empty?
-        query = []
-        sources.size.times do
-          query << "path like ?"
-        end
-        sources.map! { |_| "#{_.path}/%" }
-        items = items.where "id in ( select item_id from item_paths where #{query.join ' or '})", sources
+        items = items.where "id in ( select item_id from item_paths where source_id IN (?))", sources.map(&:id)
       end
     end
 

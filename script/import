@@ -9,8 +9,6 @@ require_dependency 'import'
 
 require 'find'
 
-candidates = {}
-
 raise "No directory passed" if ARGV.empty?
 
 def update_deleted
@@ -20,7 +18,11 @@ end
 
 dir = ARGV.first
 dir += "/" unless dir =~ /\/\Z/
-basepath = dir.sub /\Aoriginals\//, ''
+basepath = dir.sub %r{\A(originals/(.*?)/)}, ''
+prefix = $1
+source_path = $2
+source = Source.find_by_path( source_path ).first
+raise "No source set up for #{dir}" unless source
 
 @warned = false
 def check_exclude_regex path
@@ -34,6 +36,9 @@ def check_exclude_regex path
   end
   false
 end
+
+candidates = {}
+
 
 Find.find( "#{dir}" ) do |path|
   if File.basename( path ) =~ /\A\./
@@ -50,7 +55,7 @@ Find.find( "#{dir}" ) do |path|
 
   next if check_exclude_regex(path)
 
-  path.sub! /\Aoriginals\//, ''
+  path = path.delete_prefix prefix
   candidates[path] = true
 end
 
@@ -58,7 +63,7 @@ warn "Total of #{candidates.size} items" if $stderr.tty?
 
 should_update_deleted = false
 
-paths = ItemPath.where( ["path LIKE ?", "#{basepath}%"] )
+paths = ItemPath.where(source: source).where( ["path LIKE ?", "#{basepath}%"] )
 
 paths.each do |item_path|
   if candidates[item_path.path]
@@ -78,7 +83,7 @@ warn "There are #{candidates.size} new items"
 
 candidates.keys.sort.each do |path|
   begin
-    Import.by_path "originals/#{path}"
+    Import.by_path "originals/#{source.path}/#{path}"
   rescue
     warn "FAILED #{path}: #$!"
   end

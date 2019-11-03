@@ -10,9 +10,9 @@ Rails.application.require_environment!
 include ActionView::Helpers::DateHelper
 
 data = ActiveRecord::Base.connection.execute "
-  SELECT label source, MAX(taken) latest FROM items
+  SELECT label source, MAX(created_at) latest FROM items
   JOIN item_paths ON items.id = item_paths.item_id
-  JOIN sources ON item_paths.path LIKE CONCAT(sources.path, '/%')
+  JOIN sources ON source_id = sources.id
   GROUP BY 1
   ORDER BY 2 DESC
   "

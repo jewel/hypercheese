@@ -7,7 +7,7 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def paths
-    object.paths.map &:path
+    object.paths.map &:path_with_source
   end
 
   include ActionView::Helpers::DateHelper

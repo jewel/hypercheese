@@ -10,6 +10,7 @@ class Item < ActiveRecord::Base
   has_many :bullhorns
   has_many :bullhorned_by, through: :bullhorns, source: :user
   has_many :ratings
+  has_many :sources, through: :item_path
   belongs_to :group
   belongs_to :event
 
@@ -26,17 +27,8 @@ class Item < ActiveRecord::Base
     item_paths.first.try(:path)
   end
 
-  def source
-    return nil unless path
-    start_of_path = path.split("/").first
-    Source.where(path: start_of_path).first
-  end
-
-  # comparable grand-parent directory (similar to source, but always a string,
-  # may be "")
-  def directory
-    return "" unless path
-    path.split("/").first || ""
+  def source_id
+    item_paths.first.try(:source_id)
   end
 
   def resized_path size

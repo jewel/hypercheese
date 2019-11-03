@@ -51,15 +51,19 @@ module Import
     raise "File extension not supported" unless type
     raise "Empty file" unless File.size(path) > 0
 
-    partial_path = path.sub "#{ItemPath::BASE_PATH}/", ''
+    partial_path = path.sub %r{\A(originals/(.*?)/)}, ''
+    prefix = $1
+    source_path = $2
+    source = Source.find_by_path( source_path ).first
+    raise "No source set up for #{dir}" unless source
 
-    old = ItemPath.where( path: partial_path ).first
+    old = ItemPath.where(source: source).where( path: partial_path ).first
     if old
       item = old.item
       warn "Item already imported: #{partial_path}"
       if partial_path != old.path
         # MySQL case sensitivity issues
-        warn "Unexpected mismatch  #{old.path.inspect} -> #{partial_path.inspect}"
+        warn "Case sensitivity problem: #{old.path.inspect} -> #{partial_path.inspect}"
       end
 
       load_metadata item, path, type
@@ -75,7 +79,7 @@ module Import
           item_path.destroy
         end
         warn "#{partial_path} has same MD5 as #{old.paths.size} other files"
-        item_path = ItemPath.new item: old, path: partial_path
+        item_path = ItemPath.new item: old, source: source, path: partial_path
         item_path.save
 
         return
@@ -104,7 +108,7 @@ module Import
 
       item.save
 
-      item_path = ItemPath.new( item: item, path: partial_path )
+      item_path = ItemPath.new( item: item, source: source, path: partial_path )
       item_path.save
     end
 

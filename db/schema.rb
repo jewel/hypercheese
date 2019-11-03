@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_02_210853) do
+ActiveRecord::Schema.define(version: 2019_11_03_023353) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -47,8 +47,10 @@ ActiveRecord::Schema.define(version: 2019_11_02_210853) do
   create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.string "path"
     t.integer "item_id"
+    t.bigint "source_id", null: false
     t.index ["item_id"], name: "index_item_paths_on_item_id"
     t.index ["path"], name: "index_item_paths_on_path", unique: true
+    t.index ["source_id"], name: "index_item_paths_on_source_id"
   end
 
   create_table "item_tags", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
