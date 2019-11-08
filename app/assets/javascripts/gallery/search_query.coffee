@@ -18,6 +18,7 @@ class @SearchQuery
     age: true
     path: true
     comment: true
+    visibility: true
 
   @multiple:
     year: true

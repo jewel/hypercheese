@@ -15,6 +15,29 @@ class Item < ActiveRecord::Base
   belongs_to :event
 
   BASE_PATH = File.join Rails.root, "originals"
+  def self.published
+    where published: true
+  end
+
+  # Check visibility on small groups of items
+  #
+  # The main search results shouldn't use this, it's inefficient.
+  def self.check_visibility_for user
+    where(published: [nil, false]).includes(:item_paths, :sources).each do |item|
+      item.check_visibility_for user
+    end
+  end
+
+  def check_visibility_for user
+    return if published
+    raise "Must be logged in to see this item" unless user
+    sources.each do |source|
+      next unless source.user_id
+      return if source.user_id = user.id
+    end
+    raise "Item #{id} is not published"
+  end
+
   def full_path
     item_paths.first.try(:full_path)
   end

@@ -10,8 +10,7 @@ class ItemsController < ApplicationController
 
     if search_key == '' || path && !File.exists?( path )
       query = params[:query] || {}
-      query[:starred] = current_user.id if query[:starred]
-      query[:unjudged] = current_user.id if query[:unjudged]
+      query[:current_user] = current_user
       search = Search.new query
       ids = search.ids
       str = ids.join ','
@@ -49,6 +48,19 @@ class ItemsController < ApplicationController
     render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: ids.size }
   end
 
+  def visibility
+    value = params[:value] == 'true'
+    ids = items_params[:items].map { |_| _.to_i }
+    items = Item.where id: ids
+    items.check_visibility_for current_user
+    Item.transaction do
+      items.each do |item|
+        item.published = value
+        item.save
+      end
+    end
+  end
+
   def shares
     code = SecureRandom.urlsafe_base64 8
 
@@ -58,7 +70,11 @@ class ItemsController < ApplicationController
       share.code = code
       share.save
 
-      items_params[:items].each do |item_id|
+      ids = items_params[:items].map { |_| _.to_i }
+      items = Item.where id: ids
+      items.check_visibility_for current_user
+
+      items.pick(:id).each do |item_id|
         ShareItem.create share: share, item_id: item_id
       end
     end
@@ -71,10 +87,10 @@ class ItemsController < ApplicationController
   def show
     id = params[:id].to_i
     @item = Item.find id
+    @item.check_visibility_for current_user
 
     query = params[:query] || {}
-    query[:starred] = current_user.id if query[:starred]
-    query[:unjudged] = current_user.id if query[:unjudged]
+    query[:current_user] = current_user
     search = Search.new query
     index = search.ids.index id
 
@@ -89,6 +105,7 @@ class ItemsController < ApplicationController
     Item.transaction do
       tags = Tag.find item_tag_params[:tags]
       items = Item.includes(:tags).find item_tag_params[:items]
+      items.check_visibility_for current_user
 
       items.each do |item|
         tags.each do |tag|
@@ -109,6 +126,7 @@ class ItemsController < ApplicationController
     Item.transaction do
       tag = Tag.find params[:tag].to_i
       items = Item.includes(:tags).find item_tag_params[:items]
+      items.check_visibility_for current_user
 
       items.each do |item|
         next unless item.tags.member? tag
@@ -120,7 +138,8 @@ class ItemsController < ApplicationController
   end
 
   def toggle_star
-    @item = Item.includes(:stars).find params[:item_id].to_i
+    @item = Item.includes(:stars).where id: params[:item_id].to_i
+    @item.check_visibility_for current_user
     star = @item.stars.where(user_id: current_user.id).first
     if star
       star.destroy
@@ -135,6 +154,7 @@ class ItemsController < ApplicationController
 
   def toggle_bullhorn
     @item = Item.includes(:bullhorns).find params[:item_id].to_i
+    @item.check_visibility_for current_user
     bullhorn = @item.bullhorns.where(user_id: current_user.id).first
     if bullhorn
       bullhorn.destroy
@@ -149,6 +169,7 @@ class ItemsController < ApplicationController
 
   def rate
     @item = Item.includes(:ratings).find params[:item_id].to_i
+    @item.check_visibility_for current_user
     rating = @item.ratings.where(user_id: current_user.id).first
     rating.destroy if rating
 
@@ -173,6 +194,7 @@ class ItemsController < ApplicationController
   # GET /items/:id/details
   def details
     @item = Item.includes(:comments, :stars).find params[:item_id].to_i
+    @item.check_visibility_for current_user
     render json: @item, serializer: ItemDetailsSerializer, include: 'comments.user'
   end
 

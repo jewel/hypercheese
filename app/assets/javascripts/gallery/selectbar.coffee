@@ -17,6 +17,12 @@
     Store.shareSelection().then (url) ->
       window.prompt "The items are available at this link:", url
 
+  publishSelection: (e) ->
+    Store.changeSelectionVisibility true
+
+  restrictSelection: (e) ->
+    Store.changeSelectionVisibility false
+
   changeNewTags: (e) ->
     if e.target.value == '.'
       Store.addTagsToSelection Store.state.lastTags
@@ -112,7 +118,20 @@
           <div className="pull-right">
             <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
             <a title="Download Originals" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
-            <a title="Convert to JPEG and Download" className="btn navbar-btn" href={convertLink}><i className="fa fa-flask"/></a>
+            <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
+              <i className="fa fa-ellipsis-v"/>
+            </a>
+            <ul className="dropdown-menu">
+              <li>
+                <a title="Convert to JPEG and Download" href={convertLink}><i className="fa fa-flask"/> Download as JPEG</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onClick={@publishSelection}><i className="fa fa-eye"/> Publish</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onClick={@restrictSelection}><i className="fa fa-eye-slash"/> Unpublish</a>
+              </li>
+            </ul>
             <a title="Close" className="btn navbar-btn" onClick={@onExit}> <i className="fa fa-times fa-fw"/> </a>
           </div>
         </div>

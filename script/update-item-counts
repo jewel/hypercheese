@@ -8,7 +8,7 @@ Rails.application.require_environment!
 count = 0
 Tag.all.each do |tag|
   old = tag.item_count || 0
-  tag.item_count = tag.items.count
+  tag.item_count = tag.items.published.count
   next if old == tag.item_count
   count += tag.item_count - old
   puts "#{tag.label}: #{old < tag.item_count ? '+' : '-'}#{(old-tag.item_count).abs}"

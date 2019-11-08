@@ -204,6 +204,23 @@ class @Store
       @selectItem id, value
     @needsRedraw()
 
+  @changeSelectionVisibility: (value) ->
+    ids = []
+    for id of @state.selection
+      ids.push id
+
+    @jax(
+      type: "POST"
+      url: "/items/visibility"
+      data:
+        items: ids
+        value: value
+    ).then ->
+      if value
+        alert "Published"
+      else
+        alert "Unpublished"
+
   @shareSelection: ->
     ids = []
     for id of @state.selection

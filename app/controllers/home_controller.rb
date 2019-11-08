@@ -37,6 +37,8 @@ class HomeController < ApplicationController
       _.values.first["created_at"]
     end.reverse
 
+    json['new_items'] = current_user.items.where( published: nil ).count
+
     render json: json
   end
 end

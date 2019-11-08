@@ -37,6 +37,19 @@
           <Link className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</Link>
         </div>
       </div>
+      <br/>
+      <div>
+        {
+          if recent.new_items > 0
+            <div className="btn-group">
+              <Link className="btn btn-default btn-primary" href="/search/visibility:unknown">{recent.new_items} New Item(s)</Link>
+            </div>
+        }
+        {' '}
+        <div className="btn-group">
+          <Link className="btn btn-default" href="/search/visibility:unpublished">Your Private Items</Link>
+        </div>
+      </div>
 
       <h2>Recent Activity</h2>
       <div className="recent-activity">
@@ -80,7 +93,7 @@
                 <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
               </p>
             else if tagging = activity.tagging
-              <p className="clearfix tagging" key="t#{tagging.created_at}">
+              <div className="clearfix tagging" key="t#{tagging.created_at}">
                 <div className="tagging-list">
                   {
                     tagging.list.map (t) =>
@@ -92,7 +105,7 @@
                   }
                 </div>
                 <em>&mdash; {new Date(tagging.created_at).toLocaleString()}</em>
-              </p>
+              </div>
         }
       </div>
     </div>

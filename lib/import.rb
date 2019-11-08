@@ -88,6 +88,10 @@ module Import
 
       item = Item.new
 
+      if ENV['NO_PUBLISH'] == '1'
+        item.published = nil
+      end
+
       item.md5 = md5
 
       item.variety = type

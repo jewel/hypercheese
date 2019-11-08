@@ -26,6 +26,7 @@ HyperCheese::Application.routes.draw do
         get :download
         get :convert
         post :shares
+        post :visibility
       end
       get :details
       post :toggle_star

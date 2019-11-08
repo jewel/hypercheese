@@ -23,6 +23,21 @@ class Search
 
     items = Item.where deleted: false
 
+    published = case @query[:visibility]
+    when 'unknown'
+      nil
+    when 'unpublished'
+      false
+    else
+      true
+    end
+    items = items.where published: published
+
+    if !published
+      sources = Source.where user_id: @query[:current_user].id
+      items = items.where "id in ( select item_id from item_paths where source_id IN (?))", sources.map(&:id)
+    end
+
     case @query[:orientation]
     when 'landscape'
       items = items.where 'height < width'
@@ -80,12 +95,12 @@ class Search
       items = items.where 'id not in ( select item_id from item_tags )'
     end
 
-    if @query[:unjudged]
-      items = items.where 'id not in ( select item_id from ratings where user_id = ? )', @query[:unjudged].to_i
+    if @query[:unjudged] && @query[:current_user]
+      items = items.where 'id not in ( select item_id from ratings where user_id = ? )', @query[:current_user].id
     end
 
-    if @query[:starred]
-      items = items.where 'id in ( select item_id from stars where user_id = ? )', @query[:starred].to_i
+    if @query[:starred] && @query[:current_user]
+      items = items.where 'id in ( select item_id from stars where user_id = ? )', @query[:current_user].id
     end
 
     if @query[:source]

@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  has_many :sources
+  has_many :items, through: :sources
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
