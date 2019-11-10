@@ -70,7 +70,8 @@
           tag = Store.state.tagsById[tag_id]
           if tag
             setTagIcon = =>
-              tag.icon = @props.item.id
+              tag.icon_id = @props.item.id
+              tag.icon_code = @props.item.code
               Store.updateTag tag
 
             age = details.ages[tag_id]

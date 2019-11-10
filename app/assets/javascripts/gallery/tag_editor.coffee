@@ -51,9 +51,7 @@
 
     choices = Store.loadIconChoices tag
 
-    tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-    if tag.icon == null
-      tagIconURL = "/images/unknown-icon.png"
+    tagIconURL = Store.resizedURL "square", tag.icon_id, tag.icon_code
 
     <div className="container-fluid tag-editor-page">
       <a className="pull-right btn" href="javascript:void(0)" onClick={Store.navigateBack}><i className="fa fa-times"/></a>

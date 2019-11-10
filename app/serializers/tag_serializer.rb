@@ -1,8 +1,12 @@
 class TagSerializer < ActiveModel::Serializer
-  attributes :id, :label, :icon, :item_count, :parent_id, :alias
+  attributes :id, :label, :icon_id, :icon_code, :item_count, :parent_id, :alias
 
-  def icon
-    object.icon_item_id
+  def icon_id
+    object.icon.id
+  end
+
+  def icon_code
+    object.icon.code
   end
 
   def alias

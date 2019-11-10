@@ -6,8 +6,9 @@ class TagsController < ApplicationController
     # Then any tag ever used by a user comes next.
     # Finally, the remainder of tags 
     query = Tag.sanitize_sql_array ["
-      SELECT tags.id, label, icon_item_id icon, item_count, parent_tag_id parent_id, alias, uses
+      SELECT tags.id, label, icon_item_id icon_id, code icon_code, item_count, parent_tag_id parent_id, alias, uses
       FROM tags
+      LEFT OUTER JOIN items ON icon_item_id = items.id
       LEFT OUTER JOIN tag_aliases ON tag_id = tags.id AND user_id = ?
       LEFT OUTER JOIN (
         SELECT tag_id, SUM(1) uses

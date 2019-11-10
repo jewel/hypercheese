@@ -306,9 +306,12 @@ class @Store
     tagIds = []
     for tag in tags
       tagIds.push tag.id
-      unless tag.icon
+      unless tag.icon_id
         for id of @state.selection
-          tag.icon = id
+          tag.icon_id = id
+          item = @getItem id
+          tag.icon_code = item.code
+          break
         @updateTag tag
 
     itemIds = []
