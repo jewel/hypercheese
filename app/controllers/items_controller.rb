@@ -59,6 +59,7 @@ class ItemsController < ApplicationController
         item.save
       end
     end
+    UpdateActivityJob.perform_later
   end
 
   def shares
@@ -105,7 +106,9 @@ class ItemsController < ApplicationController
     Item.transaction do
       tags = Tag.find item_tag_params[:tags]
       items = Item.includes(:tags).find item_tag_params[:items]
-      items.check_visibility_for current_user
+      items.each do |item|
+        item.check_visibility_for current_user
+      end
 
       items.each do |item|
         tags.each do |tag|
@@ -126,7 +129,9 @@ class ItemsController < ApplicationController
     Item.transaction do
       tag = Tag.find params[:tag].to_i
       items = Item.includes(:tags).find item_tag_params[:items]
-      items.check_visibility_for current_user
+      items.each do |item|
+        item.check_visibility_for current_user
+      end
 
       items.each do |item|
         next unless item.tags.member? tag

@@ -88,7 +88,7 @@ module Import
 
       item = Item.new
 
-      if ENV['NO_PUBLISH'] == '1'
+      if source.user_id
         item.published = nil
       end
 

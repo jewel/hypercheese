@@ -39,6 +39,8 @@ class HomeController < ApplicationController
 
     json['new_items'] = current_user.items.where( published: nil ).count
 
+    json['private_items'] = current_user.items.where( published: false ).count
+
     render json: json
   end
 end

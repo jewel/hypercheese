@@ -46,9 +46,12 @@
             </div>
         }
         {' '}
-        <div className="btn-group">
-          <Link className="btn btn-default" href="/search/visibility:unpublished">Your Private Items</Link>
-        </div>
+        {
+          if recent.private_items > 0
+            <div className="btn-group">
+              <Link className="btn btn-default" href="/search/visibility:unpublished">Your {recent.private_items} Private Item(s)</Link>
+            </div>
+        }
       </div>
 
       <h2>Recent Activity</h2>
