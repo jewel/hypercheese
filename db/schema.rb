@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_03_023353) do
+ActiveRecord::Schema.define(version: 2019_11_08_233536) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2019_11_03_023353) do
     t.string "variety"
     t.boolean "deleted", default: false, null: false
     t.boolean "published", default: true
+    t.string "code", null: false
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["taken"], name: "index_items_on_taken"
   end

@@ -153,9 +153,7 @@
                 @setState
                   showTagLabels: true
 
-            tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-            if tag.icon == null
-              tagIconURL = "/images/unknown-icon.png"
+            tagIconURL = Store.resizedURL 'square', tag.icon_id, tag.icon_code
 
             <span key={tag.id}>
               {
@@ -177,9 +175,7 @@
           tags.map (part) ->
             if part.match?
               tag = part.match
-              tagIconURL = "/data/resized/square/#{tag.icon}.jpg"
-              if tag.icon == null
-                tagIconURL = "/images/unknown-icon.png"
+              tagIconURL = Store.resizedURL "square", tag.icon_id, tag.icon_code
 
               <span key={tag.id}>
                 <img title={tag.alias || tag.label} className="tag-icon new" src={tagIconURL}/>

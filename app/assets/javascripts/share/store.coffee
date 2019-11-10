@@ -48,6 +48,27 @@ class @Store
   @executeSearch: ->
     null
 
+  @resizedURL: (size, id, code) ->
+    if id?.code
+      item = id
+    else
+      item =
+        id: id
+        code: code
+
+    ext = "jpg"
+    ext = "mp4" if size == 'stream'
+
+    if item.id == null
+      return "/images/unknown-icon.png"
+
+    if item.code
+      filename = "#{item.id}-#{item.code}"
+    else
+      # rely on server-side redirect
+      filename = "#{item.id}"
+    "/data/resized/#{size}/#{filename}.#{ext}"
+
   @needsRedraw: ->
     @callback() if @callback
 

@@ -1,8 +1,6 @@
 @Tag = createReactClass
   render: ->
-    tagIconURL = "/data/resized/square/#{@props.icon}.jpg"
-    if @props.icon == null
-      tagIconURL = "/images/unknown-icon.png"
+    tagIconURL = Store.resizedURL "square", @props.icon_id, @props.icon_code
 
     classes = ['tag']
 

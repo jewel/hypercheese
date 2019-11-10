@@ -105,10 +105,12 @@
           <div className="icon-choice-list">
             {
               choices.map (itemId) ->
-                url = "/data/resized/square/#{itemId}.jpg"
+                url = Store.resizedURL 'square', itemId
                 updateIcon = ->
-                  tag.icon = itemId
-                  Store.updateTag(tag)
+                  tag.icon_id = itemId
+                  item = Store.getItem itemId
+                  tag.icon_code = item.code
+                  Store.updateTag tag
 
                 <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
                   <img src={url}/>

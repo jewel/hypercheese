@@ -53,4 +53,6 @@ HyperCheese::Application.routes.draw do
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
+
+  get 'data/resized/:size/:item_id.:ext' => 'items#resized'
 end

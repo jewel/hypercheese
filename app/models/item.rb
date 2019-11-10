@@ -55,19 +55,19 @@ class Item < ActiveRecord::Base
   end
 
   def resized_path size
-    "#{Rails.root}/public/data/resized/#{size}/#{id}.jpg"
+    "#{Rails.root}/public/data/resized/#{size}/#{id}-#{code}.jpg"
   end
 
   def video_stream_path
-    "#{Rails.root}/public/data/resized/stream/#{id}.mp4"
-  end
-
-  def video_stream_url
-    "/data/resized/stream/#{id}.mp4"
+    "#{Rails.root}/public/data/resized/stream/#{id}-#{code}.mp4"
   end
 
   def resized_url size
-    "/data/resized/#{size}/#{id}.jpg"
+    "/data/resized/#{size}/#{id}-#{code}.jpg"
+  end
+
+  def video_stream_url
+    "/data/resized/stream/#{id}-#{code}.mp4"
   end
 
   def tag_ids_as_hash

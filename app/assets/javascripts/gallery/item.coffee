@@ -96,7 +96,7 @@
       "square"
 
     if item.id?
-      squareImage = "/data/resized/#{size}/#{item.id}.jpg"
+      squareImage = Store.resizedURL size, item
     else
       squareImage = "/images/loading.png"
 
@@ -148,9 +148,7 @@
             }
             {
               firstTags.map (tag) ->
-                tagIconUrl = "/data/resized/square/#{tag.icon}.jpg"
-                if tag.icon == null
-                  tagIconUrl = "/images/unknown-icon.png"
+                tagIconUrl = Store.resizedURL 'square', tag.icon_id, tag.icon_code
                 c = ["tag-icon"]
                 if !used[tag.id]
                   c.push 'new'

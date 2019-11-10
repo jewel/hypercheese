@@ -7,7 +7,7 @@
   render: ->
     item = @props.item
 
-    squareImage = "/data/resized/square/#{item.id}.jpg"
+    squareImage = Store.resizedURL 'square', item
 
     <a className="shared-item" key={item.id} href="javascript:void(0)" onClick={@onClick}>
       <img src={squareImage} />

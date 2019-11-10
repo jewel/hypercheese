@@ -111,7 +111,7 @@
     else
       'large'
 
-    return "/data/resized/#{size}/#{itemId}.jpg"
+    Store.resizedURL size, item
 
   linkTo: (dir) ->
     itemId = @neighbor(dir)

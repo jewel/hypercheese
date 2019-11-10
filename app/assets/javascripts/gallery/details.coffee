@@ -125,7 +125,7 @@
     else
       'large'
 
-    return "/data/resized/#{size}/#{itemId}.jpg"
+    return Store.resizedURL size, item
 
   linkTo: (dir) ->
     itemId = @neighbor(dir)
@@ -197,6 +197,7 @@
                 showControls={@showControls}
                 poster={@largeURL(@props.itemId)}
                 itemId={@props.itemId}
+                itemCode={item.code}
               />
 
             else

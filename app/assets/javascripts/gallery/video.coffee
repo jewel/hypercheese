@@ -25,7 +25,7 @@
 
   render: ->
     <video
-      src={"/data/resized/stream/#{@props.itemId}.mp4"}
+      src={Store.resizedURL 'stream', @props.itemId, @props.itemCode}
       ref="video"
       onClick={@props.toggleControls}
       controls={@state.showVideoControls}

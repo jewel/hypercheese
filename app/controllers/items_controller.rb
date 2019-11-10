@@ -75,7 +75,7 @@ class ItemsController < ApplicationController
       items = Item.where id: ids
       items.check_visibility_for current_user
 
-      items.pick(:id).each do |item_id|
+      items.pluck(:id).each do |item_id|
         ShareItem.create share: share, item_id: item_id
       end
     end
@@ -201,6 +201,14 @@ class ItemsController < ApplicationController
     @item = Item.includes(:comments, :stars).find params[:item_id].to_i
     @item.check_visibility_for current_user
     render json: @item, serializer: ItemDetailsSerializer, include: 'comments.user'
+  end
+
+  # Backwards compatibility for new code URLs for items
+  def resized
+    expires_in 10.years
+    item = Item.find params[:item_id].to_i
+    item.check_visibility_for current_user
+    redirect_to "/data/resized/#{params[:size]}/#{item.id}-#{item.code}.#{params[:ext]}"
   end
 
   private

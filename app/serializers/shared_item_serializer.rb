@@ -1,10 +1,10 @@
 class SharedItemSerializer < ActiveModel::Serializer
-  attributes :id, :variety, :filename, :taken, :exif, :tags_with_labels
+  attributes :id, :code, :variety, :filename, :taken, :exif, :tags_with_labels
   has_many :comments, include: true
 
   def tags_with_labels
     object.tags.map do |tag|
-      [ tag.icon_item_id, tag.label ]
+      [ tag.icon&.id, tag.icon&.code, tag.label ]
     end
   end
 

@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+BASE_DIR = "#{Rails.root}/public/data/resized"
+
+def move item, size, ext
+  source = "#{BASE_DIR}/#{size}/#{item.id}.#{ext}"
+  return unless File.exists? source
+  dest = "#{BASE_DIR}/#{size}/#{item.id}-#{item.code}.#{ext}"
+  puts "#{source} -> #{dest}"
+  File.rename source, dest
+end
+
+Item.all.each do |item|
+  move item, :square, "jpg"
+  move item, :exploded, "jpg"
+  move item, :large, "jpg"
+  move item, :stream, "mp4"
+end

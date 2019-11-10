@@ -95,6 +95,7 @@ module Import
       item.md5 = md5
 
       item.variety = type
+      item.code = SecureRandom.urlsafe_base64 8
 
       load_metadata item, path, type
       item.taken ||= File.mtime path
