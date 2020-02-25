@@ -143,7 +143,7 @@ class ItemsController < ApplicationController
   end
 
   def toggle_star
-    @item = Item.includes(:stars).where id: params[:item_id].to_i
+    @item = Item.includes(:stars).where(id: params[:item_id].to_i).first
     @item.check_visibility_for current_user
     star = @item.stars.where(user_id: current_user.id).first
     if star

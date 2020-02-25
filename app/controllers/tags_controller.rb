@@ -59,7 +59,7 @@ class TagsController < ApplicationController
 
   def tag_params
     p = params.dup
-    p[:tag][:icon_item_id] = p[:tag][:icon]
+    p[:tag][:icon_item_id] = p[:tag][:icon_id]
     p[:tag][:parent_tag_id] = p[:tag][:parent_id]
     p.require(:tag).permit(:label, :icon_item_id, :parent_tag_id)
   end
