@@ -169,8 +169,9 @@
                 setPlaying={@setPlaying}
                 toggleControls={@toggleControls}
                 showControls={@showControls}
-                poster={@largeURL(@props.itemId)}
-                itemId={@props.itemId}
+                poster={@largeURL item.id}
+                itemId={item.id}
+                itemCode={item.code}
               />
 
             else

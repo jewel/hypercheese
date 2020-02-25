@@ -33,5 +33,7 @@
       poster={@props.poster}
       onPause={@onVideoPause}
       onPlaying={@onVideoPlaying}
-      onEnded={@onVideoEnded} />
+      onEnded={@onVideoEnded}
+      playsInline=true
+    />
 
