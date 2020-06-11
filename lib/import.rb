@@ -167,7 +167,7 @@ module Import
       warn "Import EXIF problem: #$!"
       metadata = read_exiftool path
       date = metadata['Create Date'] || metadata['Date/Time Original']
-      zone = metadata['Timezone']
+      zone = metadata['Timezone'] || metadata['Time Zone']
 
       if date !~ /^0000:/ && date =~ /^(\d\d\d\d):(\d\d):(\d\d) (.*)$/
         item.taken = DateTime.parse "#$1-#$2-#$3 #$4 #{zone}"
