@@ -23,6 +23,7 @@
           {
             if exif = details.exif
               data = []
+              data.push <div key="artist">{exif.artist}</div> if exif.artist
               data.push <div key="model">{exif.model}</div>
               data.push <div key="iso">ISO {exif.iso_speed_ratings}</div>
               data.push <div key="flen">{frac exif.focal_length} mm</div>
