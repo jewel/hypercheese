@@ -66,7 +66,7 @@ class UpdateActivityJob < ActiveJob::Base
     groups = []
     last = Group.new
     recent.each do |item|
-      if !last.item || last.item.source_id != item.source_id || item.created_at - last.item.created_at > 8.hours
+      if !last.item || last.item.source_id != item.source_id || item.created_at - last.item.created_at > 24.hours
         groups << last if last.item
         last = Group.new
       end
