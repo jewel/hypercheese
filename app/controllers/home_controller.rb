@@ -11,27 +11,36 @@ class HomeController < ApplicationController
     end
 
     taggings = ActiveRecord::Base.connection.select_all("
-      SELECT tag_id, DATE(created_at) date, MAX(created_at) created_at, SUM(1) count
+      SELECT added_by, tag_id, DATE(created_at) date, MAX(created_at) created_at, SUM(1) count
       FROM item_tags
       WHERE created_at > DATE_SUB(NOW(), INTERVAL 45 DAY)
-      GROUP BY 1, 2
+      GROUP BY 1, 2, 3
       ORDER BY created_at DESC
     ")
 
-    taggings_by_day = {}
+    taggings_by_group = {}
     taggings.each do |tagging|
-      taggings_by_day[ tagging["date"] ] ||= []
-      taggings_by_day[ tagging["date"] ].push tagging
+      taggings_by_group[ "#{tagging["date"]}-#{tagging["added_by"]}" ] ||= []
+      taggings_by_group[ "#{tagging["date"]}-#{tagging["added_by"]}" ].push tagging
     end
 
-    json['activity'] += taggings_by_day.values.map do |list|
+    user_ids = []
+
+    json['activity'] += taggings_by_group.values.map do |list|
+      user_ids.push list.first["added_by"]
+
       {
         "tagging" => {
+          "user_id" => list.first["added_by"],
           "created_at" => list.first["created_at"],
           "list" => list.sort_by { |_| _["count"] }.reverse,
         },
       }
     end
+
+    user_ids.uniq!
+    users = User.find user_ids
+    json['users'] += users.map { |_| UserSerializer.new(_).as_json }
 
     json['activity'] = json['activity'].sort_by do |_|
       _.values.first["created_at"]

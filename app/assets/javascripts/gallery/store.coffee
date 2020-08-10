@@ -79,6 +79,9 @@ class @Store
           b = activity.bullhorn
           if b && b.user_id
             b.user = usersById[b.user_id]
+          t = activity.tagging
+          if t && t.user_id
+            t.user = usersById[t.user_id]
 
         @state.recent = res
         @needsRedraw()

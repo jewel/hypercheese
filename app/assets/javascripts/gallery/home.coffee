@@ -64,14 +64,12 @@
 
           recent.activity.map (activity) =>
             if comment = activity.comment
-              user = Store.state.userById
               <p className="clearfix comment" key="c#{comment.id}">
                 {img_for comment}
                 <span className="text">{comment.text}</span><br/>
                 <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
               </p>
             else if bullhorn = activity.bullhorn
-              user = Store.state.userById
               <p className="clearfix bullhorn" key="s#{bullhorn.id}">
                 {img_for bullhorn}
                 <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
@@ -106,7 +104,7 @@
                       </Tag>
                   }
                 </div>
-                <em>&mdash; {new Date(tagging.created_at).toLocaleString()}</em>
+                <em>&mdash; {tagging.user.name}, {new Date(tagging.created_at).toLocaleString()}</em>
               </div>
         }
       </div>
