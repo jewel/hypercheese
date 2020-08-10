@@ -1,3 +1,5 @@
+require_dependency 'collapse_range'
+
 class HomeController < ApplicationController
   def index
     render layout: "gallery"
@@ -11,12 +13,16 @@ class HomeController < ApplicationController
     end
 
     taggings = ActiveRecord::Base.connection.select_all("
-      SELECT added_by, tag_id, DATE(created_at) date, MAX(created_at) created_at, SUM(1) count
+      SELECT added_by, tag_id, DATE(created_at) date, MAX(created_at) created_at, SUM(1) count, GROUP_CONCAT(item_id) items
       FROM item_tags
       WHERE created_at > DATE_SUB(NOW(), INTERVAL 45 DAY)
       GROUP BY 1, 2, 3
       ORDER BY created_at DESC
     ")
+
+    taggings.each do |tagging|
+      tagging["items"] = CollapseRange.collapse tagging["items"].split(",").map(&:to_i).sort
+    end
 
     taggings_by_group = {}
     taggings.each do |tagging|

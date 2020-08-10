@@ -1,9 +1,9 @@
 @Home = createReactClass
   pluralize: (count, obj) ->
     if count == 1
-      "#{count} #{obj}"
+      "#{count.toLocaleString()} #{obj}"
     else
-      "#{count} #{obj}s"
+      "#{count.toLocaleString()} #{obj}s"
 
   render: ->
     recent = Store.fetchRecent()
@@ -93,18 +93,22 @@
                 <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
               </p>
             else if tagging = activity.tagging
+              count = 0
               <div className="clearfix tagging" key="t#{tagging.created_at}">
                 <div className="tagging-list">
                   {
                     tagging.list.map (t) =>
+                      count += t.count
                       tag = Store.state.tagsById[t.tag_id]
                       return unless tag
-                      <Tag key=t.tag_id tag=tag>
-                        +{t.count}
-                      </Tag>
+                      <Link href="/search/item:#{t.items}">
+                        <Tag key=t.tag_id tag=tag>
+                          +{t.count.toLocaleString()}
+                        </Tag>
+                      </Link>
                   }
                 </div>
-                <em>&mdash; {tagging.user.name}, {new Date(tagging.created_at).toLocaleString()}</em>
+                {@pluralize(count, "tag")} added <em>&mdash; {tagging.user.name}, {new Date(tagging.created_at).toLocaleString()}</em>
               </div>
         }
       </div>
