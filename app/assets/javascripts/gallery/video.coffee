@@ -12,6 +12,9 @@
     @setState
       showVideoControls: true
 
+  currentTime: ->
+    @refs.video.currentTime
+
   onVideoPlaying: (e) ->
     @props.setPlaying true
 

@@ -17,7 +17,21 @@
       return
 
     switch e.code
-      when 'Space', 'ArrowRight', 'KeyJ', 'KeyL'
+      when 'Space'
+        item = Store.fetchItem @props.itemId
+        if @refs.video
+          if @refs.video.currentTime() > 0
+            @hideControls()
+            @stopVideo()
+            Store.navigateWithoutHistory @linkTo(1)
+          else
+            @startVideo()
+        else
+          @hideControls()
+          @stopVideo()
+          Store.navigateWithoutHistory @linkTo(1)
+
+      when 'ArrowRight', 'KeyJ', 'KeyL'
         @hideControls()
         @stopVideo()
         Store.navigateWithoutHistory @linkTo(1)
@@ -105,6 +119,12 @@
       @refs.video.pause()
       @setState
         playing: false
+
+  startVideo: ->
+    if @refs.video
+      @refs.video.play()
+      @setState
+        playing: true
 
   neighbor: (dir) ->
     item = Store.getItem @props.itemId
