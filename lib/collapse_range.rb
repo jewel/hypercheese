@@ -2,6 +2,7 @@ module CollapseRange
   # Searches with lots of IDs are too long for GET URIs.  Collapse ranges,
   # since imported items will usually be in order.
   def self.collapse nums
+    nums.sort!
     groups = []
     cur_seq = []
     groups << cur_seq
@@ -19,13 +20,27 @@ module CollapseRange
     groups.map! do |seq|
       if seq.size == 1
         "#{seq.first}"
-      elsif seq.size == 2
-        "#{seq.first},#{seq.last}"
       else
-        "#{seq.first}-#{seq.last}"
+        # Shorthand (1000-10 means 1000-1010)
+        last = ""
+        common = common_prefix(seq.first.to_s, seq.last.to_s)
+        "#{seq.first}-#{seq.last.to_s.delete_prefix(common)}"
       end
     end
 
     groups.join ","
+  end
+
+  private
+  def self.common_prefix a, b
+    return "" if a.size != b.size
+    common = ""
+    i = 0
+    while i < a.size
+      break if a[i] != b[i]
+      common += a[i]
+      i += 1
+    end
+    common
   end
 end

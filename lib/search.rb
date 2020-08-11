@@ -187,6 +187,12 @@ class Search
       start, finish = seq.split '-'
       finish ||= start
 
+      # Check for partial digit shorthand
+      # Example: 1000-2 as an encoding for 1000-1002
+      if finish.to_i < start.to_i
+        finish = start[0...-finish.size] + finish
+      end
+
       ids.concat (start.to_i..finish.to_i).to_a
     end
     ids
