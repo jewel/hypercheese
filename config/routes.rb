@@ -54,5 +54,5 @@ HyperCheese::Application.routes.draw do
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
 
-  get 'data/resized/:size/:item_id.:ext' => 'items#resized'
+  get 'data/resized/:size/:item_id.:ext' => 'items#resized', constraints: { item_id: /\d+/ }
 end
