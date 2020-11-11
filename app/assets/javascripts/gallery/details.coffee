@@ -4,6 +4,7 @@
     playing: false
     showVideoControls: false
     showControls: true
+    slideShow: false
 
   componentDidMount: ->
     window.addEventListener 'keyup', @onKeyUp
@@ -47,6 +48,8 @@
       when 'KeyT'
         Store.selectItem @props.itemId
         Store.needsRedraw()
+      when 'KeyS'
+        @onSlideShow()
 
   onInfo: (e) ->
     Store.state.showInfo = !Store.state.showInfo
@@ -57,6 +60,18 @@
 
   onBullhorn: (e) ->
     Store.toggleItemBullhorn @props.itemId
+
+  onSlideShow: (e) ->
+    newState = !@state.slideShow
+    @setState
+      slideShow: newState
+    if newState
+      @slideshowTimer = setInterval @advanceSlideshow, 10000
+    else
+      clearInterval @slideshowTimer
+
+  advanceSlideshow: ->
+    @navigateNext()
 
   fullscreenFunctions: [
       'requestFullscreen'
@@ -266,6 +281,13 @@
               if @fullScreenFunction()
                 <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
             }
+            <ControlIcon
+              className={"slideshow" + if @state.slideShow then " active" else ""}
+              title="Slideshow"
+              onClick={@onSlideShow}
+              icon="fa-fighter-jet"
+            />
+
             <a className="control" href="javascript:void(0)" onClick={@onSelect}>
               {
                 if Store.state.selection[@props.itemId]
