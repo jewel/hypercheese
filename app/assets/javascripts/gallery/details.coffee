@@ -5,6 +5,7 @@
     showVideoControls: false
     showControls: true
     slideShow: false
+    zoom: false
 
   componentDidMount: ->
     window.addEventListener 'keyup', @onKeyUp
@@ -50,6 +51,8 @@
         Store.needsRedraw()
       when 'KeyS'
         @onSlideShow()
+      when 'KeyZ'
+        @onZoom()
 
   onInfo: (e) ->
     Store.state.showInfo = !Store.state.showInfo
@@ -72,6 +75,10 @@
 
   advanceSlideshow: ->
     @navigateNext()
+
+  onZoom: (e) ->
+    @setState
+      zoom: !@state.zoom
 
   fullscreenFunctions: [
       'requestFullscreen'
@@ -213,6 +220,10 @@
     classes.push 'show-controls' if @state.showControls
     classes.push 'judge-bar' if judgeMode
 
+    imageStyle = {}
+    if @state.zoom
+      imageStyle.objectFit = 'cover'
+
     <div className="details-wrapper">
       <div className={classes.join ' '}>
         <Swiper
@@ -236,7 +247,7 @@
               />
 
             else
-              <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
+              <img style={imageStyle} ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
         </Swiper>
 
