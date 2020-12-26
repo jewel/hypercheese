@@ -292,12 +292,6 @@
               if @fullScreenFunction()
                 <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
             }
-            <ControlIcon
-              className={"slideshow" + if @state.slideShow then " active" else ""}
-              title="Slideshow"
-              onClick={@onSlideShow}
-              icon="fa-fighter-jet"
-            />
 
             <a className="control" href="javascript:void(0)" onClick={@onSelect}>
               {
