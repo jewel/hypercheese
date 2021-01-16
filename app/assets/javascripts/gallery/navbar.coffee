@@ -86,7 +86,7 @@
           <ul className="dropdown-menu pull-right">
             <li><Link href="/tags">Tags</Link></li>
             <li>
-              <a href="http://www.rickety.us/sundry/hypercheese-help/">Help</a>
+              <a href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
             </li>
             <li>
               <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
