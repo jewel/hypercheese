@@ -21,6 +21,7 @@ module Import
     'mkv' => 'video',
     'vob' => 'video',
     'dv' => 'video',
+    'wmv' => 'video',
   }
 
   def self.check_dependencies
