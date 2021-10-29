@@ -1,0 +1,6 @@
+tensorflow==2.6.0
+keras==2.6.0
+retina-face==0.0.13
+flask==2.2.2
+deepface==0.0.68
+protobuf==3.20.*

@@ -210,7 +210,7 @@ class ItemsController < ApplicationController
 
   # GET /items/:id/details
   def details
-    @item = Item.includes(:comments, :stars).find params[:item_id].to_i
+    @item = Item.includes(:comments, :stars, :faces).find params[:item_id].to_i
     @item.check_visibility_for current_user
     render json: @item, serializer: ItemDetailsSerializer, include: 'comments.user'
   end

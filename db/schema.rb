@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_08_233536) do
+ActiveRecord::Schema.define(version: 2023_02_26_032733) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -24,8 +24,8 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.text "text", size: :medium
     t.integer "user_id"
     t.integer "item_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["item_id"], name: "index_comments_on_item_id"
   end
 
@@ -35,13 +35,23 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.datetime "finish"
     t.text "description"
     t.integer "location_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "faces", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "tag_id"
+    t.bigint "cluster_id"
+    t.float "similarity"
+    t.index ["cluster_id"], name: "index_faces_on_cluster_id"
+    t.index ["item_id"], name: "index_faces_on_item_id"
+    t.index ["tag_id"], name: "index_faces_on_tag_id"
   end
 
   create_table "groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
@@ -49,8 +59,7 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.integer "item_id"
     t.bigint "source_id", null: false
     t.index ["item_id"], name: "index_item_paths_on_item_id"
-    t.index ["path"], name: "index_item_paths_on_path"
-    t.index ["source_id", "path"], name: "unique_paths", unique: true
+    t.index ["path"], name: "index_item_paths_on_path", unique: true
     t.index ["source_id"], name: "index_item_paths_on_source_id"
   end
 
@@ -72,21 +81,22 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.integer "view_count"
     t.integer "event_id"
     t.integer "group_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.datetime "deleted_at"
     t.string "variety"
     t.boolean "deleted", default: false, null: false
     t.boolean "published", default: true
     t.string "code", null: false
+    t.integer "face_count"
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["taken"], name: "index_items_on_taken"
   end
 
   create_table "locations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "ratings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
@@ -136,8 +146,8 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.integer "item_count"
     t.integer "icon_item_id"
     t.integer "parent_tag_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.index ["label"], name: "index_tags_on_label"
   end
 
@@ -152,8 +162,8 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.datetime "last_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string "role"
     t.string "provider"
     t.string "uid"

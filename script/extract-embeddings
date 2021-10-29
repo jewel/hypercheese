@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require 'base64'
+require 'net/http'
+require 'json'
+require 'pp'
+
+faces = Face.all.includes(:item).each do |face|
+  dest = face.embedding_path
+  next if File.exist? dest
+  begin
+    puts "Running for face #{face.id} from item #{face.item.id}"
+    data = File.binread face.path
+    enc = "data:image/jpeg;base64," + Base64.encode64(data)
+
+    uri = URI( 'http://localhost:5000/represent' )
+
+    res = nil
+
+    Net::HTTP.start uri.host, uri.port do |http|
+      req = Net::HTTP::Post.new uri, 'Content-Type' => 'application/json'
+      req.body = { img: enc }.to_json
+      str = http.request(req).body
+      res = JSON.parse str, symbolize_names: true
+    end
+
+    raise "No embedding" unless res[:embedding]
+
+    puts "Embedding is #{res[:embedding].size} floats"
+
+    temp = "#{dest}.#$$.tmp"
+
+    File.binwrite temp, res[:embedding].to_json
+    File.rename temp, dest
+
+  rescue
+    warn "Problem with #{face.item.path}: #{$!}"
+  end
+end

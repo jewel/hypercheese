@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require 'json'
+
+def cosine_distance a, b
+  raise "Sizes do not match" unless a.size == b.size
+  dot_product = 0
+  a.zip(b).each do |a1, b1|
+    dot_product += a1 * b1
+  end
+  at = a.map { |n| n ** 2 }.sum
+  bt = b.map { |n| n ** 2 }.sum
+  dot_product / (Math.sqrt(at) * Math.sqrt(bt))
+end
+
+canonical = Face.where("tag_id is not null").order(:tag_id)
+
+Face.all.includes(:item).find_in_batches.with_index do |group, batch|
+  puts "Processing group #{batch}"
+  Face.transaction do
+    group.each do |face|
+      next unless face.embedding?
+      winner = nil
+      max = 0.0
+      canonical.each do |canon|
+        diff = cosine_distance canon.embedding, face.embedding
+        if diff > max
+          winner = canon
+          max = diff
+        end
+      end
+      next unless winner
+      face.cluster_id = winner.id
+      face.similarity = max
+      face.save!
+    end
+  end
+end

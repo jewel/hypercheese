@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces
   has_many :comments, include: true
 
   def comments
@@ -16,6 +16,19 @@ class ItemDetailsSerializer < ActiveModel::Serializer
 
   def filesize
     File.size object.full_path rescue nil
+  end
+
+  def faces
+    object.faces.order(:cluster_id).map do |face|
+      if face.cluster_id
+        tag_id = Face.find(face.cluster_id)&.tag_id
+      end
+      {
+        id: face.id,
+        cluster_tag_id: tag_id,
+        similarity: face.similarity,
+      }
+    end
   end
 
   include ActionView::Helpers::DateHelper

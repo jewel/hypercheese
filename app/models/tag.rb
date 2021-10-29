@@ -3,6 +3,7 @@ class Tag < ActiveRecord::Base
   has_many :item_tags
   has_many :items, through: :item_tags
   has_many :tag_aliases
+  has_many :faces
 
   def parent
     return nil unless self.parent_tag_id
