@@ -10,10 +10,10 @@ require 'net/http'
 require 'json'
 require 'pp'
 
-items = Item.where(face_count: nil, deleted: false).limit(10)
 
 SIZE = 256
 
+items = Item.where(face_count: nil, deleted: false, variety: 'photo').order("taken desc")
 items.each do |item|
   begin
     puts "Finding faces in #{item.path}"

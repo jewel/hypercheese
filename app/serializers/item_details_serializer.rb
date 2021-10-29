@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :paths, :ages
+  attributes :id, :taken, :width, :height, :exif, :paths, :ages, :faces
   has_many :comments, include: true
 
   def comments
@@ -8,6 +8,10 @@ class ItemDetailsSerializer < ActiveModel::Serializer
 
   def paths
     object.paths.map &:path_with_source
+  end
+
+  def faces
+    object.faces.map &:id
   end
 
   include ActionView::Helpers::DateHelper

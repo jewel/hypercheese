@@ -91,6 +91,14 @@
               }
             </div>
       }
+      <div className="faces">
+        {
+          (details.faces || []).map (face_id) ->
+            <div key={face_id} className="face">
+              <img src={"/data/faces/#{item.id}-#{face_id}-#{item.code}.jpg"}/>
+            </div>
+        }
+      </div>
       {
         details.comments.map (comment) ->
           <p key={comment.id} className="comment">
