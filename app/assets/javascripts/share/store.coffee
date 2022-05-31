@@ -23,9 +23,12 @@ class @Store
           @state.itemsById[item.id] = item
           index++
 
+        @state.loading = false
+
         @needsRedraw()
 
     @state =
+      loading: true
       items: []
       itemsById: {}
       showItem: null

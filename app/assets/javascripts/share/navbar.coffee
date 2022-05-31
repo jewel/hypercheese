@@ -49,7 +49,12 @@
             <img style={height: '20px'} src={@siteIcon()}/>
           </div>
           <div className="navbar-brand" style={color: 'white'}>
-             {Store.state.items.length} items
+            {
+              if Store.state.loading
+                <span>Loading...</span>
+              else
+                <span>{Store.state.items.length} items</span>
+            }
           </div>
           <a href="/shares/#{Store.state.shareCode}/download" className="btn navbar-btn pull-right">
             <i className="fa fa-download"/> Download
