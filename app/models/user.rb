@@ -15,10 +15,6 @@ class User < ActiveRecord::Base
     presence: true,
     uniqueness: { case_sensitive: false }
 
-  if Rails.application.config.use_omniauth
-    devise :omniauthable, :omniauth_providers => [:facebook]
-  end
-
   def role
     val = read_attribute(:role)
     val = :stranger unless val && !val.empty?

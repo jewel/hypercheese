@@ -234,15 +234,4 @@ Devise.setup do |config|
   config.warden do |manager|
     manager.failure_app = CustomFailure
   end
-
-  def cheese_env name
-    File.read("/etc/cheese/#{name}").chomp
-  end
-
-  if File.exists? "/etc/cheese"
-    config.omniauth :facebook, cheese_env('fb.id'), cheese_env('fb.secret'), scope: 'public_profile,email', info_fields: 'email,name'
-    Rails.application.config.use_omniauth = true
-  else
-    Rails.application.config.use_omniauth = false
-  end
 end

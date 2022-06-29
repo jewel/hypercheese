@@ -5,15 +5,10 @@ HyperCheese::Application.routes.draw do
     registrations: 'user/registrations',
   }
 
-  if Rails.application.config.use_omniauth
-    devise_controllers[:omniauth_callbacks] = 'user/omniauth_callbacks'
-  end
-
   devise_for :users, controllers: devise_controllers
 
   devise_scope :user do
     get "/users/pending", to: "user/registrations#pending"
-    get "/users/choose", to: "user/sessions#choose"
   end
 
   scope path: '/api' do
