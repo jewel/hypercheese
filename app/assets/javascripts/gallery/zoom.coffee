@@ -27,7 +27,7 @@
   render: ->
     button = (action, el) =>
       if @props.small
-        <button onClick=action className="btn btn-default">{el}</button>
+        <button onClick={action} className="btn btn-default">{el}</button>
       else
         el
 

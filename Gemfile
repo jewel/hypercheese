@@ -13,9 +13,10 @@ group :assets do
   gem 'uglifier'
   gem 'jquery-rails'
   gem 'react-rails'
-  gem 'sprockets-coffee-react'
   gem 'font-awesome-rails'
   gem 'bootstrap-sass'
+  gem 'coffee-script'
+  gem 'coffee-script-source', git: 'https://github.com/jewel/coffee-script-source'
 end
 
 group :production do

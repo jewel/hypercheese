@@ -191,7 +191,7 @@
       <div className="viewport" style={viewPortStyle}>
         {
           items.map (item) =>
-            <Item showTagbox={showTagbox} imageWidth=imageWidth imageHeight=imageHeight key={item.index} item={item}/>
+            <Item showTagbox={showTagbox} imageWidth={imageWidth} imageHeight={imageHeight} key={item.index} item={item}/>
         }
       </div>
     </div>

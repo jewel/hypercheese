@@ -81,6 +81,6 @@
     classes = ["scroll-button", "btn", "btn-default", "btn-primary"]
     classes.push "visible" if @props.visible || (@state.position != null)
 
-    <div style=style onTouchStart={@onTouchStart} onTouchEnd={@onTouchEnd} onTouchMove={@onTouchMove} onMouseDown={@onMouseDown} onMouseMove={@onMouseMove} onMouseUp={@onMouseUp} className={classes.join ' '}>
+    <div style={style} onTouchStart={@onTouchStart} onTouchEnd={@onTouchEnd} onTouchMove={@onTouchMove} onMouseDown={@onMouseDown} onMouseMove={@onMouseMove} onMouseUp={@onMouseUp} className={classes.join ' '}>
       <i className="fa fa-arrows-v"/>
     </div>

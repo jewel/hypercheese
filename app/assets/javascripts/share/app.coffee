@@ -59,7 +59,7 @@
     <div className={classes.join ' '}>
       {
         if showItem
-          <Details itemId={@state.itemId} search={@state.search} viewonly=true />
+          <Details itemId={@state.itemId} search={@state.search} viewonly/>
         else
           [
             <NavBar key="navbar" />

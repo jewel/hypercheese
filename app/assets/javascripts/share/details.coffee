@@ -186,8 +186,8 @@
             else
               <a title="Play video" className="control video-control" href="javascript:void(0)" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></a>
         }
-        <ControlIcon condition=prevLink className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
-        <ControlIcon condition=nextLink className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
+        <ControlIcon condition={prevLink} className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
+        <ControlIcon condition={nextLink} className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
         <div className="controls top">
           <div className="details-label">{item && item.filename}</div>
           <div></div>

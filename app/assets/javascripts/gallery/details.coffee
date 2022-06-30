@@ -258,8 +258,8 @@
             else
               <ControlIcon title="Play video" className="video-control" onClick={@onPlay} icon="fa-play"/>
         }
-        <ControlIcon condition=prevLink className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
-        <ControlIcon condition=nextLink className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
+        <ControlIcon condition={prevLink} className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
+        <ControlIcon condition={nextLink} className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
         <div className="controls top">
           <Link className="control home" href="/">
             <img src={@siteIcon()}/>
@@ -273,7 +273,7 @@
                 item.tag_ids.map (tag_id) ->
                   tag = Store.state.tagsById[tag_id]
                   if tag
-                    <TagLink key={tag.id} className="tag-link" tag=tag />
+                    <TagLink key={tag.id} className="tag-link" tag={tag}/>
             }
             <ControlIcon
               className={ "bullhorn" + if item && item.bullhorned then " active" else "" }

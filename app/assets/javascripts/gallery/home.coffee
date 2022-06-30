@@ -19,7 +19,7 @@
           {
             recent.sources.map (source) =>
               href = "/search/source:#{source.label}"
-              <Link key={source.path} className="btn btn-default" href=href>{source.label} Photos</Link>
+              <Link key={source.path} className="btn btn-default" href={href}>{source.label} Photos</Link>
           }
         </div>
       </div>
@@ -102,7 +102,7 @@
                       tag = Store.state.tagsById[t.tag_id]
                       return unless tag
                       <Link href="/search/item:#{t.items}">
-                        <Tag key=t.tag_id tag=tag>
+                        <Tag key={t.tag_id} tag={tag}>
                           +{t.count.toLocaleString()}
                         </Tag>
                       </Link>
