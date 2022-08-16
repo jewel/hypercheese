@@ -38,8 +38,14 @@
           {fact 'calendar', new Date(details.taken).toLocaleString()}
           {fact 'location-arrow', details.location}
           {
+            if details.width && details.height && !details.exif && !details.probe
+              res = <span>{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</span>
+              fact 'camera', res
+          }
+          {
             if exif = details.exif
               data = []
+              data.push <div>{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</div>
               data.push <div key="artist">{exif.artist}</div> if exif.artist
               data.push <div key="model">{exif.model}</div>
               data.push <div key="iso">ISO {exif.iso_speed_ratings}</div>
@@ -47,6 +53,27 @@
               data.push <div key="fnum">&fnof;/{frac exif.f_number}</div>
               data.push <div key="time">{exif.exposure_time} sec</div>
               fact 'camera', data
+          }
+          {
+            if probe = details.probe
+              data = []
+              if details.height == 360 || details.width == 360
+                data.push <div key="res">360p</div>
+              else if details.height == 480 || details.width == 480
+                data.push <div key="res">480p</div>
+              else if details.height == 720 || details.width == 720
+                data.push <div key="res">720p</div>
+              else if details.height == 1080 || details.width == 1080
+                data.push <div key="res">1080p</div>
+              else if details.width == 2160 || details.width == 2160
+                data.push <div key="res">4K</div>
+              else
+                data.push <div key="res">{details.width}&times;{details.height}</div>
+              data.push <div key="dur">{Math.round(probe.duration)} sec</div>
+              data.push <div key="codec">{probe.codec}</div>
+              data.push <div key="frate">{frac probe.rate} fps</div>
+              data.push <div key="bitrate">{(details.filesize * 8 / 1000000 / probe.duration).toFixed(1)} mbps</div> if details.filesize && probe.duration
+              fact 'video-camera', data
           }
           <tr>
             <th><i className="fa fa-folder-o"/></th>
@@ -57,6 +84,13 @@
                     {path}
                   </div>
               }
+              <div>
+                {
+                  if details.pretty_size
+                    details.pretty_size
+                }
+              </div>
+
               <div>
                 <a href="/api/items/download?ids=#{@props.item.id}">
                   <i className="fa fa-download"/> Download

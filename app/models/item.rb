@@ -1,4 +1,5 @@
 require 'exifr/jpeg'
+require_dependency 'probe'
 
 class Item < ActiveRecord::Base
   has_many :item_tags
@@ -79,10 +80,14 @@ class Item < ActiveRecord::Base
   end
 
   def exif
-    begin
-      EXIFR::JPEG.new full_path
-    rescue
-      nil
-    end
+    EXIFR::JPEG.new full_path
+  rescue
+    nil
+  end
+
+  def probe
+    Probe.video full_path if variety == 'video'
+  rescue
+    nil
   end
 end

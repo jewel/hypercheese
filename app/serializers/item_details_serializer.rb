@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :paths, :ages
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size
   has_many :comments, include: true
 
   def comments
@@ -8,6 +8,14 @@ class ItemDetailsSerializer < ActiveModel::Serializer
 
   def paths
     object.paths.map &:path_with_source
+  end
+  include ActionView::Helpers::NumberHelper
+  def pretty_size
+    number_to_human_size filesize if filesize
+  end
+
+  def filesize
+    File.size object.full_path rescue nil
   end
 
   include ActionView::Helpers::DateHelper

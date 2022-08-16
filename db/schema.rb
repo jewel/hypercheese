@@ -20,8 +20,8 @@ ActiveRecord::Schema.define(version: 2019_11_08_233536) do
     t.index ["user_id"], name: "index_bullhorns_on_user_id"
   end
 
-  create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
-    t.text "text"
+  create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
+    t.text "text", size: :medium
     t.integer "user_id"
     t.integer "item_id"
     t.datetime "created_at", null: false
