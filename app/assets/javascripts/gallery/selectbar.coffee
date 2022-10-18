@@ -111,12 +111,16 @@
       <nav className={classes.join ' '}>
         <div className="container-fluid">
           <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
-          <form onSubmit={@addNewTags}>
-            <input className="form-control" placeholder="Add tags" value={Store.state.pendingTagString} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus={!Store.state.hasTouch} onKeyUp={@moveCaret}/>
-          </form>
+          <Writer>
+            <form onSubmit={@addNewTags}>
+              <input className="form-control" placeholder="Add tags" value={Store.state.pendingTagString} onChange={@changeNewTags} type="text" onClick={@moveCaret} autoFocus={!Store.state.hasTouch} onKeyUp={@moveCaret}/>
+            </form>
+          </Writer>
 
           <div className="pull-right">
-            <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+            <Writer>
+              <a title="Share" className="btn navbar-btn" href="javascript:void(0)" onClick={@shareSelection}><i className="fa fa-share-alt"/></a>
+            </Writer>
             <a title="Download Originals" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
             <a href="javascript:void(0)" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
               <i className="fa fa-ellipsis-v"/>
@@ -125,12 +129,14 @@
               <li>
                 <a title="Convert to JPEG and Download" href={convertLink}><i className="fa fa-flask"/> Download as JPEG</a>
               </li>
-              <li>
-                <a href="javascript:void(0)" onClick={@publishSelection}><i className="fa fa-eye"/> Publish</a>
-              </li>
-              <li>
-                <a href="javascript:void(0)" onClick={@restrictSelection}><i className="fa fa-eye-slash"/> Unpublish</a>
-              </li>
+              <Writer>
+                <li>
+                  <a href="javascript:void(0)" onClick={@publishSelection}><i className="fa fa-eye"/> Publish</a>
+                </li>
+                <li>
+                  <a href="javascript:void(0)" onClick={@restrictSelection}><i className="fa fa-eye-slash"/> Unpublish</a>
+                </li>
+              </Writer>
             </ul>
             <a title="Close" className="btn navbar-btn" onClick={@onExit}> <i className="fa fa-times fa-fw"/> </a>
           </div>

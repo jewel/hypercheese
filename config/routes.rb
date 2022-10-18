@@ -33,6 +33,7 @@ HyperCheese::Application.routes.draw do
 
     resources :tags
 
+    get 'users/current', to: 'current_user#current'
   end
 
   scope :shares do

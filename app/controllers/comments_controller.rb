@@ -3,6 +3,8 @@ class CommentsController < ApplicationController
 
   # POST /comments
   def create
+    require_write!
+
     c = Comment.new
     c.update_attributes! comment_params
     c.user = current_user

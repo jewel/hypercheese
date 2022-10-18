@@ -29,13 +29,15 @@
           <Link className="btn btn-default" href="/tags/">Tags</Link>
         </div>
         {' '}
-        <div className="btn-group">
-          <Link className="btn btn-default" href="/search/starred">My Stars</Link>
-        </div>
-        {' '}
-        <div className="btn-group">
-          <Link className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</Link>
-        </div>
+        <Writer>
+          <div className="btn-group">
+            <Link className="btn btn-default" href="/search/starred">My Stars</Link>
+          </div>
+          {' '}
+          <div className="btn-group">
+            <Link className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</Link>
+          </div>
+        </Writer>
       </div>
       <br/>
       <div>

@@ -275,18 +275,20 @@
                   if tag
                     <TagLink key={tag.id} className="tag-link" tag={tag}/>
             }
-            <ControlIcon
-              className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
-              title="Tells others about this item"
-              onClick={@onBullhorn}
-              icon="fa-bullhorn"
-            />
-            <ControlIcon
-              className="star"
-              title="Bookmark for future reference"
-              onClick={@onStar}
-              icon={if item && item.starred then "fa-star" else "fa-star-o"}
-            />
+            <Writer>
+              <ControlIcon
+                className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
+                title="Tells others about this item"
+                onClick={@onBullhorn}
+                icon="fa-bullhorn"
+              />
+              <ControlIcon
+                className="star"
+                title="Bookmark for future reference"
+                onClick={@onStar}
+                icon={if item && item.starred then "fa-star" else "fa-star-o"}
+              />
+            </Writer>
             {
               # FIXME Only show this on devices without a keyboard
               if @fullScreenFunction()

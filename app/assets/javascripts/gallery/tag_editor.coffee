@@ -70,52 +70,56 @@
         <li>search for <Link href={"/search/#{encodeURI("only #{tag.alias || tag.label}")}"}>{"only #{tag.alias || tag.label}"}</Link></li>
         <li>search for <Link href={"/search/#{encodeURI("video #{tag.alias || tag.label}")}"}>{"video of #{tag.alias || tag.label}"}</Link></li>
       </ul>
-      <form onSubmit={@saveChanges} style={width: "20em"}>
-        <div className="form-group">
-          <label htmlFor="label-input">Label</label>
-          <input id="label-input" onChange={@changeLabel} type="text" className="form-control" value={@state.newLabel}/>
-        </div>
-        <div className="form-group">
-          <label htmlFor="parent-input">Parent</label>
-          <input id="parent-input" onChange={@changeParent} type="text" className="form-control" value={@state.newParent}/>
-        </div>
-        <div className="form-group">
-          <label htmlFor="user-alias">Personal Alias</label>
-          <input id="user-alias" onChange={@changeAlias} type="text" className="form-control" value={@state.newAlias}/>
-          <p>This alias is used for faster tagging.  It is visible to you.</p>
-        </div>
-        <button type="submit" className="btn btn-primary">
-          <i className="fa fa-save"/>
-        </button>
+      <Writer>
+        <form onSubmit={@saveChanges} style={width: "20em"}>
+          <div className="form-group">
+            <label htmlFor="label-input">Label</label>
+            <input id="label-input" onChange={@changeLabel} type="text" className="form-control" value={@state.newLabel}/>
+          </div>
+          <div className="form-group">
+            <label htmlFor="parent-input">Parent</label>
+            <input id="parent-input" onChange={@changeParent} type="text" className="form-control" value={@state.newParent}/>
+          </div>
+          <div className="form-group">
+            <label htmlFor="user-alias">Personal Alias</label>
+            <input id="user-alias" onChange={@changeAlias} type="text" className="form-control" value={@state.newAlias}/>
+            <p>This alias is used for faster tagging.  It is visible to you.</p>
+          </div>
+          <button type="submit" className="btn btn-primary">
+            <i className="fa fa-save"/>
+          </button>
+          {
+            if tag.item_count <= 0
+              <div>
+                <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)} type="button">
+                  <i className="fa fa-trash"/>
+                </button>
+              </div>
+          }
+        </form>
+      </Writer>
+
+      <Writer>
+        <h3>Change Icon</h3>
         {
-          if tag.item_count <= 0
-            <div>
-              <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)} type="button">
-                <i className="fa fa-trash"/>
-              </button>
+          if choices == null
+            <i className="fa fa-spinner fa-spin"/>
+          else
+            <div className="icon-choice-list">
+              {
+                choices.map (itemId) ->
+                  url = Store.resizedURL 'square', itemId
+                  updateIcon = ->
+                    tag.icon_id = itemId
+                    item = Store.getItem itemId
+                    tag.icon_code = item.code
+                    Store.updateTag tag
+
+                  <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
+                    <img src={url}/>
+                  </a>
+              }
             </div>
         }
-      </form>
-
-      <h3>Change Icon</h3>
-      {
-        if choices == null
-          <i className="fa fa-spinner fa-spin"/>
-        else
-          <div className="icon-choice-list">
-            {
-              choices.map (itemId) ->
-                url = Store.resizedURL 'square', itemId
-                updateIcon = ->
-                  tag.icon_id = itemId
-                  item = Store.getItem itemId
-                  tag.icon_code = item.code
-                  Store.updateTag tag
-
-                <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
-                  <img src={url}/>
-                </a>
-            }
-          </div>
-      }
+      </Writer>
     </div>

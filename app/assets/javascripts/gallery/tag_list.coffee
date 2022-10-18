@@ -86,15 +86,17 @@
         <input type="text" onChange={@updateFilter} className="form-control" placeholder="Filter..." value={@state.filter}/>
       </div>
 
-      <div className="new-tag">
-        <a href="javascript:void(0)" onClick={@newTag}>
-          <i className="fa fa-plus-circle"/>
-        </a>
-        <br/>
-        <em>
-          New Tag
-        </em>
-      </div>
+      <Writer>
+        <div className="new-tag">
+          <a href="javascript:void(0)" onClick={@newTag}>
+            <i className="fa fa-plus-circle"/>
+          </a>
+          <br/>
+          <em>
+            New Tag
+          </em>
+        </div>
+      </Writer>
 
       {
         roots.map (i) ->

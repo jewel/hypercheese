@@ -16,6 +16,12 @@ class @Store
         @_updateTagIndexes()
         @needsRedraw()
 
+    @jax
+     url: '/users/current'
+     success: (res) =>
+       @state.canWrite = res.can_write
+       @needsRedraw()
+
     if document.documentElement.clientWidth > 960
       defaultZoom = 7
     else
@@ -51,12 +57,16 @@ class @Store
       showInfo: false
       openStack: []
       judgeIcons: false
+      canWrite: true
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
     for tag in @state.tags
       tag.item_count = 0 if tag.item_count == null
       @state.tagsById[tag.id] = tag
+
+  @canWrite: ->
+    @state.canWrite
 
   @fetchRecent: ->
     return @state.recent if @state.recent

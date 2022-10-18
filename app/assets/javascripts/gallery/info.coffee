@@ -113,9 +113,11 @@
             <div key={tag_id}>
               <TagLink tag={tag}/>
               {' '}
-              <a href="javascript:void(0)" onClick={setTagIcon} title="Set current photo as icon for this tag">
-                <i className="fa fa-link"/>
-              </a>
+              <Writer>
+                <a href="javascript:void(0)" onClick={setTagIcon} title="Set current photo as icon for this tag">
+                  <i className="fa fa-link"/>
+                </a>
+              </Writer>
               {' '}
               <strong>{tag.alias || tag.label}</strong>
               {' '}
@@ -135,9 +137,11 @@
             </small>
           </p>
       }
-      <form key="new" className="comment" onSubmit={@onComment}>
-        <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
-        <br/>
-        <button className="btn btn-default">Submit</button>
-      </form>
+      <Writer>
+        <form key="new" className="comment" onSubmit={@onComment}>
+          <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
+          <br/>
+          <button className="btn btn-default">Submit</button>
+        </form>
+      </Writer>
     </div>
