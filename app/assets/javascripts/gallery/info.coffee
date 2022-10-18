@@ -36,7 +36,7 @@
       <table className="table">
         <tbody>
           {fact 'calendar', new Date(details.taken).toLocaleString()}
-          {fact 'location-arrow', details.location}
+          {fact 'location-arrow', <GPSCoord exif={details.exif}/>}
           {
             if details.width && details.height && !details.exif && !details.probe
               res = <span>{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</span>
