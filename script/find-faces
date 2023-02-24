@@ -10,6 +10,10 @@ require 'net/http'
 require 'json'
 require 'pp'
 
+begin
+  Dir.mkdir(Rails.root + "public/data/faces")
+rescue Errno::EEXIST
+end
 
 SIZE = 256
 
