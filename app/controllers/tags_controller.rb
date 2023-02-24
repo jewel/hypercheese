@@ -26,14 +26,17 @@ class TagsController < ApplicationController
   end
 
   def create
+    require_write!
     render status: :created, json: Tag.create(tag_params)
   end
 
   def destroy
+    require_write!
     render json: tag.destroy
   end
 
   def update
+    require_write!
     @tag = tag
     @tag.update(tag_params)
 

@@ -113,14 +113,14 @@
               type="text"
             />
             <span className="input-group-btn">
-              <button type="button" className="btn btn-secondary" onClick=@onClearText>&times;</button>
+              <button type="button" className="btn btn-secondary" onClick={@onClearText}>&times;</button>
             </span>
           </div>
           {' '}
           <button className="btn btn-default btn-primary">
             <i className="fa fa-search"/> Search
           </button>
-          <a href="javascript:void(0)" onClick=@onShowCriteriaPicker className="btn">
+          <a href="javascript:void(0)" onClick={@onShowCriteriaPicker} className="btn">
             advanced...
           </a>
         </div>
@@ -167,7 +167,7 @@
                 @setState
                   query: query
 
-            <Tag tag=tag key={tag.id} selected={selected} label onClick={onClick}/>
+            <Tag tag={tag} key={tag.id} selected={selected} label onClick={onClick}/>
         }
       </div>
     </div>

@@ -47,7 +47,7 @@
         item.tags_with_labels.map (tag) =>
           [icon_id, icon_code, label] = tag
           <div key={icon_id}>
-            <Tag icon_id=icon_id icon_code=icon_code />
+            <Tag icon_id={icon_id} icon_code={icon_code}/>
             {' '}
             <strong>{label}</strong>
           </div>

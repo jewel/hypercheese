@@ -81,7 +81,8 @@ exit if candidates.empty?
 
 warn "There are #{candidates.size} new items"
 
-candidates.keys.sort.each do |path|
+candidates.keys.sort.each_with_index do |path,index|
+  warn "Importing #{index+1}/#{candidates.size}"
   begin
     Import.by_path "originals/#{source.path}/#{path}"
   rescue

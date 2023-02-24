@@ -63,6 +63,8 @@ class ItemsController < ApplicationController
   end
 
   def shares
+    require_write!
+
     code = SecureRandom.urlsafe_base64 8
 
     Share.transaction do
@@ -99,6 +101,8 @@ class ItemsController < ApplicationController
   end
 
   def add_tags
+    require_write!
+
     items = nil
 
     current_user_id = current_user && current_user.id
@@ -125,6 +129,8 @@ class ItemsController < ApplicationController
   end
 
   def remove_tag
+    require_write!
+
     items = nil
     Item.transaction do
       tag = Tag.find params[:tag].to_i
@@ -143,6 +149,8 @@ class ItemsController < ApplicationController
   end
 
   def toggle_star
+    require_write!
+
     @item = Item.includes(:stars).where(id: params[:item_id].to_i).first
     @item.check_visibility_for current_user
     star = @item.stars.where(user_id: current_user.id).first
@@ -158,6 +166,8 @@ class ItemsController < ApplicationController
   end
 
   def toggle_bullhorn
+    require_write!
+
     @item = Item.includes(:bullhorns).find params[:item_id].to_i
     @item.check_visibility_for current_user
     bullhorn = @item.bullhorns.where(user_id: current_user.id).first
@@ -173,6 +183,8 @@ class ItemsController < ApplicationController
   end
 
   def rate
+    require_write!
+
     @item = Item.includes(:ratings).find params[:item_id].to_i
     @item.check_visibility_for current_user
     rating = @item.ratings.where(user_id: current_user.id).first

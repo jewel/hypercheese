@@ -65,7 +65,7 @@
               ([tag].concat(tag.children)).map (child) =>
                 if child.children.length == 0 || tag == child
                   <div key={child.id} className="tag">
-                    <TagLink tag=child />
+                    <TagLink tag={child}/>
                     {" #{(child.alias || child.label)} (#{child.item_count.toLocaleString()}) "}
                   </div>
             }
@@ -86,15 +86,17 @@
         <input type="text" onChange={@updateFilter} className="form-control" placeholder="Filter..." value={@state.filter}/>
       </div>
 
-      <div className="new-tag">
-        <a href="javascript:void(0)" onClick={@newTag}>
-          <i className="fa fa-plus-circle"/>
-        </a>
-        <br/>
-        <em>
-          New Tag
-        </em>
-      </div>
+      <Writer>
+        <div className="new-tag">
+          <a href="javascript:void(0)" onClick={@newTag}>
+            <i className="fa fa-plus-circle"/>
+          </a>
+          <br/>
+          <em>
+            New Tag
+          </em>
+        </div>
+      </Writer>
 
       {
         roots.map (i) ->

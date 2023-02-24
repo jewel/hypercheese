@@ -70,4 +70,8 @@ class ApplicationController < ActionController::Base
       u.permit :username, :email, :password, :password_confirmation, :current_password
     end
   end
+
+  def require_write!
+    raise "No write permissions" unless current_user.can_write?
+  end
 end

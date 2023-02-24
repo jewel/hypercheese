@@ -37,6 +37,6 @@
       onPause={@onVideoPause}
       onPlaying={@onVideoPlaying}
       onEnded={@onVideoEnded}
-      playsInline=true
+      playsInline
     />
 

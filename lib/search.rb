@@ -175,6 +175,9 @@ class Search
       @query[:sort] += " desc"
     end
 
+    @query[:sort] += ", id"
+    @query[:sort] += " desc" unless @query[:reverse]
+
     items = items.order @query[:sort]
 
     @items = items
