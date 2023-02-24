@@ -5,4 +5,4 @@ services:
     command: python3 ./app.py
     tty: true
     ports:
-      - "3000:3000"
+      - "5000:5000"
