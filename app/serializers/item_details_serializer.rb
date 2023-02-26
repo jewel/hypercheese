@@ -19,7 +19,7 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def faces
-    object.faces.map do |face|
+    object.faces.order(:cluster_id).map do |face|
       if face.cluster_id
         tag_id = Face.find(face.cluster_id)&.tag_id
       end

@@ -127,19 +127,10 @@
               }
             </div>
       }
-      <div className="faces">
-        {
-          (details.faces || []).map (face) ->
-            <div key={face.id} className="face">
-              <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
-              {
-                tag = Store.state.tagsById[ face.cluster_tag_id ]
-                if tag
-                  <strong>{tag.alias || tag.label} {(face.similarity * 100).toFixed(1)}%</strong>
-              }
-            </div>
-        }
-      </div>
+      {
+        if details.faces
+          <p>Experimental Face Matching:</p>
+      }
       {
         details.comments.map (comment) ->
           <p key={comment.id} className="comment">
@@ -150,6 +141,24 @@
             </small>
           </p>
       }
+      <div className="faces">
+        {
+          (details.faces || []).map (face) ->
+            <div key={face.id} className="face">
+              <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
+              <br/>
+              {
+                tag = Store.state.tagsById[ face.cluster_tag_id ]
+                if tag
+                  <React.Fragment>
+                    <strong>{tag.alias || tag.label}</strong>
+                    <br/>
+                    {(face.similarity * 100).toFixed(1)}%
+                  </React.Fragment>
+              }
+            </div>
+        }
+      </div>
       <Writer>
         <form key="new" className="comment" onSubmit={@onComment}>
           <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>
