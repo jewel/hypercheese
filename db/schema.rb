@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2023_02_26_032733) do
 
-  create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "item_id", null: false
     t.datetime "created_at"
@@ -24,22 +24,22 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.text "text", size: :medium
     t.integer "user_id"
     t.integer "item_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_comments_on_item_id"
   end
 
-  create_table "events", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "events", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "start"
     t.datetime "finish"
     t.text "description"
     t.integer "location_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "faces", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "faces", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "tag_id"
     t.bigint "cluster_id"
@@ -49,21 +49,22 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["tag_id"], name: "index_faces_on_tag_id"
   end
 
-  create_table "groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+  create_table "groups", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "path"
     t.integer "item_id"
     t.bigint "source_id", null: false
     t.index ["item_id"], name: "index_item_paths_on_item_id"
-    t.index ["path"], name: "index_item_paths_on_path", unique: true
+    t.index ["path"], name: "index_item_paths_on_path"
+    t.index ["source_id", "path"], name: "unique_paths", unique: true
     t.index ["source_id"], name: "index_item_paths_on_source_id"
   end
 
-  create_table "item_tags", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "item_tags", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "item_id"
     t.integer "tag_id"
     t.integer "added_by"
@@ -72,7 +73,7 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["tag_id"], name: "index_item_tags_on_tag_id"
   end
 
-  create_table "items", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "items", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.datetime "taken"
     t.text "description"
     t.string "md5"
@@ -81,8 +82,8 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.integer "view_count"
     t.integer "event_id"
     t.integer "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.datetime "deleted_at"
     t.string "variety"
     t.boolean "deleted", default: false, null: false
@@ -93,13 +94,13 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["taken"], name: "index_items_on_taken"
   end
 
-  create_table "locations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "locations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "ratings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "ratings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "value"
     t.integer "user_id"
     t.integer "item_id"
@@ -108,17 +109,17 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["item_id"], name: "index_ratings_on_item_id"
   end
 
-  create_table "share_items", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "share_items", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "share_id"
     t.integer "item_id"
   end
 
-  create_table "shares", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "shares", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id"
     t.string "code", null: false
   end
 
-  create_table "sources", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "sources", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "label"
     t.string "path"
     t.boolean "show_on_home", default: true, null: false
@@ -126,7 +127,7 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["user_id"], name: "index_sources_on_user_id"
   end
 
-  create_table "stars", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "stars", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "item_id", null: false
     t.datetime "created_at"
@@ -134,24 +135,24 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.index ["user_id"], name: "index_stars_on_user_id"
   end
 
-  create_table "tag_aliases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "tag_aliases", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "tag_id", null: false
     t.string "alias"
   end
 
-  create_table "tags", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "tags", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "label"
     t.datetime "birthday"
     t.integer "item_count"
     t.integer "icon_item_id"
     t.integer "parent_tag_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["label"], name: "index_tags_on_label"
   end
 
-  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
+  create_table "users", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -162,8 +163,8 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.datetime "last_sign_in_at"
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "role"
     t.string "provider"
     t.string "uid"
