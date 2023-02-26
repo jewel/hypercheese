@@ -294,18 +294,7 @@ def representWrapper(req, trx_id = 0):
   #-------------------------------------
   #retrieve images from request
 
-  img = ""
-  if "img" in list(req.keys()):
-    img = req["img"] #list
-          #print("img: ", img)
-
-  validate_img = False
-  if len(img) > 11 and img[0:11] == "data:image/":
-    validate_img = True
-
-  if validate_img != True:
-    print("invalid image passed!")
-    return jsonify({'success': False, 'error': 'you must pass img as base64 encoded string'}), 205
+  img = req["img"] #list
 
   #-------------------------------------
   #call represent function from the interface
@@ -314,7 +303,8 @@ def representWrapper(req, trx_id = 0):
 
     embedding = DeepFace.represent(img
         , model_name = model_name
-        , detector_backend = detector_backend
+        , detector_backend = "skip"
+        , enforce_detection = False
         )
 
     return jsonify({'success': True, 'embedding': embedding})
