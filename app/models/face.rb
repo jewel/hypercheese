@@ -7,7 +7,7 @@ class Face < ActiveRecord::Base
   end
 
   def embedding_path
-    "#{Rails.root}/public/data/faces/#{item.id}-#{id}-#{item.code}.json"
+    "#{Rails.root}/public/data/faces/#{item.id}-#{id}-#{item.code}.facenet512.json"
   end
 
   def embedding?
