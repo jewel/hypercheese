@@ -49,7 +49,7 @@ items.each do |item|
             item: item,
           )
 
-          dest = "#{Rails.root}/public/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"
+          dest = face.path
           temp = "#{dest}.#$$.jpg"
           image = MiniMagick::Image.open path
           image.format 'jpeg'

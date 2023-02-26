@@ -276,14 +276,9 @@ def represent():
 
   toc =  time.time()
 
-  resp_obj["trx_id"] = trx_id
-  resp_obj["seconds"] = toc-tic
-
   return resp_obj, 200
 
 def representWrapper(req, trx_id = 0):
-
-  resp_obj = jsonify({'success': False})
 
   #-------------------------------------
   #find out model
@@ -322,19 +317,12 @@ def representWrapper(req, trx_id = 0):
         , detector_backend = detector_backend
         )
 
+    return jsonify({'success': True, 'embedding': embedding})
+
   except Exception as err:
     print("Exception: ",str(err))
-    resp_obj = jsonify({'success': False, 'error': str(err)}), 205
+    return jsonify({'success': False, 'error': str(err)}), 205
 
-  #-------------------------------------
-
-  #print("embedding is ", len(embedding)," dimensional vector")
-  resp_obj = {}
-  resp_obj["embedding"] = embedding
-
-  #-------------------------------------
-
-  return resp_obj
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
