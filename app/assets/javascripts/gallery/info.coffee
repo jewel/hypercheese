@@ -129,9 +129,14 @@
       }
       <div className="faces">
         {
-          (details.faces || []).map (face_id) ->
-            <div key={face_id} className="face">
-              <img src={"/data/faces/#{item.id}-#{face_id}-#{item.code}.jpg"}/>
+          (details.faces || []).map (face) ->
+            <div key={face.id} className="face">
+              <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
+              {
+                tag = Store.state.tagsById[ face.cluster_tag_id ]
+                if tag
+                  <strong>{tag.alias || tag.label} {(face.similarity * 100).toFixed(1)}%</strong>
+              }
             </div>
         }
       </div>

@@ -19,7 +19,16 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def faces
-    object.faces.map &:id
+    object.faces.map do |face|
+      if face.cluster_id
+        tag_id = Face.find(face.cluster_id)&.tag_id
+      end
+      {
+        id: face.id,
+        cluster_tag_id: tag_id,
+        similarity: face.similarity,
+      }
+    end
   end
 
   include ActionView::Helpers::DateHelper

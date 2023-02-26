@@ -283,7 +283,7 @@ def representWrapper(req, trx_id = 0):
   #-------------------------------------
   #find out model
 
-  model_name = "VGG-Face"; distance_metric = "cosine"; detector_backend = 'opencv'
+  model_name = "Facenet512"; distance_metric = "cosine"; detector_backend = 'opencv'
 
   if "model_name" in list(req.keys()):
     model_name = req["model_name"]
