@@ -46,6 +46,8 @@ HyperCheese::Application.routes.draw do
 
   root to: 'home#index'
 
+  resources :faces
+
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'

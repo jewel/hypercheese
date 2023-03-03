@@ -128,10 +128,6 @@
             </div>
       }
       {
-        if details.faces
-          <p>Experimental Face Matching:</p>
-      }
-      {
         details.comments.map (comment) ->
           <p key={comment.id} className="comment">
             {comment.text}<br/>
@@ -141,11 +137,17 @@
             </small>
           </p>
       }
+      {
+        if details.faces
+          <p>Experimental Face Matching:</p>
+      }
       <div className="faces">
         {
           (details.faces || []).map (face) ->
             <div key={face.id} className="face">
-              <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
+              <a href="/faces/#{face.id}">
+                <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
+              </a>
               <br/>
               {
                 tag = Store.state.tagsById[ face.cluster_tag_id ]
