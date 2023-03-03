@@ -1,4 +1,21 @@
 class FacesController < ApplicationController
+  def index
+    @tags = Tag.find_by_sql "
+      SELECT tags.*,
+        (
+          SELECT SUM(1) FROM faces WHERE cluster_id IN (
+            SELECT id FROM faces WHERE tag_id = tags.id
+          )
+        ) total_faces,
+        (
+          SELECT SUM(1) FROM item_tags WHERE tag_id = tags.id
+        ) total_items
+      FROM tags
+      HAVING total_faces > 0
+      ORDER by total_faces DESC
+    "
+  end
+
   def show
     # FIXME Add authorization check?
     @face = Face.find params[:id]
