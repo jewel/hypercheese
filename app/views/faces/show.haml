@@ -3,10 +3,17 @@
 %a(href="/items/#{@face.item_id}")
   %img.source-image{ src: @face.item.resized_url(:large) }
 %br
-%strong= @face.cluster.tag.label
+%strong= @face.cluster.tag&.label
+
+= form_with(method: "POST", url: "/faces/#{@face.id}/canonize") do |f|
+  = f.text_field :label, placeholder: "Tag label"
+  %br
+  %button.btn.btn-default(type="submit") Canonize
 
 - if @face.tag
   %h1 Canonical for #{@face.tag.label}
+  %a.btn.btn-default(href="/faces/#{@face.id}/uncanonize" data-method="POST")
+    Uncanonize Face
 
   %ul
     %li
@@ -36,7 +43,7 @@
       %a(href="/faces/#{canon.id}")
         %img{ src: canon.url }
       %br
-      %strong= canon.tag&.label
+      %strong= canon.tag.label
       %br
       = "#{(@face.distance(canon)*100).round(1)}%"
 
@@ -50,4 +57,4 @@
         %a(href="/faces/#{other.id}")
           %img{ src: other.url }
         %br
-        = "#{other.similarity}%"
+        = "#{(other.similarity*100).round(1)}%"

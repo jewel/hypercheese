@@ -16,14 +16,30 @@ class FacesController < ApplicationController
     "
   end
 
+  def uncanonize
+    @face = Face.find params[:id]
+    @face.tag = nil
+    @face.save!
+    redirect_to "/faces/#{@face.id}", notice: "No longer canon"
+  end
+
+  def canonize
+    @face = Face.find params[:id]
+    @tag = Tag.find_by_label params[:label]
+    redirect_to "/faces/#{@face.id}", alert: "No such tag: #{params[:label].inspect}" unless @tag
+
+    @face.tag = @tag
+    @face.save!
+    redirect_to "/faces/#{@face.id}", notice: "Canonized as #{@tag.label}"
+  end
+
   def show
-    # FIXME Add authorization check?
     @face = Face.find params[:id]
     @canonical_faces = Face.where.not(tag: nil).sort_by do |canon|
       canon.embedding? && @face.embedding? && canon.distance(@face)
     end.reverse
     if @face.tag
-      @other_canonical = Face.where(tag: @face.cluster.tag)
+      @other_canonical = Face.where(tag: @face.cluster.tag).to_a - [@face]
       @cluster = Face.where(cluster: @face.cluster).order('similarity desc').limit(1000)
     end
   end

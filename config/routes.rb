@@ -48,7 +48,13 @@ HyperCheese::Application.routes.draw do
 
   get 'faces/mistagged/:tag_id' => 'faces#mistagged'
   get 'faces/untagged/:tag_id' => 'faces#untagged'
-  resources :faces
+  resources :faces do
+    member do
+      post 'uncanonize'
+      post 'canonize'
+    end
+  end
+
 
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
