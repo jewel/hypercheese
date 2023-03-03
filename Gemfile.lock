@@ -7,6 +7,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
+    RubyInline (3.12.4)
     actioncable (6.0.5)
       actionpack (= 6.0.5)
       nio4r (~> 2.0)
@@ -262,6 +263,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  RubyInline
   active_model_serializers
   bootstrap-sass
   coffee-rails

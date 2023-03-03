@@ -31,3 +31,5 @@
 
 /.secret_key_base
 *.swp
+
+/embeddings

@@ -10,9 +10,8 @@ require 'net/http'
 require 'json'
 require 'pp'
 
-faces = Face.all.includes(:item).each do |face|
-  dest = face.embedding_path
-  next if File.exist? dest
+faces = Face.all.order(:id).includes(:item).each do |face|
+  next if face.embedding?
   begin
     puts "Running for face #{face.id} from item #{face.item.id}"
     data = File.binread face.path
@@ -32,12 +31,7 @@ faces = Face.all.includes(:item).each do |face|
     raise "No embedding" unless res[:embedding]
 
     puts "Embedding is #{res[:embedding].size} floats"
-
-    temp = "#{dest}.#$$.tmp"
-
-    File.binwrite temp, res[:embedding].to_json
-    File.rename temp, dest
-
+    face.embedding = res[:embedding]
   rescue
     warn "Problem with #{face.item.path}: #{$!}"
   end

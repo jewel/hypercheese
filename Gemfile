@@ -41,3 +41,5 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 
 gem 'sucker_punch'
+
+gem 'RubyInline', require: 'inline'

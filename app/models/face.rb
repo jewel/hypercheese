@@ -9,14 +9,9 @@ class Face < ActiveRecord::Base
   def distance other
     a = embedding
     b = other.embedding
-    raise "Sizes do not match" unless a.size == b.size
-    dot_product = 0
-    a.zip(b).each do |a1, b1|
-      dot_product += a1 * b1
-    end
-    at = a.map { |n| n ** 2 }.sum
-    bt = b.map { |n| n ** 2 }.sum
-    dot_product / (Math.sqrt(at) * Math.sqrt(bt))
+    raise "Sizes do not match" unless a.bytesize == b.bytesize
+
+    NativeFunctions.cosine_distance a, b
   end
 
   def path
@@ -27,15 +22,19 @@ class Face < ActiveRecord::Base
     "/data/faces/#{item.id}-#{id}-#{item.code}.jpg"
   end
 
-  def embedding_path
-    "#{Rails.root}/public/data/faces/#{item.id}-#{id}-#{item.code}.facenet512.json"
-  end
-
   def embedding?
-    @_embedding || File.exist?(embedding_path)
+    @_embedding || store.has(id)
   end
 
   def embedding
-    @_embedding ||= JSON.parse File.binread embedding_path
+    @_embedding ||= store.get(id)
+  end
+
+  def embedding= data
+    store.put id, data
+  end
+
+  def store
+    @@_store ||= EmbeddingStore.new "facenet512", 512
   end
 end
