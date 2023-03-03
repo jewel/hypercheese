@@ -18,15 +18,22 @@ def cosine_distance a, b
   dot_product / (Math.sqrt(at) * Math.sqrt(bt))
 end
 
-canonical = Face.where("tag_id is not null").order(:tag_id)
+canonical = Face.where("tag_id is not null").order(:tag_id).to_a
+canonical.select! { _1.embedding? }
+total = Face.all.size
+count = 0
+
+puts "#{canonical.size} canonical faces, #{total} faces, #{canonical.size * total} comparisons"
 
 Face.all.includes(:item).find_in_batches.with_index do |group, batch|
-  puts "Processing group #{batch}"
+  start = Time.new
+  puts "Processing group #{batch}, #{canonical.size * group.size} comparisons"
   Face.transaction do
     group.each do |face|
+      count += 1
       next unless face.embedding?
       winner = nil
-      max = 0.0
+      max = -2.0
       canonical.each do |canon|
         diff = cosine_distance canon.embedding, face.embedding
         if diff > max
@@ -34,10 +41,20 @@ Face.all.includes(:item).find_in_batches.with_index do |group, batch|
           max = diff
         end
       end
-      next unless winner
-      face.cluster_id = winner.id
-      face.similarity = max
+      if winner
+        face.cluster_id = winner.id
+        face.similarity = max
+      else
+        face.cluster_id = nil
+        face.similarity = nil
+      end
       face.save!
     end
   end
+  duration = Time.new - start
+  rate = group.size / duration
+  remaining_faces = total - count
+  remaining_time = remaining_faces / rate
+  puts "#{duration.round} seconds, #{rate.round(1)} faces/s; #{(remaining_time/60).round} minutes left"
 end
+puts "Done"

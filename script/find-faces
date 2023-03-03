@@ -19,6 +19,11 @@ SIZE = 256
 
 items = Item.where(face_count: nil, deleted: false, variety: 'photo').order("taken desc")
 items.each do |item|
+
+  # Make sure another job hasn't already taken care of this item
+  item.reload
+  next if item.face_count
+
   begin
     puts "Finding faces in #{item.path}"
     Item.transaction do
@@ -26,7 +31,7 @@ items.each do |item|
       data = File.binread path
       enc = "data:image/jpeg;base64," + Base64.encode64(data)
 
-      uri = URI( 'http://localhost:5000/detect' )
+      uri = URI( 'http://face:5000/detect' )
 
       res = nil
 
@@ -47,6 +52,7 @@ items.each do |item|
           count += 1
           face = Face.create!(
             item: item,
+            position: info.to_json,
           )
 
           dest = face.path

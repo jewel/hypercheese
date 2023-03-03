@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_02_26_032733) do
+ActiveRecord::Schema.define(version: 2023_02_27_164601) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2023_02_26_032733) do
     t.bigint "tag_id"
     t.bigint "cluster_id"
     t.float "similarity"
+    t.text "position", size: :long, collation: "utf8mb4_bin"
     t.index ["cluster_id"], name: "index_faces_on_cluster_id"
     t.index ["item_id"], name: "index_faces_on_item_id"
     t.index ["tag_id"], name: "index_faces_on_tag_id"
