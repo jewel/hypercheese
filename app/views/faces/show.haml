@@ -12,6 +12,9 @@
     %li
       %a{ href: "/faces/mistagged/#{@face.tag.id}" }
         Mistagged
+    %li
+      %a{ href: "/faces/untagged/#{@face.tag.id}" }
+        Untagged
 
 - if @other_canonical&.size&.> 0
   %h2 Other Canonical Faces with this Tag
@@ -47,4 +50,4 @@
         %a(href="/faces/#{other.id}")
           %img{ src: other.url }
         %br
-        = "#{(@face.distance(other)*100).round(1)}%"
+        = "#{other.similarity}%"

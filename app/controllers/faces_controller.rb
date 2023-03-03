@@ -35,6 +35,27 @@ class FacesController < ApplicationController
     ", @tag.id, @tag.id]
   end
 
+  def untagged
+    @tag = Tag.find_by_id params[:tag_id]
+
+    # Faces that are in an image that doesn't have that tag
+    @faces = Face.find_by_sql ["
+      SELECT faces.* FROM faces
+      WHERE cluster_id IN (
+        SELECT id
+        FROM faces
+        WHERE tag_id = ?
+      )
+      AND item_id NOT IN (
+        SELECT item_id
+        FROM item_tags
+        WHERE tag_id = ?
+      )
+      ORDER BY similarity DESC
+      LIMIT 1000
+    ", @tag.id, @tag.id]
+  end
+
 
   # TODO:
       # Images that are not tagged Ezra, but is tagged, but do have his face in them

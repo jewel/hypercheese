@@ -1,0 +1,9 @@
+%h1= "Untagged faces of #{@tag.label}"
+
+.face-list
+  - @faces.each do |face|
+    .face
+      %a{ href: "/faces/#{face.id}" }
+        %img{ src: face.url }
+      %br
+      = (face.similarity * 100).round(1)
