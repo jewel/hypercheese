@@ -46,6 +46,7 @@ HyperCheese::Application.routes.draw do
 
   root to: 'home#index'
 
+  get 'faces/mistagged/:tag_id' => 'faces#mistagged'
   resources :faces
 
   get 'items/(*path)' => 'home#index'

@@ -1,14 +1,21 @@
 %h1 Face
-%img{ src: @face.url }
+%img.main-face{ src: @face.url }
+%a(href="/items/#{@face.item_id}")
+  %img.source-image{ src: @face.item.resized_url(:large) }
 %br
 %strong= @face.cluster.tag.label
 
 - if @face.tag
   %h1 Canonical for #{@face.tag.label}
 
+  %ul
+    %li
+      %a{ href: "/faces/mistagged/#{@face.tag.id}" }
+        Mistagged
+
 - if @other_canonical&.size&.> 0
   %h2 Other Canonical Faces with this Tag
-  .faces
+  .face-list
     - @other_canonical.each do |face|
       .face
         %a(href="/faces/#{face.id}")
@@ -18,7 +25,7 @@
   %p No embedding for face
 
 %h2 Canonical Faces
-.faces
+.face-list
   - @canonical_faces.each do |canon|
     - next unless canon.embedding?
     - next unless @face.embedding?
@@ -32,7 +39,7 @@
 
 - if @cluster
   %h2 #{@cluster.size} Faces in Cluster
-  .faces
+  .face-list
     - @cluster.each do |other|
       - next unless other.embedding?
       - next unless @face.embedding?

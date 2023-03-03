@@ -1,0 +1,7 @@
+%h1= "Mistagged images of #{@tag.label}"
+
+.item-list
+  - @items.each do |item|
+    .item
+      %a{ href: "/items/#{item.id}" }
+        %img{ src: item.resized_url(:large) }
