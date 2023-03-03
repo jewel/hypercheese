@@ -20,6 +20,7 @@ class FacesController < ApplicationController
       FROM item_tags
       JOIN items ON item_id = items.id
       WHERE tag_id = ?
+      AND face_count IS NOT NULL
       AND item_id NOT IN (
         SELECT item_id
         FROM faces
@@ -29,6 +30,7 @@ class FacesController < ApplicationController
           WHERE tag_id = ?
         )
       )
+      ORDER BY taken DESC
       LIMIT 1000
     ", @tag.id, @tag.id]
   end
