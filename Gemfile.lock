@@ -7,7 +7,9 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    RubyInline (3.12.4)
+    RubyInline (3.13.0)
+      ZenTest (~> 4.3)
+    ZenTest (4.12.1)
     actioncable (6.0.5)
       actionpack (= 6.0.5)
       nio4r (~> 2.0)

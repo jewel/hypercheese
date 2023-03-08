@@ -3,7 +3,7 @@
 %a(href="/items/#{@face.item_id}")
   %img.source-image{ src: @face.item.resized_url(:large) }
 %br
-%strong= @face.cluster.tag&.label
+%strong= @face.cluster&.tag&.label
 
 = form_with(method: "POST", url: "/faces/#{@face.id}/canonize") do |f|
   = f.text_field :label, placeholder: "Tag label"
@@ -34,7 +34,7 @@
 - unless @face.embedding?
   %p No embedding for face
 
-%h2 Canonical Faces
+%h2 Similar Faces
 .face-list
   - @canonical_faces.each do |canon|
     - next unless canon.embedding?

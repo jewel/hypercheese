@@ -29,6 +29,10 @@
           <Link className="btn btn-default" href="/tags/">Tags</Link>
         </div>
         {' '}
+        <div className="btn-group">
+          <a className="btn btn-default" href="/faces/">Faces</a>
+        </div>
+        {' '}
         <Writer>
           <div className="btn-group">
             <Link className="btn btn-default" href="/search/starred">My Stars</Link>

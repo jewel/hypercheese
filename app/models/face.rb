@@ -1,3 +1,6 @@
+require_relative '../../lib/embedding_store'
+require_relative '../../lib/native_functions'
+
 class Face < ActiveRecord::Base
   belongs_to :item
   belongs_to :tag
@@ -30,7 +33,8 @@ class Face < ActiveRecord::Base
     @_embedding ||= store.get(id)
   end
 
-  def embedding= data
+  def set_embedding data
+    @_embedding = nil
     store.put id, data
   end
 
