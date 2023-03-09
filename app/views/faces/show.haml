@@ -1,12 +1,27 @@
+%p
+  %a(href="/faces") All Faces
+
 %h1 Face
-%img.main-face{ src: @face.url }
-%a(href="/items/#{@face.item_id}")
-  %img.source-image{ src: @face.item.resized_url(:large) }
-%br
-%strong= @face.cluster&.tag&.label
+.main-faces
+  .main-face
+    %img{ src: @face.url }
+    %br
+    %strong= @face.cluster&.tag&.label
+
+  .main-item
+    %a(href="/items/#{@face.item_id}")
+      %img.source-image{ src: @face.item.resized_url(:large) }
+
+
+  .face-list
+    - @face.item.tags.includes(:icon).each do |tag|
+      .face
+        %img{ src: tag.icon.resized_url(:square) }
+        %br
+        = tag.label
 
 = form_with(method: "POST", url: "/faces/#{@face.id}/canonize") do |f|
-  = f.text_field :label, placeholder: "Tag label"
+  = f.text_field :label, placeholder: "Tag label", value: @face.cluster&.tag&.label
   %br
   %button.btn.btn-default(type="submit") Canonize
 
@@ -57,4 +72,11 @@
         %a(href="/faces/#{other.id}")
           %img{ src: other.url }
         %br
+        - if @birthday
+          - age = ((other.item.taken.to_time - @birthday.to_time) / 1.month.seconds).floor
+          - if age.abs >= 24
+            = "#{pluralize age/12, "year"}"
+          - else
+            = "#{pluralize age, "month"}"
+          %br
         = "#{(other.similarity*100).round(1)}%"

@@ -22,6 +22,8 @@ class FacesController < ApplicationController
   def uncanonize
     @face = Face.find params[:id]
     @face.tag = nil
+    @face.cluster_id = nil
+    @face.similarity = nil
     @face.save!
     redirect_to "/faces/#{@face.id}", notice: "No longer canon"
   end
@@ -32,7 +34,8 @@ class FacesController < ApplicationController
     redirect_to "/faces/#{@face.id}", alert: "No such tag: #{params[:label].inspect}" unless @tag
 
     @face.tag = @tag
-    @face.cluster_id = @tag.id
+    @face.cluster_id = @face.id
+    @face.similarity = 1
     @face.save!
     redirect_to "/faces/#{@face.id}", notice: "Canonized as #{@tag.label}"
   end
@@ -45,7 +48,9 @@ class FacesController < ApplicationController
 
     if @face.tag
       @other_canonical = Face.where(tag_id: @face.tag.id).to_a - [@face]
-      @cluster = Face.where(cluster_id: @face.id).order('similarity desc').limit(1000)
+      @cluster = Face.where(cluster_id: @face.id).joins(:item).order('taken desc').limit(10_000)
+      @birthday = @face.tag.birthday
+      @birthday ||= @face.tag.items.order('taken').first.taken
     end
   end
 
