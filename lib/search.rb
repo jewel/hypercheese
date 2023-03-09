@@ -155,6 +155,11 @@ class Search
     raise "Invalid 'by'" if @query[:sort] && @query[:sort] !~ /\A\w+\Z/
     @query[:sort] = 'rand()' if @query[:sort] == 'random'
 
+    if @query[:sort] == 'aesthetics'
+      @query[:sort] = 'aesthetics_score'
+      items = items.where('aesthetics_score is not null')
+    end
+
     if @query[:sort] == 'age'
       age = "timestampdiff( second, (
           select tags.birthday

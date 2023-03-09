@@ -75,6 +75,10 @@
               data.push <div key="bitrate">{(details.filesize * 8 / 1000000 / probe.duration).toFixed(1)} mbps</div> if details.filesize && probe.duration
               fact 'video-camera', data
           }
+          {
+            if details.aesthetics_score?
+              fact 'paint-brush', details.aesthetics_score.toFixed(1)
+          }
           <tr>
             <th><i className="fa fa-folder-o"/></th>
             <td>
