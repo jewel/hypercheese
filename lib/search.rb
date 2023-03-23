@@ -1,3 +1,7 @@
+require_relative 'embedding_store'
+require_relative 'native_functions'
+require 'net/http'
+
 class Search
   def initialize query
     @query = query
@@ -11,12 +15,19 @@ class Search
 
   def ids
     items
-    if @pluckable
+    res = if @pluckable
       items.pluck :id
     else
       items.map { |item| item.id }
     end
+    if @query[:clip]
+      string = @query[:clip].gsub /-/, ' '
+      embedding = clip_embedding string
+      res = clip_search res, embedding
+    end
+    res
   end
+
 
   def execute
     return if @executed
@@ -217,5 +228,46 @@ class Search
       end
     end
     tag_ids + tag_ids.map { |_| @descendants[_] || [] }.flatten
+  end
+
+  private
+
+  def clip_embedding text
+    uri = URI( 'http://face:7860/run/extract' )
+
+    res = nil
+
+    # FIXME switch to HTTParty
+    Net::HTTP.start uri.host, uri.port do |http|
+      req = Net::HTTP::Post.new uri, 'Content-Type' => 'application/json'
+      req.body = { data: [text] }.to_json
+      str = http.request(req).body
+      res = JSON.parse str, symbolize_names: true
+    end
+
+    res = res[:data][0]
+    res[:embedding]
+  end
+
+  def clip_search ids, embedding
+    store = EmbeddingStore.new "clip", 768
+
+    ids = Set.new ids
+    raw = embedding.pack 'f*'
+
+    threshold = -10
+    output = []
+
+    # FIXME we could seek around instead of reading the entire file if there
+    # are less ids than embeddings
+    store.each_with_index do |other,index|
+      next unless ids.member? index
+      similarity = NativeFunctions.cosine_distance raw, other
+      next if similarity < threshold
+      output.push [similarity, index]
+    end
+
+    output.sort_by! { -_1.first }
+    output.map { _1.last }
   end
 end

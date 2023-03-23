@@ -19,6 +19,7 @@ class @SearchQuery
     path: true
     comment: true
     visibility: true
+    clip: true
 
   @multiple:
     year: true

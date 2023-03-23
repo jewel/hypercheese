@@ -8,6 +8,10 @@ class EmbeddingStore
     Rails.root + "embeddings/#{@name}-#{@size}.db"
   end
 
+  def slurp
+    File.binread path
+  end
+
   def get index
     handle.seek index * @size * 4
     data = handle.read @size * 4
@@ -29,6 +33,23 @@ class EmbeddingStore
     return false if embedding == nil
     return false if embedding == 0.chr * @size * 4
     true
+  end
+
+  def each_with_index
+    count = handle.size / (@size * 4)
+    index = 0
+    handle.seek 0
+    blank = 0.chr * @size * 4
+    while index < count
+      data = handle.read @size * 4
+      raise "Not expecting nil at #{index}" unless data
+
+      if data != blank
+        yield data, index
+      end
+      index += 1
+    end
+    count
   end
 
   private
