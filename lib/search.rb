@@ -21,7 +21,7 @@ class Search
       items.map { |item| item.id }
     end
     if @query[:clip]
-      string = @query[:clip].gsub /-/, ' '
+      string = @query[:clip].join ' '
       embedding = clip_embedding string
       res = clip_search res, embedding
     end

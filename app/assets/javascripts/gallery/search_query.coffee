@@ -27,6 +27,7 @@ class @SearchQuery
     day: true
     source: true
     item: true
+    clip: true
 
   @caseSensitive:
     shared: true
@@ -127,14 +128,24 @@ class @SearchQuery
             @options.month.push month
             skip = true
         continue if skip
-      @unknown.push word
+
+      # Words that don't otherwise match turn into a CLIP search
+
+      # A word that starts with a plus is forced into CLIP
+      if word.startsWith "+"
+        word = word.slice(1)
+
+      @options.clip ?= []
+      @options.clip.push word
 
     null
 
   stringify: ->
     parts = @tags.map (tag) -> tag.alias || tag.label
     for k,v of @options
-      if @constructor.keywords[k]
+      if k == "clip"
+        parts.push v.join(' ')
+      else if @constructor.keywords[k]
         parts.push k if v == "true" || v == true
       else if @constructor.multiple[k]
         parts.push "#{k}:#{v.join(',')}" if v.length > 0
