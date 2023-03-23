@@ -20,6 +20,7 @@ class @SearchQuery
     comment: true
     visibility: true
     clip: true
+    threshold: true
 
   @multiple:
     year: true

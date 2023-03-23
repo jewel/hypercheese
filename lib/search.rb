@@ -14,20 +14,18 @@ class Search
   end
 
   def ids
-    items
     res = if @pluckable
       items.pluck :id
     else
       items.map { |item| item.id }
     end
-    if @query[:clip]
-      string = @query[:clip].join ' '
-      embedding = clip_embedding string
-      res = clip_search res, embedding
-    end
-    res
-  end
 
+    return res unless @query[:sort] =~ /^clip/
+    res = Set.new res
+    @clip_ids.select do |id|
+      res.member? id
+    end
+  end
 
   def execute
     return if @executed
@@ -163,6 +161,18 @@ class Search
       end
     end
 
+    if @query[:clip]
+      string = @query[:clip].join ' '
+      embedding = clip_embedding string
+      threshold = 0.18
+      if @query[:threshold]
+        threshold = @query[:threshold].to_f / 100
+      end
+      @clip_ids = clip_search embedding, threshold
+      items = items.where id: @clip_ids
+      @query[:sort] ||= 'clip'
+    end
+
     raise "Invalid 'by'" if @query[:sort] && @query[:sort] !~ /\A\w+\Z/
     @query[:sort] = 'rand()' if @query[:sort] == 'random'
 
@@ -194,7 +204,9 @@ class Search
     @query[:sort] += ", id"
     @query[:sort] += " desc" unless @query[:reverse]
 
-    items = items.order @query[:sort]
+    unless @query[:sort] =~ /^clip/
+      items = items.order @query[:sort]
+    end
 
     @items = items
     @executed = true
@@ -249,19 +261,16 @@ class Search
     res[:embedding]
   end
 
-  def clip_search ids, embedding
+  def clip_search embedding, threshold
     store = EmbeddingStore.new "clip", 768
 
-    ids = Set.new ids
     raw = embedding.pack 'f*'
 
-    threshold = -10
     output = []
 
     # FIXME we could seek around instead of reading the entire file if there
     # are less ids than embeddings
     store.each_with_index do |other,index|
-      next unless ids.member? index
       similarity = NativeFunctions.cosine_distance raw, other
       next if similarity < threshold
       output.push [similarity, index]
