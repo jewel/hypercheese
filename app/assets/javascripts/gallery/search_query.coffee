@@ -144,7 +144,11 @@ class @SearchQuery
     parts = @tags.map (tag) -> tag.alias || tag.label
     for k,v of @options
       if k == "clip"
-        parts.push v.join(' ')
+        for word in v
+          if TagMatch.matchPrefix(word).length > 0
+            parts.push "+#{word}"
+          else
+            parts.push word
       else if @constructor.keywords[k]
         parts.push k if v == "true" || v == true
       else if @constructor.multiple[k]
