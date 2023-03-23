@@ -1,19 +1,26 @@
 class FacesController < ApplicationController
   def index
     @tags = Tag.find_by_sql "
-      SELECT tags.*,
-        (
-          SELECT SUM(1) FROM faces WHERE cluster_id IN (
-            SELECT id FROM faces WHERE tag_id = tags.id
-          )
-        ) total_faces,
-        (
-          SELECT SUM(1) FROM item_tags
-          JOIN items ON item_id = items.id
-          WHERE tag_id = tags.id
-          AND face_count IS NOT NULL
-        ) total_items
+      WITH clusters AS (
+        SELECT cluster_id, SUM(1) count FROM faces
+        WHERE cluster_id IS NOT NULL
+        GROUP BY 1
+      ),
+      total_faces AS (
+        SELECT tag_id, SUM(count) count FROM faces
+        JOIN clusters ON faces.id = clusters.cluster_id
+        GROUP BY 1
+      ),
+      total_items AS (
+        SELECT tag_id, SUM(1) count FROM item_tags
+        JOIN items ON item_id = items.id
+        WHERE face_count IS NOT NULL
+        GROUP BY 1
+      )
+      SELECT tags.*, total_faces.count total_faces, total_items.count total_items
       FROM tags
+      LEFT JOIN total_faces ON tag_id = tags.id
+      LEFT JOIN total_items ON total_items.tag_id = tags.id
       HAVING total_faces > 0
       ORDER by total_faces DESC
     "
@@ -48,7 +55,7 @@ class FacesController < ApplicationController
 
     if @face.tag
       @other_canonical = Face.where(tag_id: @face.tag.id).to_a - [@face]
-      @cluster = Face.where(cluster_id: @face.id).joins(:item).order('taken desc').limit(10_000)
+      @cluster = Face.where(cluster_id: @face.id).joins(:item).order('similarity desc').limit(10_000)
       @birthday = @face.tag.birthday
       @birthday ||= @face.tag.items.order('taken').first.taken
     end
