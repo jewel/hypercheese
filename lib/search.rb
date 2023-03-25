@@ -73,7 +73,15 @@ class Search
     end
     @items = Item.none
 
-    if @query[:any]
+    if @query[:faces]
+      tag_ids.each do |id|
+        items = items.where 'id in (
+          select item_id from faces where cluster_id in (
+            select id from faces where tag_id = ?
+          )
+        )', id
+      end
+    elsif @query[:any]
       items = items.where 'id in ( select item_id from item_tags where tag_id IN (?) )', descendants(tag_ids)
     else
       tag_ids.each do |id|

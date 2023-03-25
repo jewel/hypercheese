@@ -8,6 +8,7 @@ class @SearchQuery
     unjudged: true
     has_comments: true
     starred: true
+    faces: true
 
   @options:
     orientation: true
@@ -19,7 +20,6 @@ class @SearchQuery
     path: true
     comment: true
     visibility: true
-    clip: true
     threshold: true
 
   @multiple:
