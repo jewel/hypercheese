@@ -1,14 +1,19 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations
   has_many :comments, include: true
 
   def comments
     object.comments.order :created_at
   end
 
+  def locations
+    object.locations.map &:name
+  end
+
   def paths
     object.paths.map &:path_with_source
   end
+
   include ActionView::Helpers::NumberHelper
   def pretty_size
     number_to_human_size filesize if filesize

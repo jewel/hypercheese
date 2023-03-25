@@ -214,6 +214,9 @@ GEM
     responders (3.0.0)
       actionpack (>= 5.0)
       railties (>= 5.0)
+    rgeo (3.0.0)
+    rgeo-geojson (2.1.1)
+      rgeo (>= 1.0.0)
     ruby_parser (3.13.1)
       sexp_processor (~> 4.9)
     sass-rails (6.0.0)
@@ -284,6 +287,8 @@ DEPENDENCIES
   rails (~> 6.0.0)
   rb-readline
   react-rails
+  rgeo
+  rgeo-geojson
   sass-rails
   sqlite3
   sucker_punch

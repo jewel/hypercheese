@@ -21,6 +21,9 @@ class @SearchQuery
     comment: true
     visibility: true
     threshold: true
+    in: true
+    near: true
+    miles: true
 
   @multiple:
     year: true

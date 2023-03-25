@@ -4,6 +4,8 @@ require_dependency 'probe'
 class Item < ActiveRecord::Base
   has_many :item_tags
   has_many :tags, through: :item_tags
+  has_many :item_locations
+  has_many :locations, through: :item_locations
   has_many :comments
   has_many :item_paths
   has_many :stars

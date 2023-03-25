@@ -36,7 +36,24 @@
       <table className="table">
         <tbody>
           {fact 'calendar', new Date(details.taken).toLocaleString()}
-          {fact 'location-arrow', <GPSCoord exif={details.exif}/>}
+          {
+            fact('location-arrow',
+              <React.Fragment>
+                <GPSCoord exif={details.exif}/>
+                {
+                  if details.locations?.length > 0
+                    <React.Fragment>
+                      <br/>
+                      {
+                        locations = details.locations.slice(0)
+                        locations.reverse()
+                        locations.join(", ")
+                      }
+                    </React.Fragment>
+                }
+              </React.Fragment>
+            )
+          }
           {
             if details.width && details.height && !details.exif && !details.probe
               res = <span>{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</span>

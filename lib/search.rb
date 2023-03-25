@@ -1,6 +1,7 @@
 require_relative 'embedding_store'
 require_relative 'native_functions'
 require 'net/http'
+require 'rgeo'
 
 class Search
   def initialize query
@@ -106,6 +107,32 @@ class Search
 
     if @query[:comment]
       items = items.where ['id in ( select item_id from comments where text like ? )', "%#{@query[:comment]}%" ]
+    end
+
+    if @query[:in]
+      location = @query[:in].gsub /[-_]/, ' '
+      items = items.where ['id in ( select item_id from item_locations where location_id in ( select id from locations where name = ? ) )', location]
+    end
+
+    if @query[:near]
+      lat, lon = @query[:near].split /,/
+      n_miles = 1.0
+      if @query[:miles]
+        n_miles = @query[:miles].to_f
+      end
+
+      earth_radius_miles = 3960
+
+      given_coordinate = RGeo::Geographic.spherical_factory(srid: 4326).point(lon, lat)
+
+      lat_degree_distance = n_miles / 69.0 # 1 degree of latitude is approximately 69 miles
+      lon_degree_distance = (n_miles / (Math.cos(given_coordinate.latitude * Math::PI / 180) * 69)).abs
+      min_lat = given_coordinate.latitude - lat_degree_distance
+      max_lat = given_coordinate.latitude + lat_degree_distance
+      min_lon = given_coordinate.longitude - lon_degree_distance
+      max_lon = given_coordinate.longitude + lon_degree_distance
+
+      items = items.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_lon, max_lon)
     end
 
     if @query[:untagged]

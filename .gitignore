@@ -33,3 +33,5 @@
 *.swp
 
 /embeddings
+/db/geo.index
+/db/geo

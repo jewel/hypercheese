@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_08_053109) do
+ActiveRecord::Schema.define(version: 2023_03_24_213810) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -55,6 +55,13 @@ ActiveRecord::Schema.define(version: 2023_03_08_053109) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "item_locations", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.bigint "location_id", null: false
+    t.index ["item_id"], name: "index_item_locations_on_item_id"
+    t.index ["location_id"], name: "index_item_locations_on_location_id"
+  end
+
   create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
     t.string "path"
     t.integer "item_id"
@@ -92,14 +99,18 @@ ActiveRecord::Schema.define(version: 2023_03_08_053109) do
     t.string "code", null: false
     t.integer "face_count"
     t.float "aesthetics_score"
+    t.float "latitude"
+    t.float "longitude"
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["taken"], name: "index_items_on_taken"
   end
 
-  create_table "locations", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "locations", options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "geoid", null: false
+    t.text "properties", size: :long, null: false, collation: "utf8mb4_bin"
+    t.index ["geoid"], name: "index_locations_on_geoid"
+    t.index ["name"], name: "index_locations_on_name"
   end
 
   create_table "ratings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|

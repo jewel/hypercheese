@@ -40,6 +40,9 @@ gem 'devise'
 gem 'omniauth'
 gem 'omniauth-facebook'
 
+gem 'rgeo'
+gem 'rgeo-geojson'
+
 gem 'sucker_punch'
 
 gem 'RubyInline', require: 'inline'
