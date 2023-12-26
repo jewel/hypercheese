@@ -93,7 +93,16 @@
   imagesPerRow: ->
     Math.floor @html.clientWidth / @columnWidth()
 
+
+  spinner: ->
+    <div style={textAlign: 'center', margin: 48}>
+      <i className="fa fa-spinner fa-spin" style={fontSize: 48}/>
+    </div>
+
   render: ->
+    if Store.state.searching
+      return @spinner()
+
     overdraw = 3
     maxSize = 200
     minColumns = 3
