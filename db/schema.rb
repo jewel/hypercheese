@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 2023_03_24_213810) do
     t.index ["location_id"], name: "index_item_locations_on_location_id"
   end
 
-  create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci", force: :cascade do |t|
+  create_table "item_paths", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci", force: :cascade do |t|
     t.string "path"
     t.integer "item_id"
     t.bigint "source_id", null: false
