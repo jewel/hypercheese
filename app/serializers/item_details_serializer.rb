@@ -2,6 +2,10 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations
   has_many :comments, include: true
 
+  def exif
+    object.exif&.as_json&.except "user_comment"
+  end
+
   def comments
     object.comments.order :created_at
   end

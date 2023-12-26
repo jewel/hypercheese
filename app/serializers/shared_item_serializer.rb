@@ -2,6 +2,10 @@ class SharedItemSerializer < ActiveModel::Serializer
   attributes :id, :code, :variety, :filename, :taken, :exif, :tags_with_labels
   has_many :comments, include: true
 
+  def exif
+    object.exif&.as_json&.except "user_comment"
+  end
+
   def tags_with_labels
     object.tags.map do |tag|
       [ tag.icon&.id, tag.icon&.code, tag.label ]
