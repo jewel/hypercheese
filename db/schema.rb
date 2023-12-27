@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_27_045903) do
+ActiveRecord::Schema.define(version: 2023_12_27_050416) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 2023_12_27_045903) do
     t.integer "tag_id"
     t.integer "added_by"
     t.datetime "created_at"
+    t.index ["added_by"], name: "index_item_tags_on_added_by"
     t.index ["item_id"], name: "index_item_tags_on_item_id"
     t.index ["tag_id"], name: "index_item_tags_on_tag_id"
   end
