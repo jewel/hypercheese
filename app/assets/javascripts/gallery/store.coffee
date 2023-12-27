@@ -20,6 +20,7 @@ class @Store
      url: '/users/current'
      success: (res) =>
        @state.canWrite = res.can_write
+       @state.isAdmin = res.is_admin
        @needsRedraw()
 
     if document.documentElement.clientWidth > 960
@@ -58,6 +59,7 @@ class @Store
       openStack: []
       judgeIcons: false
       canWrite: true
+      isAdmin: false
 
   @_updateTagIndexes: ->
     @state.tagsById = {}

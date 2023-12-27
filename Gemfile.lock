@@ -244,6 +244,9 @@ GEM
       kaminari (>= 1.1.0)
       railties (>= 4.2.0)
       sprockets-rails (>= 2.0.0)
+    trestle-auth (0.4.4)
+      bcrypt (~> 3.1.7)
+      trestle (~> 0.9.0, >= 0.9.3)
     tzinfo (1.2.9)
       thread_safe (~> 0.1)
     uglifier (4.1.20)
@@ -288,6 +291,7 @@ DEPENDENCIES
   sucker_punch
   thin
   trestle
+  trestle-auth
   uglifier
   zipline
 

@@ -39,6 +39,7 @@ gem 'haml-rails'
 gem 'devise'
 
 gem 'trestle'
+gem 'trestle-auth'
 
 gem 'rgeo'
 gem 'rgeo-geojson'

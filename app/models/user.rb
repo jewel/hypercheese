@@ -1,15 +1,21 @@
 class User < ActiveRecord::Base
   has_many :sources
   has_many :items, through: :sources
+  belongs_to :sponsor, class_name: "User", foreign_key: "sponsor_id", optional: true
+  has_many :sponsored_users, class_name: "User", foreign_key: "sponsor_id"
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable,
          :authentication_keys => [:login]
 
   attr_accessor :login
+
+  def email_required?
+    false
+  end
 
   validates :username,
     presence: true,
@@ -26,7 +32,11 @@ class User < ActiveRecord::Base
   end
 
   def can_write?
-    role == :user
+    role == :user || role == :admin
+  end
+
+  def is_admin?
+    role == :admin
   end
 
   def self.find_for_database_authentication warden_conditions

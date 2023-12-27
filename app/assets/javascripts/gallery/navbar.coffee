@@ -85,6 +85,10 @@
           }
           <ul className="dropdown-menu pull-right">
             <li><Link href="/tags">Tags</Link></li>
+            {
+              if Store.state.isAdmin
+                <li><a href="/admin">Admin</a></li>
+            }
             <li>
               <a href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
             </li>
