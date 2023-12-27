@@ -12,6 +12,12 @@ Trestle.resource(:users, model: User, scope: Auth) do
     end
     column :role
     column :sponsor
+    column :comments do |user|
+      user.comments.count
+    end
+    column :taggings do |user|
+      user.item_tags.count
+    end
     column :current_sign_in_at
     actions do |a|
       a.delete unless a.instance == current_user
@@ -44,6 +50,10 @@ Trestle.resource(:users, model: User, scope: Auth) do
     if attrs[:password].blank?
       attrs.delete(:password)
       attrs.delete(:password_confirmation) if attrs[:password_confirmation].blank?
+    end
+
+    if attrs[:email].blank?
+      attrs[:email] = nil
     end
 
     instance.assign_attributes(attrs)
