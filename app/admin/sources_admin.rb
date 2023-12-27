@@ -10,6 +10,7 @@ Trestle.resource(:sources) do
     column :path
     column :show_on_home
     column :user
+    column :default_published_state
     column :items do |source|
       source.items.count
     end

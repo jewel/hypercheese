@@ -89,9 +89,7 @@ module Import
 
       item = Item.new
 
-      if source.user_id
-        item.published = nil
-      end
+      item.published = source.default_published_state
 
       item.md5 = md5
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_27_050416) do
+ActiveRecord::Schema.define(version: 2023_12_27_051454) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -138,6 +138,7 @@ ActiveRecord::Schema.define(version: 2023_12_27_050416) do
     t.string "path"
     t.boolean "show_on_home", default: true, null: false
     t.bigint "user_id"
+    t.boolean "default_published_state"
     t.index ["user_id"], name: "index_sources_on_user_id"
   end
 
