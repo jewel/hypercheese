@@ -60,5 +60,9 @@ HyperCheese::Application.routes.draw do
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
 
+  post 'files/manifest' => 'files/manifest'
+  post 'files/hashes' => 'files/hashes'
+  put 'files' => 'files#upload'
+
   get 'data/resized/:size/:item_id.:ext' => 'items#resized', constraints: { item_id: /\d+/ }
 end
