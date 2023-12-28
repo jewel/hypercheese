@@ -415,7 +415,7 @@ class @Store
     return unless @state.tagsLoaded
     batchSize = 100
 
-    if @searching
+    if @state.searching
       return
 
     if @state.resultCount == 0
@@ -448,7 +448,8 @@ class @Store
     while @state.items[batchEnd]
       batchEnd--
 
-    @searching = true
+    @state.searching = true
+    @needsRedraw()
 
     query = new SearchQuery
     query.parse @state.query
@@ -461,7 +462,7 @@ class @Store
         query: query.as_json()
         search_key: @state.searchKey
       success: (res) =>
-        @searching = false
+        @state.searching = false
 
         @state.resultCount = res.meta.total
         for item, i in res.items
@@ -482,7 +483,9 @@ class @Store
     query.options.type = 'photo'
     query.tags = [tag]
 
-    @searching = true
+    @state.searching = true
+    @needsRedraw()
+
     @jax
       url: "/items"
       data:
@@ -491,7 +494,7 @@ class @Store
         query: query.as_json()
         search_key: null
       success: (res) =>
-        @searching = false
+        @state.searching = false
         @state.tagIconChoices = []
         for item in res.items
           @state.tagIconChoices.push item.id
