@@ -100,7 +100,7 @@
     </div>
 
   render: ->
-    if Store.state.searching
+    if Store.state.searching && !Store.state.searchKey
       return @spinner()
 
     overdraw = 3
