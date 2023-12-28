@@ -1,8 +1,6 @@
 Trestle.resource(:users, model: User, scope: Auth) do
   menu do
-    group :configuration, priority: :last do
-      item :users, icon: "fas fa-users"
-    end
+    item :users, icon: "fas fa-users", priority: :first
   end
 
   table do
