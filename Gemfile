@@ -46,4 +46,6 @@ gem 'rgeo-geojson'
 
 gem 'sucker_punch'
 
+gem 'jwt'
+
 gem 'RubyInline', require: 'inline'
