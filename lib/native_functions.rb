@@ -203,6 +203,7 @@ VALUE bulk_cosine_distance_mmap(VALUE a_str, VALUE threshold, int total_size, in
     rb_ary_push(indexed, rb_int_new(j));
     rb_ary_push(results, indexed);
   }
+  munmap(mapping, (size_t)total_size);
   return results;
 }'
     builder.prefix '
