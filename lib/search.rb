@@ -301,15 +301,8 @@ class Search
 
     raw = embedding.pack 'f*'
 
-    output = []
-
-    # FIXME we could seek around instead of reading the entire file if there
-    # are less ids than embeddings
-    store.each_with_index do |other,index|
-      similarity = NativeFunctions.cosine_distance raw, other
-      next if similarity < threshold
-      output.push [similarity, index]
-    end
+    file = File.open store.path, 'rb'
+    output = NativeFunctions.bulk_cosine_distance_mmap raw, threshold, file.size, file.fileno
 
     output.sort_by! { -_1.first }
     output.map { _1.last }
