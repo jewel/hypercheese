@@ -64,6 +64,7 @@ class FindFacesJob < ApplicationJob
       raise "No embedding" unless res[:embedding]
 
       face.set_embedding res[:embedding]
+      face.save!
 
       @item.face_count += 1
     end

@@ -28,15 +28,12 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def faces
-    object.faces.order(:timestamp, :cluster_id).map do |face|
-      if face.cluster_id
-        tag_id = Face.find(face.cluster_id)&.tag_id
-      end
+    object.faces.includes(:cluster).order(:timestamp, :cluster_id).map do |face|
       {
         id: face.id,
-        cluster_tag_id: tag_id,
+        tag_id: face.tag_id,
+        cluster_tag_id: face.cluster&.tag_id,
         similarity: face.similarity,
-        timestamp: face.timestamp,
       }
     end
   end
@@ -44,7 +41,18 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   include ActionView::Helpers::DateHelper
   def ages
     age_map = {}
-    object.tags.each do |tag|
+    tags = object.tags.to_a
+    object.faces.includes(:tag, :cluster).each do |face|
+      if face.tag_id
+        tags << face.tag
+      end
+      if face.cluster_id && face.cluster.tag_id
+        tags << face.cluster.tag
+      end
+    end
+    tags.uniq!
+
+    tags.each do |tag|
       next unless tag.birthday
       age = if tag.birthday > object.taken
         distance_of_time_in_words(object.taken, tag.birthday) + " in the PAST!?"

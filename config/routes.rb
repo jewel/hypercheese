@@ -32,7 +32,6 @@ HyperCheese::Application.routes.draw do
     resources :comments
 
     resources :tags
-
     get 'users/current', to: 'current_user#current'
   end
 
@@ -49,6 +48,10 @@ HyperCheese::Application.routes.draw do
   get 'faces/mistagged/:tag_id' => 'faces#mistagged'
   get 'faces/untagged/:tag_id' => 'faces#untagged'
   resources :faces do
+    collection do
+      get 'unclustered'
+    end
+
     member do
       post 'uncanonize'
       post 'canonize'

@@ -1,7 +1,5 @@
 require_relative 'embedding_store'
-require_relative 'native_functions'
 require 'net/http'
-require 'rgeo'
 
 class Search
   def initialize query
@@ -301,13 +299,11 @@ class Search
 
     raw = embedding.pack 'f*'
 
-    file = File.open store.path, 'rb'
-    output = NativeFunctions.bulk_cosine_distance_mmap raw, threshold, file.size, file.fileno
+    store.bulk_cosine_distance raw, threshold
 
     # Also search videos
     video_store = EmbeddingStore.new "video-clip", 768
-    file = File.open video_store.path, 'rb'
-    frames = NativeFunctions.bulk_cosine_distance_mmap raw, threshold, file.size, file.fileno
+    video_store.bulk_cosine_distance raw, threshold
     frame_ids = frames.map { _1.last }
     frame_scores = {}
     frames.each do |score, frame_id|
