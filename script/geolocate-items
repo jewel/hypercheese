@@ -10,6 +10,7 @@ require_relative '../lib/rtree'
 
 cache = Rails.root + "db/geo.index"
 if cache.exist?
+  puts "Loading cache"
   rtree = Marshal.load File.open(cache.to_s, 'rb')
 else
   rtree = RTree.new
@@ -38,8 +39,10 @@ end
 factory = RGeo::Geographic.simple_mercator_factory
 
 # factory = RGeo::Geographic.spherical_factory
+puts "Finding max"
+max = ItemLocation.maximum :item_id
 puts "Loading items"
-items = Item.where(deleted: false, variety: 'photo').order("taken desc")
+items = Item.where(deleted: false, variety: 'photo').where(["id > ?", max]).order("id asc")
 items.each do |item|
   Item.transaction do
     begin
