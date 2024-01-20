@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require_relative '../lib/embedding_store'
+require 'base64'
+require 'net/http'
+require 'json'
+require_relative '../lib/probe'
+
+total = Item.where.not(duration: nil).sum(:duration)
+count = Item.where.not(duration: nil).count
+
+
+items = Item.where(variety: 'video', duration: nil)
+total_items = count + items.count
+
+items.each do |item|
+  begin
+    info = Probe.video item.full_path
+    item.duration = info[:duration]
+    item.save!
+    total += item.duration
+    count += 1
+    puts "#{count}/#{total_items} #{(total/60/60).round(1)} h #{item.path} -> #{item.duration}"
+  rescue
+    puts "Failed on #{item.full_path}: #$!"
+  end
+end
