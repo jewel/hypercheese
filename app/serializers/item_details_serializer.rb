@@ -28,7 +28,7 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def faces
-    object.faces.order(:cluster_id).map do |face|
+    object.faces.order(:timestamp, :cluster_id).map do |face|
       if face.cluster_id
         tag_id = Face.find(face.cluster_id)&.tag_id
       end
@@ -36,6 +36,7 @@ class ItemDetailsSerializer < ActiveModel::Serializer
         id: face.id,
         cluster_tag_id: tag_id,
         similarity: face.similarity,
+        timestamp: face.timestamp,
       }
     end
   end
