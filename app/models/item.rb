@@ -93,4 +93,30 @@ class Item < ActiveRecord::Base
   rescue
     nil
   end
+
+  def photo?
+    variety == 'photo'
+  end
+
+  def video?
+    variety == 'video'
+  end
+
+  def schedule_jobs priority_offset=0
+    # Deprioritize video since everything takes longer with video
+    p = priority_offset
+    p += 10 if video?
+
+    LoadMetadataJob.set(priority: 0 + p).perform_later id
+    GenerateThumbsJob.set(priority: 1 + p).perform_later id
+    GeolocateJob.set(priority: 2 + p).perform_later id
+    FindFacesJob.set(priority: 3 + p).perform_later id
+    IndexVisuallyJob.set(priority: 4 + p).perform_later id
+
+    if video?
+      GenerateExplodedVideoJob.set(priority: 5 + p).perform_later id
+      GenerateVideoStreamJob.set(priority: 6 + p).perform_later id
+    end
+  end
 end
+

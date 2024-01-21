@@ -304,6 +304,23 @@ class Search
     file = File.open store.path, 'rb'
     output = NativeFunctions.bulk_cosine_distance_mmap raw, threshold, file.size, file.fileno
 
+    # Also search videos
+    video_store = EmbeddingStore.new "video-clip", 768
+    file = File.open video_store.path, 'rb'
+    frames = NativeFunctions.bulk_cosine_distance_mmap raw, threshold, file.size, file.fileno
+    frame_ids = frames.map { _1.last }
+    frame_scores = {}
+    frames.each do |score, frame_id|
+      frame_scores[frame_id] = score
+    end
+
+    item_ids = Set.new
+    frame_ids = ClipFrame.where(id: frame_ids).pluck(:id, :item_id).each do |frame_id, item_id|
+      next if item_ids.member? item_id
+      item_ids << item_id
+      output.push [frame_scores[frame_id], item_id]
+    end
+
     output.sort_by! { -_1.first }
     output.map { _1.last }
   end

@@ -44,8 +44,10 @@ gem 'trestle-auth'
 gem 'rgeo'
 gem 'rgeo-geojson'
 
-gem 'sucker_punch'
+gem 'delayed_job_active_record'
 
 gem 'jwt'
 
 gem 'RubyInline', require: 'inline'
+
+gem 'httparty'

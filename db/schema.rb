@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_12_27_051454) do
+ActiveRecord::Schema.define(version: 2024_01_21_012432) do
 
   create_table "bullhorns", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -18,6 +18,13 @@ ActiveRecord::Schema.define(version: 2023_12_27_051454) do
     t.datetime "created_at"
     t.index ["item_id"], name: "index_bullhorns_on_item_id"
     t.index ["user_id"], name: "index_bullhorns_on_user_id"
+  end
+
+  create_table "clip_frames", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+    t.bigint "item_id", null: false
+    t.float "aesthetics_score", null: false
+    t.float "timestamp", null: false
+    t.index ["item_id"], name: "index_clip_frames_on_item_id"
   end
 
   create_table "comments", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", force: :cascade do |t|
@@ -28,6 +35,21 @@ ActiveRecord::Schema.define(version: 2023_12_27_051454) do
     t.datetime "updated_at"
     t.index ["item_id"], name: "index_comments_on_item_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "delayed_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
   create_table "events", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|
@@ -46,6 +68,10 @@ ActiveRecord::Schema.define(version: 2023_12_27_051454) do
     t.bigint "cluster_id"
     t.float "similarity"
     t.json "position"
+    t.integer "confirmed_by"
+    t.datetime "confirmed_at"
+    t.boolean "indexed_in_annoy", default: false
+    t.float "timestamp"
     t.index ["cluster_id"], name: "index_faces_on_cluster_id"
     t.index ["item_id"], name: "index_faces_on_item_id"
     t.index ["tag_id"], name: "index_faces_on_tag_id"
@@ -56,7 +82,7 @@ ActiveRecord::Schema.define(version: 2023_12_27_051454) do
     t.datetime "updated_at"
   end
 
-  create_table "item_locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "item_locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "location_id", null: false
     t.index ["item_id"], name: "index_item_locations_on_item_id"
@@ -102,11 +128,12 @@ ActiveRecord::Schema.define(version: 2023_12_27_051454) do
     t.float "aesthetics_score"
     t.float "latitude"
     t.float "longitude"
+    t.float "duration"
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["taken"], name: "index_items_on_taken"
   end
 
-  create_table "locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "locations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "geoid", null: false
     t.json "properties", null: false

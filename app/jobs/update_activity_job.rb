@@ -1,7 +1,7 @@
 require_dependency 'user_serializer'
 require_dependency 'collapse_range'
 
-class UpdateActivityJob < ActiveJob::Base
+class UpdateActivityJob < ApplicationJob
   queue_as :default
 
   class Group
@@ -14,7 +14,7 @@ class UpdateActivityJob < ActiveJob::Base
     end
   end
 
-  def perform(*args)
+  def perform *args
     cutoff = 45.days.ago
     events = []
     # events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a

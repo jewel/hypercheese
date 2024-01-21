@@ -52,5 +52,7 @@ module HyperCheese
     config.assets.version = '1.0'
 
     config.template_engine = :haml
+
+    config.active_job.queue_adapter = :delayed_job
   end
 end
