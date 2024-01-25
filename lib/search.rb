@@ -314,11 +314,15 @@ class Search
       frame_scores[frame_id] = score
     end
 
-    item_ids = Set.new
+    item_scores = {}
     frame_ids = ClipFrame.where(id: frame_ids).pluck(:id, :item_id).each do |frame_id, item_id|
-      next if item_ids.member? item_id
-      item_ids << item_id
-      output.push [frame_scores[frame_id], item_id]
+      score = frame_scores[frame_id]
+      item_scores[item_id] ||= []
+      item_scores[item_id] << score
+    end
+
+    item_scores.each do |item_id, scores|
+      output.push [scores.max, item_id]
     end
 
     output.sort_by! { -_1.first }
