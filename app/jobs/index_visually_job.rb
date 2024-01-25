@@ -3,6 +3,7 @@ class IndexVisuallyJob < ApplicationJob
 
   def perform item_id
     item = Item.find item_id
+    return if item.deleted
     return if item.aesthetics_score
 
     if item.photo?
@@ -15,8 +16,8 @@ class IndexVisuallyJob < ApplicationJob
       tmp = "/tmp/find-faces.#$$"
       FileUtils.rm_rf tmp
       Dir.mkdir tmp
-      run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -vf fps=#{FPS} -y #{se tmp}/out%06d.png"
-      files = Dir.glob "#{tmp}/*.png"
+      run "ffmpeg -v error -i #{se item.full_path} -vsync 1 -vf fps=#{FPS} -y #{se tmp}/out%06d.bmp"
+      files = Dir.glob "#{tmp}/*.bmp"
 
       store = EmbeddingStore.new "video-clip", 768
 

@@ -4,6 +4,7 @@ class FindFacesJob < ApplicationJob
 
   def perform item_id
     @item = Item.find item_id
+    return if @item.deleted
     return if @item.face_count
 
     FileUtils.mkdir_p Rails.root + "public/data/faces"
@@ -15,8 +16,8 @@ class FindFacesJob < ApplicationJob
         tmp = "/tmp/find-faces.#$$"
         FileUtils.rm_rf tmp
         Dir.mkdir tmp
-        run "ffmpeg -v error -i #{se @item.full_path} -vsync 1 -vf fps=#{FPS} -y #{se tmp}/out%06d.png"
-        files = Dir.glob "#{tmp}/*.png"
+        run "ffmpeg -v error -i #{se @item.full_path} -vsync 1 -vf fps=#{FPS} -y #{se tmp}/out%06d.bmp"
+        files = Dir.glob "#{tmp}/*.bmp"
         files.sort.each_with_index do |path, index|
           find_faces path, index
         end

@@ -5,6 +5,7 @@ class GeolocateJob < ApplicationJob
 
   def perform item_id
     item = Item.find item_id
+    return if item.deleted
 
     # FIXME we need a way to note that a photo has no location information
     return if ItemLocation.where(item_id: item.id).exists?

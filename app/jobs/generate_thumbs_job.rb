@@ -9,6 +9,7 @@ class GenerateThumbsJob < ApplicationJob
 
   def perform item_id
     @item = Item.find item_id
+    return if @item.deleted
 
     if @item.photo?
       generate_thumbs

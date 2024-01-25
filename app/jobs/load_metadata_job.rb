@@ -4,6 +4,7 @@ require 'exifr/jpeg'
 class LoadMetadataJob < ApplicationJob
   def perform item_id
     item = Item.find item_id
+    return if item.deleted
 
     return if item.taken && item.width && item.height && (item.duration || item.variety == 'photo')
 

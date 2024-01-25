@@ -1,6 +1,7 @@
 class GenerateVideoStreamJob < ApplicationJob
   def perform item_id
     item = Item.find item_id
+    return if item.deleted
 
     path = item.full_path
 

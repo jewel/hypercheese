@@ -1,6 +1,7 @@
 class GenerateExplodedVideoJob < ApplicationJob
   def perform item_id
     item = Item.find item_id
+    return if item.deleted
 
     dest = item.resized_path :exploded
     return if File.exists? dest
