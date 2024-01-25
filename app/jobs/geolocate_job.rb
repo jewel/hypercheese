@@ -1,6 +1,8 @@
 require_dependency 'rtree'
 
 class GeolocateJob < ApplicationJob
+  @@rtree = nil
+
   def perform item_id
     item = Item.find item_id
 
@@ -51,34 +53,10 @@ class GeolocateJob < ApplicationJob
   end
 
   def load_geoindex
-    cache = Rails.root + "db/geo.index"
-    if cache.exist?
-      puts "Loading cache"
-      return Marshal.load File.open(cache.to_s, 'rb')
-    end
-
-    rtree = RTree.new
-    Dir.glob("#{Rails.root}/db/geo/*json").sort.each do |path|
-      puts "Loading #{path}"
-
-      # Load the geojson file containing the world's administrative areas
-      json = File.read path
-      world = JSON.parse json
-
-      shapes = RGeo::GeoJSON.decode world
-
-      puts "Indexing #{shapes.size} shapes"
-      shapes.each_with_index do |shape,index|
-        begin
-          puts " #{(index.to_f/shapes.size*100).round}%" if index % 4000 == 0
-          rtree.insert rtree.root, shape
-        rescue RGeo::Error::InvalidGeometry
-          puts "Problem with shape: #$!"
-        end
-      end
-    end
-    temp = cache.to_s + ".#$$.tmp"
-    Marshal.dump rtree, File.open(temp, 'wb')
-    File.rename temp, cache.to_s
+    return @@rtree if @@rtree
+    cache = Rails.root + "db/geo.index/rtree"
+    raise "geo index has not been built (run script/build-geo-index)" unless cache.exist?
+    @@rtree = Marshal.load cache.open 'rb'
+    @@rtree
   end
 end

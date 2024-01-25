@@ -1,133 +1,151 @@
 require 'rgeo/geo_json'
 
+# Wrapper around shapes because they use too much memory in aggregate, and we
+# only need one or two of them anyway
+class ShapeShifter
+  @@next_id = 0
+
+  attr_accessor :id, :rect
+  def initialize id, rect
+    @id = id
+    @rect = rect
+  end
+
+  def rgeo_shape
+    RGeo::GeoJSON.decode File.binread "db/geo.index/#{id}"
+  end
+
+  def self.store rgeo_shape
+    @@next_id += 1
+    id = @@next_id
+    File.binwrite "db/geo.index/#{id}", RGeo::GeoJSON.encode(rgeo_shape).to_json
+
+    rect = Rect.from_shape rgeo_shape
+
+    self.new id, rect
+  end
+end
+
+class Rect
+  attr_accessor :xmin, :xmax, :ymin, :ymax
+
+  def self.from_shape rgeo_shape
+    envelope = rgeo_shape.geometry.envelope
+    coords = envelope.exterior_ring.coordinates
+    rect = Rect.new
+    rect.xmin = coords.map(&:first).min
+    rect.ymin = coords.map(&:last).min
+    rect.xmax = coords.map(&:first).max
+    rect.ymax = coords.map(&:last).max
+    rect
+  end
+
+  def area
+    (xmax - xmin) * (ymax - ymin)
+  end
+
+  def + other
+    res = Rect.new
+    res.xmin = [xmin, other.xmin].min
+    res.xmax = [xmax, other.xmax].max
+    res.ymin = [ymin, other.ymin].min
+    res.ymax = [ymax, other.ymax].max
+    res
+  end
+
+  def contains? point
+    point.x >= xmin && point.x <= xmax && point.y >= ymin && point.y <= ymax
+  end
+end
+
 class RTreeNode
-  attr_accessor :mbr, :shapes, :children, :id
+  attr_accessor :rect, :shapes, :children
 
   def initialize
-    @@id ||= 0
-    @@id += 1
-    @id = @@id
-    @mbr = nil
+    @rect = nil
     @shapes = []
     @children = []
   end
 
   def to_s
-    "<#{@id} #{@mbr.nil? ? "nil" : "MBR"}, #{@shapes.size} shapes, #{@children.size} children, #{mbr && area.round(3)}>"
+    "<#{@shapes.join '-'} shapes, #{rect && area.round(3)}>"
   end
 
   def area
-    (mbr[:xmax] - mbr[:xmin]) * (mbr[:ymax] - mbr[:ymin])
+    return 0.0 unless @rect
+    @rect.area
   end
 end
 
 class RTree
   attr_accessor :root
 
-  def initialize
-    @root = RTreeNode.new
+  def initialize root
+    @root = root
+    @max_children = 4
   end
 
-  def mbr_of_shape shape
-    envelope = shape.geometry.envelope
-    coords = envelope.exterior_ring.coordinates
-    xmin = coords.map(&:first).min
-    ymin = coords.map(&:last).min
-    xmax = coords.map(&:first).max
-    ymax = coords.map(&:last).max
-    { xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax }
-  end
+  def insert node, shape
+    # puts "insert(#{node})"
+    leaf = node.children.empty?
 
-  def merge_mbrs mbr1, mbr2
-    if !mbr1 && !mbr2
-      raise "two nil MBRs"
-    elsif !mbr1
-      return mbr2
-    elsif !mbr2
-      return mbr1
+    if node.rect
+      node.rect += shape.rect
+    else
+      node.rect = shape.rect
     end
 
-    {
-      xmin: [mbr1[:xmin], mbr2[:xmin]].min,
-      ymin: [mbr1[:ymin], mbr2[:ymin]].min,
-      xmax: [mbr1[:xmax], mbr2[:xmax]].max,
-      ymax: [mbr1[:ymax], mbr2[:ymax]].max
-    }
-  end
-
-  def insert(node, shape, max_children = 4)
-    # puts "insert(#{node})"
-    if node.shapes.size + node.children.size < max_children
+    if leaf
       # puts " inserting into self"
-      node.shapes << shape
-      node.mbr = merge_mbrs node.mbr, mbr_of_shape(shape)
-    elsif node.children.empty?
-      # puts " self is full"
-      node.shapes << shape
-      node.mbr = merge_mbrs node.mbr, mbr_of_shape(shape)
-      if node.shapes.size > max_children
+      if node.shapes.size == @max_children
         # puts " splitting"
-        split_node node, max_children
+        split_node node
+        # retry
+        insert node, shape
+      else
+        node.shapes << shape
       end
     else
+      # branch
+
       # puts " inserting into best child"
-      best_child = choose_best_child(node, shape)
+      best_child = choose_best_child node, shape
+
       # puts " chose #{best_child}"
-      insert best_child, shape, max_children
-      node.mbr = merge_mbrs node.mbr, mbr_of_shape(shape)
+      insert best_child, shape
     end
   end
 
-  def split_node(node, max_children)
-    best_split = nil
-    best_diff = Float::INFINITY
-
-    node.shapes.combination(max_children / 2).each do |group1|
-      group2 = node.shapes - group1
-      mbr1 = group1.reduce(nil) { |acc, shape| merge_mbrs(acc, mbr_of_shape(shape)) }
-      mbr2 = group2.reduce(nil) { |acc, shape| merge_mbrs(acc, mbr_of_shape(shape)) }
-      diff = area(merge_mbrs(mbr1, mbr2)) - area(mbr1) - area(mbr2)
-
-      if diff < best_diff
-        best_diff = diff
-        best_split = [group1, group2]
-      end
-    end
-
-    node.shapes = []
-    best_split.each do |group|
-      # puts "  creating new node with #{group.size} shapes"
+  # split a leaf node into branch nodes
+  def split_node node
+    node.shapes.each do |shape|
       child = RTreeNode.new
-      group.each { |shape| insert(child, shape, max_children) }
+      insert child, shape
       node.children << child
-      # puts "  created #{child}"
     end
+    node.shapes = []
   end
 
-
+  # choose whichever child would grow the least if shape were added to it
   def choose_best_child node, shape
     node.children.min_by do |child|
       # puts " looking at #{child}"
-      mbr = merge_mbrs child.mbr, mbr_of_shape(shape)
-      area_increase = area(mbr) - area(child.mbr)
-      [area_increase, area(child.mbr)]
+      rect = child.rect + shape.rect
+      rect.area - child.rect.area
     end
-  end
-
-  def area mbr
-    return 0.0 unless mbr
-    (mbr[:xmax] - mbr[:xmin]) * (mbr[:ymax] - mbr[:ymin])
-  end
-
-  def point_in_mbr point, mbr
-    point.x >= mbr[:xmin] && point.x <= mbr[:xmax] && point.y >= mbr[:ymin] && point.y <= mbr[:ymax]
   end
 
   def query node, point
     return [] unless node
-    return [] if node.mbr && !point_in_mbr(point, node.mbr)
+    return [] unless node.rect.contains?(point)
 
-    shapes_found = node.shapes.select { |shape| shape.geometry.contains?(point) }
+    shapes_found = []
+    node.shapes.each do |shape|
+      next unless shape.rect.contains?(point)
+      next unless shape.rgeo_shape.geometry.contains?(point)
+      shapes_found << shape.rgeo_shape
+    end
+
     node.children.each do |child|
       shapes_found += query(child, point)
     end

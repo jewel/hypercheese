@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+APP_PATH = File.expand_path('../../config/application',  __FILE__)
+require File.expand_path('../../config/boot',  __FILE__)
+require APP_PATH
+Rails.application.require_environment!
+
+require_dependency 'rtree'
+
+rtree_path = Rails.root + "db/geo.index"
+FileUtils.mkdir_p rtree_path
+
+rtree_path += "rtree"
+
+root = RTreeNode.new
+rtree = RTree.new root
+files = Dir.glob("#{Rails.root}/db/geo/*json").sort
+files.each_with_index do |path,pindex|
+  friendly_name = File.basename path, '.json'
+  json = File.read path
+  shapes = RGeo::GeoJSON.decode json
+
+  shapes.each_with_index do |shape,sindex|
+    begin
+      name = shape[:shapeName] || shape[:NAME] || shape[:shapeGroup]
+      puts "#{pindex+1}/#{files.size} #{friendly_name} #{sindex+1}/#{shapes.size} #{name}"
+      wrapper = ShapeShifter.store shape
+      rtree.insert rtree.root, wrapper
+    rescue RGeo::Error::InvalidGeometry
+      puts "Problem with shape: #$!"
+    end
+  end
+end
+
+Marshal.dump rtree, rtree_path
