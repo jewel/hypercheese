@@ -32,4 +32,4 @@ files.each_with_index do |path,pindex|
   end
 end
 
-Marshal.dump rtree, rtree_path
+Marshal.dump rtree, rtree_path.open('wb')
