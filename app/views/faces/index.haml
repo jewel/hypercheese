@@ -1,4 +1,15 @@
 %h1 Faces
+%p
+  There are
+  = Face.all.count
+  faces,
+  = Face.where.not(tag_id: nil).count
+  canonical faces,
+  = Face.where.not(cluster_id: nil).count
+  clustered faces, and
+  %a(href="/faces/unclustered")
+    = Face.where(cluster_id: nil).count
+  unclustered faces.
 .face-list
   - @tags.each do |tag|
     .face

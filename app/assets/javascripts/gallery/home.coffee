@@ -114,7 +114,7 @@
                       </Link>
                   }
                 </div>
-                {@pluralize(count, "tag")} added <em>&mdash; {tagging.user.name}, {new Date(tagging.created_at).toLocaleString()}</em>
+                {@pluralize(count, "tag")} added <em>&mdash; {tagging.user?.name}, {new Date(tagging.created_at).toLocaleString()}</em>
               </div>
         }
       </div>

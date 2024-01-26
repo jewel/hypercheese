@@ -1,4 +1,6 @@
 @Info = createReactClass
+  displayName: 'Info'
+
   getInitialState: ->
     newComment: ''
 
@@ -62,7 +64,7 @@
           {
             if exif = details.exif
               data = []
-              data.push <div>{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</div>
+              data.push <div key="dims">{details.width}&times;{details.height} {(details.width*details.height/1000000).toFixed(1)} MP</div>
               data.push <div key="artist">{exif.artist}</div> if exif.artist
               data.push <div key="model">{exif.model}</div>
               data.push <div key="iso">ISO {exif.iso_speed_ratings}</div>
@@ -122,33 +124,6 @@
         </tbody>
       </table>
       {
-        item.tag_ids.map (tag_id) =>
-          tag = Store.state.tagsById[tag_id]
-          if tag
-            setTagIcon = =>
-              tag.icon_id = @props.item.id
-              tag.icon_code = @props.item.code
-              Store.updateTag tag
-
-            age = details.ages[tag_id]
-            <div key={tag_id}>
-              <TagLink tag={tag}/>
-              {' '}
-              <Writer>
-                <a href="javascript:void(0)" onClick={setTagIcon} title="Set current photo as icon for this tag">
-                  <i className="fa fa-link"/>
-                </a>
-              </Writer>
-              {' '}
-              <strong>{tag.alias || tag.label}</strong>
-              {' '}
-              {
-                if age
-                  <em>({age})</em>
-              }
-            </div>
-      }
-      {
         details.comments.map (comment) ->
           <p key={comment.id} className="comment">
             {comment.text}<br/>
@@ -158,30 +133,7 @@
             </small>
           </p>
       }
-      {
-        if details.faces
-          <p>Experimental Face Matching:</p>
-      }
-      <div className="faces">
-        {
-          (details.faces || []).map (face) ->
-            <div key={face.id} className="face">
-              <a href="/faces/#{face.id}">
-                <img src={"/data/faces/#{item.id}-#{face.id}-#{item.code}.jpg"}/>
-              </a>
-              <br/>
-              {
-                tag = Store.state.tagsById[ face.cluster_tag_id ]
-                if tag
-                  <React.Fragment>
-                    <strong>{tag.alias || tag.label}</strong>
-                    <br/>
-                    {(face.similarity * 100).toFixed(1)}%
-                  </React.Fragment>
-              }
-            </div>
-        }
-      </div>
+      <FacesAndTags item={item} details={details}/>
       <Writer>
         <form key="new" className="comment" onSubmit={@onComment}>
           <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>

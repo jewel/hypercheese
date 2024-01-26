@@ -52,8 +52,15 @@ class EmbeddingStore
     count
   end
 
+  # Returns [[distance, id], [distance, id], ...]
+  def bulk_cosine_distance embedding, threshold
+    path.open 'rb' do |f|
+      return NativeFunctions.bulk_cosine_distance_mmap embedding, threshold, f.size, f.fileno
+    end
+  end
+
   private
   def handle
-    @_handle ||= File.open path, "r+b"
+    @_handle ||= path.open("r+b")
   end
 end

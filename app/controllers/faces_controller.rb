@@ -27,23 +27,35 @@ class FacesController < ApplicationController
   end
 
   def uncanonize
-    @face = Face.find params[:id]
-    @face.tag = nil
-    @face.cluster_id = nil
-    @face.similarity = nil
-    @face.save!
+    Face.transaction do
+      @face = Face.find params[:id]
+      @face.tag = nil
+      @face.cluster_id = nil
+      @face.similarity = nil
+      @face.confirmed_by = nil
+      @face.confirmed_at = nil
+      @face.join_cluster
+      @face.save!
+      @face.destroy_cluster
+    end
     redirect_to "/faces/#{@face.id}", notice: "No longer canon"
   end
 
   def canonize
-    @face = Face.find params[:id]
-    @tag = Tag.find_by_label params[:label]
-    redirect_to "/faces/#{@face.id}", alert: "No such tag: #{params[:label].inspect}" unless @tag
+    Face.transaction do
+      @face = Face.find params[:id]
+      @tag = Tag.find_by_label params[:label]
+      redirect_to "/faces/#{@face.id}", alert: "No such tag: #{params[:label].inspect}" unless @tag
 
-    @face.tag = @tag
-    @face.cluster_id = @face.id
-    @face.similarity = 1
-    @face.save!
+      @face.tag = @tag
+      @face.confirmed_by = current_user.id
+      @face.confirmed_at = Time.now
+      @face.cluster_id = @face.id
+      @face.similarity = 1
+
+      @face.save!
+      @face.build_cluster
+    end
     redirect_to "/faces/#{@face.id}", notice: "Canonized as #{@tag.label}"
   end
 
@@ -57,8 +69,12 @@ class FacesController < ApplicationController
       @other_canonical = Face.where(tag_id: @face.tag.id).to_a - [@face]
       @cluster = Face.where(cluster_id: @face.id).joins(:item).order('similarity desc').limit(10_000)
       @birthday = @face.tag.birthday
-      @birthday ||= @face.tag.items.order('taken').first.taken
+      @birthday ||= @face.tag.items.order('taken').first&.taken
     end
+  end
+
+  def unclustered
+    @faces = Face.where(cluster_id: nil).order('rand()').limit(512)
   end
 
   def mistagged

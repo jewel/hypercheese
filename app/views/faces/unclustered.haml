@@ -1,0 +1,7 @@
+%h1 Random selection of unclustered faces
+
+.face-list
+  - @faces.each do |face|
+    .face
+      %a(href="/faces/#{face.id}")
+        %img{ src: face.url }

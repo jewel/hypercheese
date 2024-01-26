@@ -13,12 +13,21 @@
   .comment
     :white-space pre-wrap
 
-  .faces
+  .faces-and-tags
     :display flex
-    :flex-wrap wrap
+    :flex-direction column
+    :gap 4px
+    :margin-bottom 8px
 
     .face
-      :margin 5px
+      :display flex
 
       img
         :height 64px
+        :width 64px
+        :object-fit contain
+        :margin-right 8px
+
+      input
+        :margin-right 8px
+        :width 128px

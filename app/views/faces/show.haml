@@ -49,18 +49,20 @@
 - unless @face.embedding?
   %p No embedding for face
 
-%h2 Similar Faces
+%h2 Similar Canonical Faces
 .face-list
   - @canonical_faces.each do |canon|
     - next unless canon.embedding?
     - next unless @face.embedding?
+    - distance = @face.distance(canon)
+    - next if distance < Face::DISTANCE_THRESHOLD
     .face
       %a(href="/faces/#{canon.id}")
         %img{ src: canon.url }
       %br
       %strong= canon.tag.label
       %br
-      = "#{(@face.distance(canon)*100).round(1)}%"
+      = "#{(distance*100).round(1)}%"
 
 - if @cluster
   %h2 #{@cluster.size} Faces in Cluster
