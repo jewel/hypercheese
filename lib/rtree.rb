@@ -127,12 +127,13 @@ class RTree
   end
 
   # choose whichever child would grow the least if shape were added to it
+  # if there's a tie then choose the smallest shape
   def choose_best_child node, shape
-    node.children.min_by do |child|
+    node.children.sort_by do |child|
       # puts " looking at #{child}"
       rect = child.rect + shape.rect
-      rect.area - child.rect.area
-    end
+      [rect.area - child.rect.area, child.rect.area]
+    end.first
   end
 
   def query node, point
