@@ -70,7 +70,6 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2, >= 2.2.2)
-    annoy-rb (0.7.2)
     autoprefixer-rails (9.6.1.1)
       execjs
     babel-source (5.8.35)
@@ -281,7 +280,6 @@ PLATFORMS
 DEPENDENCIES
   RubyInline
   active_model_serializers
-  annoy-rb
   bootstrap-sass
   coffee-rails
   coffee-script
