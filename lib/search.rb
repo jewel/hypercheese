@@ -299,11 +299,11 @@ class Search
 
     raw = embedding.pack 'f*'
 
-    store.bulk_cosine_distance raw, threshold
+    output = store.bulk_cosine_distance raw, threshold
 
     # Also search videos
     video_store = EmbeddingStore.new "video-clip", 768
-    video_store.bulk_cosine_distance raw, threshold
+    frames = video_store.bulk_cosine_distance raw, threshold
     frame_ids = frames.map { _1.last }
     frame_scores = {}
     frames.each do |score, frame_id|
