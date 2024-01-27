@@ -148,10 +148,10 @@ VALUE bulk_cosine_distance(VALUE a_str, VALUE all_str)
 }'
 
     builder.c_singleton '
-VALUE bulk_cosine_distance_mmap(VALUE a_str, VALUE threshold, int total_size, int fd)
+VALUE bulk_cosine_distance_mmap(VALUE a_str, VALUE threshold, long total_size, int fd)
 {
-  int size = RSTRING_LEN(a_str) / 4;
-  int count = total_size / RSTRING_LEN(a_str);
+  size_t size = RSTRING_LEN(a_str) / 4;
+  long count = total_size / RSTRING_LEN(a_str);
   VALUE results = rb_ary_new();
 
   float thresh = NUM2DBL(threshold);
@@ -164,7 +164,7 @@ VALUE bulk_cosine_distance_mmap(VALUE a_str, VALUE threshold, int total_size, in
 
   float* all = mapping;
 
-  for( int j = 0; j < count; j++ ) {
+  for( long j = 0; j < count; j++ ) {
     float* b = all + j * size;
 
     __m256 dot_product = _mm256_setzero_ps();
