@@ -68,8 +68,6 @@
   %h2 #{@cluster.size} Faces in Cluster
   .face-list
     - @cluster.each do |other|
-      - next unless other.embedding?
-      - next unless @face.embedding?
       .face
         %a(href="/faces/#{other.id}")
           %img{ src: other.url }
@@ -82,3 +80,21 @@
             = "#{pluralize age, "month"}"
           %br
         = "#{(other.similarity*100).round(1)}%"
+
+- if @hypothetical
+  - count = @hypothetical.values.map(&:size).sum
+  %h2 #{count} in Hypothetical Cluster
+  - @hypothetical.keys.sort_by { -@hypothetical[_1].size }.each do |cluster|
+    - faces = @hypothetical[cluster]
+    %h3
+      - if cluster
+        #{faces.size} from #{cluster.label}
+      - else
+        #{faces.size} unclustered faces
+
+    .face-list
+      - faces.each do |other|
+        .face
+          %a(href="/faces/#{other.id}")
+            %img{ src: other.url }
+

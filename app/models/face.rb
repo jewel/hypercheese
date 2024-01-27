@@ -1,3 +1,5 @@
+require_dependency 'native_functions'
+
 class Face < ActiveRecord::Base
   belongs_to :item
   belongs_to :tag

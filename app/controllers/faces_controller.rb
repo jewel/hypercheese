@@ -67,14 +67,31 @@ class FacesController < ApplicationController
 
     if @face.tag
       @other_canonical = Face.where(tag_id: @face.tag.id).to_a - [@face]
-      @cluster = Face.where(cluster_id: @face.id).joins(:item).order('similarity desc').limit(10_000)
+      @cluster = Face.where(cluster_id: @face.id).includes(:item).order('similarity desc').limit(10_000)
       @birthday = @face.tag.birthday
       @birthday ||= @face.tag.items.order('taken').first&.taken
+    else
+      @hypothetical = {}
+      output = @face.store.bulk_cosine_distance @face.embedding, Face::DISTANCE_THRESHOLD
+      ids = output.map &:last
+      faces_by_id = Face.includes(:item, :cluster, cluster: :tag).where(id: ids).where(tag_id: nil).index_by &:id
+      output.each do |(distance, id)|
+        other = faces_by_id[id]
+        next unless other # face must have been deleted
+        next if other.cluster_id && other.similarity >= distance
+        @hypothetical[other.cluster&.tag] ||= []
+        @hypothetical[other.cluster&.tag] << other
+      end
     end
   end
 
   def unclustered
-    @faces = Face.where(cluster_id: nil).order('rand()').limit(512)
+    ids = []
+    max = Face.maximum(:id)
+    2048.times do
+      ids << rand(max)
+    end
+    @faces = Face.where(cluster_id: nil, id: ids)
   end
 
   def mistagged
