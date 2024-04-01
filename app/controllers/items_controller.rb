@@ -8,30 +8,37 @@ class ItemsController < ApplicationController
     search_key = params[:search_key]
     path = Rails.root.join('tmp/searches').join search_key if search_key
 
-    if search_key == '' || path && !File.exists?( path )
+    if search_key == '' || path&.exist?
       query = params[:query] || {}
       query[:current_user] = current_user
       search = Search.new query
       ids = search.ids
-      str = ids.join ','
+      str = ids.pack 'V*'
       search_key = Digest::MD5.hexdigest str
       dir = Rails.root.join('tmp/searches')
-      Dir.mkdir dir unless File.exists? path
-      path = "#{dir}/#{search_key}"
-      temp = path + ".#$$.tmp"
+      Dir.mkdir dir unless dir.exist?
+      path = dir + search_key
+      temp = "#{path}.#$$.tmp"
       File.binwrite temp, str
       File.rename temp, path
     end
 
     raise "Invalid key" unless search_key =~ /\A[a-f0-9]{32}\Z/
 
-    str = File.binread path
-    ids = str.split ','
-
     limit = (params[:limit] || 1000).to_i
     offset = (params[:offset] || 0).to_i
 
-    subset = ids.slice offset, limit
+    bytes_per_id = 4 # 32-bit
+
+    total = path.size / bytes_per_id
+
+    subset = nil
+
+    path.open('rb') do |f|
+      f.seek offset * bytes_per_id
+      str = f.read limit * bytes_per_id
+      subset = str.unpack 'V*'
+    end
 
     res = Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find subset
 
@@ -45,7 +52,7 @@ class ItemsController < ApplicationController
       items_by_id[item_id.to_i]
     end
 
-    render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: ids.size }
+    render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: total }
   end
 
   def visibility
