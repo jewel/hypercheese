@@ -8,7 +8,7 @@ class ItemsController < ApplicationController
     search_key = params[:search_key]
     path = Rails.root.join('tmp/searches').join search_key if search_key
 
-    if search_key == '' || path&.exist?
+    if search_key == '' || path && !path.exist?
       query = params[:query] || {}
       query[:current_user] = current_user
       search = Search.new query
