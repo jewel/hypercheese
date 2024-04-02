@@ -51,3 +51,5 @@ gem 'jwt'
 gem 'RubyInline', require: 'inline'
 
 gem 'httparty'
+
+gem 'oj'
