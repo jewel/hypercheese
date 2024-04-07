@@ -235,7 +235,7 @@ class ItemsController < ApplicationController
     @item.check_visibility_for current_user
     items = @item.similar_items
     if items
-      render json: items, each_serializer: ItemSerializer
+      render json: items, each_serializer: ItemSerializer, root: "items"
     else
       render json: { items: nil }
     end
