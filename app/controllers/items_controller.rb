@@ -230,6 +230,12 @@ class ItemsController < ApplicationController
     redirect_to "/data/resized/#{params[:size]}/#{item.id}-#{item.code}.#{params[:ext]}"
   end
 
+  def similar
+    @item = Item.find params[:item_id].to_i
+    @item.check_visibility_for current_user
+    render json: @item.similar_items, each_serializer: ItemSerializer
+  end
+
   private
 
   def items_params

@@ -134,6 +134,7 @@
           </p>
       }
       <FacesAndTags item={item} details={details}/>
+      <SimilarPhotos key={item.id} itemId={item.id}/>
       <Writer>
         <form key="new" className="comment" onSubmit={@onComment}>
           <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>

@@ -118,5 +118,17 @@ class Item < ActiveRecord::Base
       GenerateVideoStreamJob.set(priority: 6 + p).perform_later id
     end
   end
+
+  def similar_items
+    return nil unless photo?
+    store = EmbeddingStore.new "clip", 768
+    raw = store.get id
+    return nil unless raw
+    output = store.bulk_cosine_distance raw, 0.8
+    output.sort_by! { -_1.first }
+    ids = output.map { _1.last }
+    ids.shift if ids.first == id
+    Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find ids.first(20)
+  end
 end
 

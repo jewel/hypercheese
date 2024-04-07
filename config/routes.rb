@@ -24,6 +24,7 @@ HyperCheese::Application.routes.draw do
         post :visibility
       end
       get :details
+      get :similar
       post :toggle_star
       post :toggle_bullhorn
       post :rate
