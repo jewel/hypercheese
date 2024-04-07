@@ -233,7 +233,12 @@ class ItemsController < ApplicationController
   def similar
     @item = Item.find params[:item_id].to_i
     @item.check_visibility_for current_user
-    render json: @item.similar_items, each_serializer: ItemSerializer
+    items = @item.similar_items
+    if items
+      render json: items, each_serializer: ItemSerializer
+    else
+      render json: { items: nil }
+    end
   end
 
   private
