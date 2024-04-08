@@ -15,6 +15,7 @@ class Item < ActiveRecord::Base
   has_many :ratings
   has_many :sources, through: :item_paths
   has_many :faces
+  has_many :clip_frames
   belongs_to :group
   belongs_to :event
 
@@ -120,14 +121,52 @@ class Item < ActiveRecord::Base
   end
 
   def similar_items
-    return nil unless photo?
     store = EmbeddingStore.new "clip", 768
-    raw = store.get id
-    return nil unless raw
+    clip_store = EmbeddingStore.new "video-clip", 768
+    if photo?
+      raw = store.get id
+      return nil unless raw
+    else
+      # We'll average the embeddings of all the frames here since that's going
+      # to be better than doing a separate search for each of them.  Who knows
+      # what that will do for longer videos but at least we'll get some sort of
+      # result.
+      embeddings = clip_frames.map do |frame|
+        raw = clip_store.get frame.id
+        return nil unless raw
+        raw.unpack 'f*'
+      end
+      return nil if embeddings.empty?
+      average = embeddings.transpose.map do |elements|
+        elements.sum / elements.size
+      end
+      raw = average.pack 'f*'
+    end
+
+    # Search photos
     output = store.bulk_cosine_distance raw, 0.8
+
+    # Add in videos
+    frames = clip_store.bulk_cosine_distance raw, 0.8
+    frame_ids = frames.map { _1.last }
+    frame_scores = {}
+    frames.each do |score, frame_id|
+      frame_scores[frame_id] = score
+    end
+    item_scores = {}
+    frame_ids = ClipFrame.where(id: frame_ids).pluck(:id, :item_id).each do |frame_id, item_id|
+      score = frame_scores[frame_id]
+      item_scores[item_id] ||= []
+      item_scores[item_id] << score
+    end
+
+    item_scores.each do |item_id, scores|
+      output.push [scores.max, item_id]
+    end
+
     output.sort_by! { -_1.first }
     ids = output.map { _1.last }
-    ids.shift if ids.first == id
+    ids = ids - [id]
     Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find ids.first(20)
   end
 end
