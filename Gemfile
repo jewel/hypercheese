@@ -53,3 +53,8 @@ gem 'RubyInline', require: 'inline'
 gem 'httparty'
 
 gem 'oj'
+
+gem 'net-smtp', require: false
+gem 'net-pop', require: false
+gem 'net-imap', require: false
+
