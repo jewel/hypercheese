@@ -110,14 +110,13 @@ class Item < ActiveRecord::Base
 
     LoadMetadataJob.set(priority: 0 + p).perform_later id
     GenerateThumbsJob.set(priority: 1 + p).perform_later id
-    GeolocateJob.set(priority: 2 + p).perform_later id
-    FindFacesJob.set(priority: 3 + p).perform_later id
-    IndexVisuallyJob.set(priority: 4 + p).perform_later id
-
     if video?
-      GenerateExplodedVideoJob.set(priority: 5 + p).perform_later id
-      GenerateVideoStreamJob.set(priority: 6 + p).perform_later id
+      GenerateExplodedVideoJob.set(priority: 2 + p).perform_later id
+      GenerateVideoStreamJob.set(priority: 3 + p).perform_later id
     end
+    GeolocateJob.set(priority: 4 + p).perform_later id
+    FindFacesJob.set(priority: 5 + p).perform_later id
+    IndexVisuallyJob.set(priority: 6 + p).perform_later id
   end
 
   def similar_items

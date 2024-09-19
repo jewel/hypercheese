@@ -478,6 +478,9 @@ class @Store
     if tag.id == @state.tagIconChoicesId
       return @state.tagIconChoices
 
+    if @state.searching
+      return null
+
     query = new SearchQuery
     query.options.only = true
     query.options.type = 'photo'
