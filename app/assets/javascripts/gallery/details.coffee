@@ -275,6 +275,10 @@
                   if tag
                     <TagLink key={tag.id} className="tag-link" tag={tag}/>
             }
+            <PresentButton
+              url={@largeURL @props.itemId}
+              streamUrl={item && item.variety == 'video' && Store.resizedURL('stream', item.id, item.code)}
+            />
             <Writer>
               <ControlIcon
                 className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
