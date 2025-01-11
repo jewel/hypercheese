@@ -36,3 +36,5 @@
 /db/geo.index
 /db/geo
 /storage
+
+/config/master.key
