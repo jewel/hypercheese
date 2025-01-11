@@ -8,7 +8,7 @@
   onMessage: (msg) ->
     data = JSON.parse msg.data
     console.log data
-    if data.type == "update_session"
+    if data.type == "update_session" || data.type == "new_session"
       console.log data.message.sessionId
       @setState
         sessionId: data.message.sessionId
@@ -23,10 +23,9 @@
         connection: connection
       connection.onmessage = @onMessage
 
-  send: ->
+  loadIfChanged: ->
     return unless @props.url
-    return unless @state.connection
-    return unless @state.connection.state == 'connected'
+    return unless @connected()
 
     url = location.origin + @props.url
 
@@ -40,39 +39,64 @@
     else
       mimeType = "image/jpeg"
 
+    @sendMessage
+      type: "LOAD"
+      media:
+        contentId: url
+        streamType: "BUFFERED"
+        contentType: mimeType
+        metadata:
+          metadataType: 0
+          title: "Hypercheese"
+          subtitle: ""
+      autoplay: true
+      sessionId: @state.sessionId
+      requestId: 0
+
+    @currentUrl = url
+
+  connected: ->
+    @state.connection?.state == 'connected'
+
+  sendMessage: (payload) ->
+    return unless @connected()
+
     msg =
       type: "v2_message"
       timeoutMillis: 0
       sequenceNumber: 0
       clientId: @state.clientId
-      message:
-        type: "LOAD"
-        media:
-          contentId: url
-          streamType: "BUFFERED"
-          contentType: mimeType
-          metadata:
-            metadataType: 0
-            title: "Hypercheese"
-            subtitle: ""
-        autoplay: true
-        sessionId: @state.sessionId
-        requestId: 0
+      message: payload
 
     console.log "Sending", msg
     @state.connection.send JSON.stringify msg
 
-    @currentUrl = url
+  seekTo: (time) ->
+    @sendMessage
+      type: "SEEK"
+      currentTime: time
+      sessionId: @state.sessionId
+      requestId: 0
+
+  subscribeSeeks: ->
+    console.log @props.video
+    return unless @props.video
+
+    @props.video.onseeked = =>
+      console.log @props.video.currentTime
+      @seekTo @props.video.currentTime
+
 
   render: ->
     return null unless PresentationRequest?
     return null unless @props.url
 
-    @send()
+    @loadIfChanged()
+    @subscribeSeeks()
 
     <ControlIcon
       className={"presentation"}
-      active={@state.connection?.state == "connected"}
+      active={@connected()}
       title="Present"
       onClick={@onStart}
       icon="fa-tv"

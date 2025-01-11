@@ -278,6 +278,7 @@
             <PresentButton
               url={@largeURL @props.itemId}
               streamUrl={item && item.variety == 'video' && Store.resizedURL('stream', item.id, item.code)}
+              video={@refs.video?.refs.video}
             />
             <Writer>
               <ControlIcon
