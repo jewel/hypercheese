@@ -121,7 +121,7 @@ class Item < ActiveRecord::Base
 
   def similar_items
     store = EmbeddingStore.new "clip", 768
-    clip_store = EmbeddingStore.new "video-clip", 768
+    video_store = EmbeddingStore.new "video-clip", 768
     if photo?
       raw = store.get id
       return nil unless raw
@@ -131,7 +131,7 @@ class Item < ActiveRecord::Base
       # what that will do for longer videos but at least we'll get some sort of
       # result.
       embeddings = clip_frames.map do |frame|
-        raw = clip_store.get frame.id
+        raw = video_store.get frame.id
         return nil unless raw
         raw.unpack 'f*'
       end
@@ -146,7 +146,7 @@ class Item < ActiveRecord::Base
     output = store.bulk_cosine_distance raw, 0.8
 
     # Add in videos
-    frames = clip_store.bulk_cosine_distance raw, 0.8
+    frames = video_store.bulk_cosine_distance raw, 0.8
     frame_ids = frames.map { _1.last }
     frame_scores = {}
     frames.each do |score, frame_id|
