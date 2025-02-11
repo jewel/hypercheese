@@ -3,7 +3,7 @@ class @TagMatch
     lower = (str) ->
       str.toLowerCase()
     clean = (str) ->
-      lower(str.replace( ' ', '' ))
+      lower(str.replace( / /g, '' ))
 
     str = lower(str).trim()
     tags = []
@@ -31,8 +31,9 @@ class @TagMatch
 
     parts = str.split( /\ / )
 
-    # split adds extra ""s when theres a trailing space
-    # FIXME Causes parts to be wrong if there is a double space between 2 search terms
+    # split adds extra ""s when there's a trailing space
+    # FIXME Causes parts to be wrong if there is a double space between 2
+    # search terms
     parts = parts.filter (p) ->
       p != ""
 
@@ -52,9 +53,17 @@ class @TagMatch
       continue if part == ""
       pos = posOfParts[index]
 
-      # try to match a pair of words to a tag first
-      if index < parts.length - 1
-        matchedPrefixes = @matchPrefix part + ' ' + parts[index + 1]
+      # FIXME Match tags of any length.  For now we just need to support tags
+      # of up to three words
+      if index < parts.length - 2
+        matchedPrefixes = @matchPrefix "#{part} #{parts[index+1]} #{parts[index+2]}"
+        if matchedPrefixes.length > 0
+          parts[index + 1] = ""
+          parts[index + 2] = ""
+          pos = posOfParts[index + 2]
+
+      if matchedPrefixes.length == 0 && index < parts.length - 1
+        matchedPrefixes = @matchPrefix "#{part} #{parts[index+1]}"
         if matchedPrefixes.length > 0
           parts[index + 1] = ""
           pos = posOfParts[index + 1]
