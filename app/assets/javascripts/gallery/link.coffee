@@ -1,5 +1,7 @@
 @Link = createReactClass
   onClick: (e) ->
+    document.body.scrollTo 0, 0
+
     if @props.onClick
       @props.onClick e
 

@@ -1,6 +1,5 @@
 @Details = createReactClass
   getInitialState: ->
-    Store.state.showInfo = false
     playing: false
     showVideoControls: false
     showControls: true
@@ -27,12 +26,6 @@
       when 'KeyF'
         @hideControls()
         @onFullScreen()
-      when 'KeyI'
-        @onInfo()
-
-  onInfo: (e) ->
-    Store.state.showInfo = !Store.state.showInfo
-    Store.needsRedraw()
 
   fullscreenFunctions: [
       'requestFullscreen'
@@ -199,13 +192,12 @@
               if @fullScreenFunction()
                 <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
             }
-            <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
             <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
           </div>
         </div>
       </div>
       {
-        if item && Store.state.showInfo
-          <Info item={item} onInfo={@onInfo}/>
+        if item
+          <Info item={item}/>
       }
     </div>

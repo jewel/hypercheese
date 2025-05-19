@@ -1,18 +1,30 @@
 @Details = createReactClass
   getInitialState: ->
-    Store.state.showInfo = false
     playing: false
     showVideoControls: false
     showControls: true
     slideShow: false
     zoom: false
+    infoRef: React.createRef()
+    infoVisible: false
 
   componentDidMount: ->
     window.addEventListener 'keyup', @onKeyUp
     Store.state.openStack.push 'item'
+    window.addEventListener 'scroll', @checkInfoVisibility
 
   componentWillUnmount: ->
     window.removeEventListener 'keyup', @onKeyUp
+    window.removeEventListener 'scroll', @checkInfoVisibility
+
+  checkInfoVisibility: ->
+    infoElement = @state.infoRef.current
+    return unless infoElement
+    rect = infoElement.getBoundingClientRect()
+    newInfoVisible = Math.round(rect.top) < window.innerHeight
+    if newInfoVisible != @state.infoVisible
+      @setState
+        infoVisible: newInfoVisible
 
   onKeyUp: (e) ->
     if e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
@@ -45,7 +57,7 @@
         @hideControls()
         @onFullScreen()
       when 'KeyI'
-        @onInfo()
+        @state.infoRef.current?.scrollIntoView behavior: 'smooth'
       when 'KeyT'
         Store.selectItem @props.itemId
         Store.needsRedraw()
@@ -53,10 +65,6 @@
         @onSlideShow()
       when 'KeyZ'
         @onZoom()
-
-  onInfo: (e) ->
-    Store.state.showInfo = !Store.state.showInfo
-    Store.needsRedraw()
 
   onStar: (e) ->
     Store.toggleItemStar @props.itemId
@@ -93,7 +101,6 @@
       if html[i]?
         return i
     null
-
 
   onFullScreen: (e) ->
     html = document.documentElement
@@ -211,11 +218,6 @@
       q.parse Store.state.query
       judgeMode = true if q.options.unjudged
 
-    # preload neighbors details
-    if item && Store.state.showInfo
-      Store.getDetails @neighbor(1)
-      Store.getDetails @neighbor(-1)
-
     classes = ['details-window']
     classes.push 'show-controls' if @state.showControls
     classes.push 'judge-bar' if judgeMode
@@ -308,7 +310,6 @@
                   <i className="fa fa-square-o fa-fw"/>
               }
             </a>
-            <a className="control" href="javascript:void(0)" onClick={@onInfo}><i className="fa fa-info-circle fa-fw"/></a>
             <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
           </div>
         </div>
@@ -326,7 +327,7 @@
         }
       </div>
       {
-        if item && Store.state.showInfo
-          <Info item={item} onInfo={@onInfo}/>
+        if item
+          <Info containerRef={@state.infoRef} item={item} isVisible={@state.infoVisible}/>
       }
     </div>

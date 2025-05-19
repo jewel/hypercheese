@@ -15,7 +15,6 @@
       parts[0] / parts[1]
 
     <div className="info">
-      <a className="btn pull-right" href="javascript:void(0)" onClick={@props.onInfo}><i className="fa fa-close"/></a>
       <table className="table">
         <tbody>
           {fact 'calendar', new Date(details.taken).toLocaleString()}
@@ -35,7 +34,7 @@
             <th><i className="fa fa-folder-o"/></th>
             <td>
               {item.filename}
-              {' '}
+              <br/>
               <a href="/shares/#{Store.state.shareCode}/download_item/#{@props.item.id}">
                 <i className="fa fa-download"/> Download
               </a>

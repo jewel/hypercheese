@@ -55,7 +55,6 @@ class @Store
       highlight: null
       recent: null
       hasTouch: false
-      showInfo: false
       openStack: []
       judgeIcons: false
       canWrite: true

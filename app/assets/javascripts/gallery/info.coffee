@@ -4,9 +4,6 @@
   getInitialState: ->
     newComment: ''
 
-  componentDidMount: ->
-    Store.state.openStack.push 'info'
-
   onChangeNewComment: (e) ->
     @setState
       newComment: e.target.value
@@ -18,9 +15,24 @@
     @setState
       newComment: ''
 
+  neighbor: (dir) ->
+    item = Store.getItem @props.itemId
+    return unless item
+
+    newIndex = item.index + dir
+    Store.state.items[newIndex]
+
   render: ->
+    console.log @props.isVisible
     item = @props.item
-    details = Store.getDetails item.id
+    if item && @props.isVisible
+      details = Store.getDetails item.id
+
+      # preload neighbors' details
+      Store.getDetails @neighbor(-1)
+      Store.getDetails @neighbor(1)
+    else
+      details = { comments: [], paths: [], ages: {} }
 
     fact = (label, info) ->
       <tr key={label}>
@@ -33,10 +45,32 @@
       parts = str.split '/'
       parts[0] / parts[1]
 
-    <div className="info">
-      <a className="btn pull-right" href="javascript:void(0)" onClick={@props.onInfo}><i className="fa fa-close"/></a>
+    <div className="info" ref={@props.containerRef}>
       <table className="table">
         <tbody>
+          <tr>
+            <th><i className="fa fa-folder-o"/></th>
+            <td>
+              {
+                details.paths.map (path) =>
+                  <div key={path}>
+                    {path}
+                  </div>
+              }
+              <div>
+                {
+                  if details.pretty_size
+                    details.pretty_size
+                }
+              </div>
+
+              <div>
+                <a href="/api/items/download?ids=#{@props.item.id}">
+                  <i className="fa fa-download"/> Download
+                </a>
+              </div>
+            </td>
+          </tr>
           {fact 'calendar', new Date(details.taken).toLocaleString()}
           {
             fact('location-arrow',
@@ -98,29 +132,6 @@
             if details.aesthetics_score?
               fact 'paint-brush', details.aesthetics_score.toFixed(1)
           }
-          <tr>
-            <th><i className="fa fa-folder-o"/></th>
-            <td>
-              {
-                details.paths.map (path) =>
-                  <div key={path}>
-                    {path}
-                  </div>
-              }
-              <div>
-                {
-                  if details.pretty_size
-                    details.pretty_size
-                }
-              </div>
-
-              <div>
-                <a href="/api/items/download?ids=#{@props.item.id}">
-                  <i className="fa fa-download"/> Download
-                </a>
-              </div>
-            </td>
-          </tr>
         </tbody>
       </table>
       {
@@ -133,8 +144,11 @@
             </small>
           </p>
       }
-      <FacesAndTags item={item} details={details}/>
-      <SimilarPhotos key={item.id} itemId={item.id}/>
+      {
+        if @props.isVisible
+          <FacesAndTags item={item} details={details}/>
+          <SimilarPhotos key={item.id} itemId={item.id}/>
+      }
       <Writer>
         <form key="new" className="comment" onSubmit={@onComment}>
           <textarea placeholder="What a great picture!" value={@state.newComment} onChange={@onChangeNewComment}/>

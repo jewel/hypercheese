@@ -27,12 +27,12 @@
       <h3>Similar Items:</h3>
       {
         @state.items.map (item) =>
-          <a href={"/items/#{item.id}"} onClick={@navigateTo(item)}>
+          <Link href={"/items/#{item.id}"} onClick={@navigateTo(item)}>
             <img
               key={item.id}
               className="thumb"
               src={Store.resizedURL "square", item}
             />
-          </a>
+          </Link>
       }
     </div>

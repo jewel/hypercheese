@@ -28,10 +28,6 @@
     if e.keyCode == 27
       while lastOpened = Store.state.openStack.pop()
         page = @state.page
-        if lastOpened == 'info' && page == 'item' && Store.state.showInfo
-          Store.state.showInfo = false
-          Store.needsRedraw()
-          break
         if lastOpened == 'item' && page == 'item'
           Store.navigateBack()
           break
