@@ -147,7 +147,6 @@
       {
         if @props.isVisible
           <FacesAndTags item={item} details={details}/>
-          <SimilarPhotos key={item.id} itemId={item.id}/>
       }
       <Writer>
         <form key="new" className="comment" onSubmit={@onComment}>
@@ -156,4 +155,8 @@
           <button className="btn btn-default">Submit</button>
         </form>
       </Writer>
+      {
+        if @props.isVisible
+          <SimilarPhotos key={item.id} itemId={item.id}/>
+      }
     </div>

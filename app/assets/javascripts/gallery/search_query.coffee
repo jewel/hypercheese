@@ -24,6 +24,7 @@ class @SearchQuery
     in: true
     near: true
     miles: true
+    duration: true
 
   @multiple:
     year: true

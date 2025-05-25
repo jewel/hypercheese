@@ -56,6 +56,21 @@ class Search
     else
     end
 
+    if @query[:duration]
+      @query[:type] = 'video'
+      if @query[:duration] =~ /\A(\d+)-(\d+)\z/
+        items = items.where ["round(duration) between ? and ?", $1, $2]
+      elsif @query[:duration] =~ /\A(\d+)\+\z/
+        items = items.where ["round(duration) >= ?", $1]
+      elsif @query[:duration] =~ /\A(\d+)\z/
+        items = items.where ["round(duration) = ?", $1]
+      elsif @query[:duration] =~ /\A-(\d+)\z/
+        items = items.where ["round(duration) <= ?", $1]
+      else
+        raise "Invalid duration: #{@query[:duration].inspect}"
+      end
+    end
+
     if @query[:type]
       items = items.where variety: @query[:type].to_s
     end
