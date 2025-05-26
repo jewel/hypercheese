@@ -1,34 +1,31 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 8.0.2'
 
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
+gem 'sprockets-rails'
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails'
-  gem 'coffee-rails'
-  gem 'uglifier'
-  gem 'jquery-rails'
-  gem 'react-rails'
-  gem 'font-awesome-rails'
-  gem 'bootstrap-sass'
-  gem 'coffee-script'
-  gem 'coffee-script-source', git: 'https://github.com/jewel/coffee-script-source'
-end
+gem 'puma'
 
-group :production do
-  gem 'mysql2'
-end
+gem 'jsbundling-rails'
 
-group :development do
-  gem 'thin'
-  gem 'pry'
-  gem 'rb-readline'
-  gem 'sqlite3'
-end
+gem 'cssbundling-rails'
+
+gem 'jbuilder'
+
+gem 'react-rails'
+
+gem 'sassc'
+
+gem 'coffee-script'
+gem 'coffee-script-source', git: 'https://github.com/jewel/coffee-script-source'
+
+gem 'font-awesome-rails'
+gem 'bootstrap-sass'
+
+gem 'bootsnap', require: false
+
+gem 'mysql2'
+
 
 gem 'mini_magick'
 gem 'exifr'
@@ -58,3 +55,28 @@ gem 'net-smtp', require: false
 gem 'net-pop', require: false
 gem 'net-imap', require: false
 
+gem 'aws-sdk-s3'
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+end
+
+group :development do
+  # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "web-console"
+  gem "foreman"
+
+  # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
+  # gem "rack-mini-profiler"
+
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem "spring"
+end
+
+group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers"
+end

@@ -1,4 +1,4 @@
-require_dependency 'rtree'
+require_dependency 'r_tree'
 
 class GeolocateJob < ApplicationJob
   @@rtree = nil

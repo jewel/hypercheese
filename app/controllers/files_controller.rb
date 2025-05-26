@@ -3,76 +3,171 @@ class FilesController < ApplicationController
   skip_before_action :authenticate_user!
   skip_before_action :verify_approval!
 
+  before_action :require_auth!, except: :authenticate
+
   rescue_from StandardError, with: :handle_error
+
+  require 'open3'
+
+  # File upload is designed to be lightweight on the client side, with no
+  # database required on the client side to track what has been uploaded so
+  # far.  Instead, the server will keep track of what the client has previously
+  # uploaded.  Just like rsync, we'll assume files are the same if they have
+  # the same mtime and filesize and pathname.
+  #
+  # Upload is done in four steps:
+  #
+  # Step one: POST to /files/auth with a username and password.  This only
+  # needs to happen once per device, a device token will be memorized by the
+  # client for future uploads.
+  #
+  # Step two: POST to /files/manifest.  A JSON array of files is POSTed,
+  # representing the entirety of what is on the remote computer.  The server
+  # responds with the paths of the files that should be hashed.
+  #
+  # Step three: POST to /files/hashes.  The client sends the manifest again, but
+  # this time with the SHA256 hash of the file contents.  The server will
+  # respond with the paths of the files that should be uploaded.
+  #
+  # Step four: PUT to /files/upload.  Each file from step three is sent one at a
+  # time, in a separate PUT request.
 
   def authenticate
     info = JSON.parse request.body.read, symbolize_names: true
-    user = User.find_by username: info[:username]
-    unless user&.valid_password?(info[:password])
-      return render plain: "Invalid username or password", status: :unauthorized
+    if current_user
+      user = current_user
+    else
+      user = User.find_by username: info[:username]
+      unless user&.valid_password?(info[:password])
+        return render plain: "Invalid username or password", status: :unauthorized
+      end
     end
-    payload = { user_id: user.id, device: SecureRandom.uuid }
-    token = JWT.encode payload, Rails.application.secrets.secret_key_base
+    device = Device.create!(
+      user_id: user.id,
+      uuid: SecureRandom.uuid,
+      nickname: info[:nickname],
+      os: info[:os],
+      client_software: info[:client_software],
+      client_version: info[:client_version]
+    )
+    payload = { user_id: user.id, device: device.uuid }
+    token = JWT.encode payload, Rails.application.credentials.secret_key_base
     render json: { token: token }
   end
 
   def manifest
-    auth!
     files = JSON.parse request.body.read, symbolize_names: true
+    paths = files.map { _1[:path] }
+    blobs = CheeseBlob.where path: paths, user: @user, device: @device
+    blobs = blobs.index_by &:path
+
+    @device.update!(
+      last_manifest_at: Time.current,
+      os: params[:os],
+      nickname: params[:nickname],
+      client_version: params[:client_version]
+    )
+
     res = []
     files.each do |file|
-      dest = dest_path file[:path]
-      if dest.exist? && dest.mtime.to_f.round == (file[:mtime].to_f / 1000).round && dest.size == file[:size]
-        next
-      end
-      res.push({
-        path: file[:path]
-      })
+      blob = blobs[file[:path]]
+      same_mtime = (blob&.mtime.to_f * 1000).round == file[:mtime]
+      same_size = blob&.size == file[:size]
+      next if same_mtime && same_size
+      res.push({ path: file[:path] })
     end
-    render json: res
+
+    render json: res.to_json
   end
 
-  # Since we're not indexing hashes on the server side yet, this is just a
-  # no-op.  It will take their device a little while to hash the files but it's
-  # only going to be rare that there are duplicates.
   def hashes
-    auth!
     files = JSON.parse request.body.read, symbolize_names: true
+    sha256s = files.map { _1[:sha256].downcase }
+    existing_blobs = CheeseBlob.where sha256: sha256s
+    existing_blobs_by_sha = existing_blobs.index_by &:sha256
+
     res = []
     files.each do |file|
-      res.push({
-        path: file[:path]
-      })
+      existing_blob = existing_blobs_by_sha[file[:sha256]]
+
+      if existing_blob
+        CheeseBlob.create!(
+          user: @user,
+          device: @device,
+          path: file[:path],
+          sha256: file[:sha256].downcase,
+          size: file[:size],
+          mtime: Time.at(file[:mtime].to_f / 1000),
+        )
+      else
+        res.push({
+          path: file[:path]
+        })
+      end
     end
-    render json: res
+    render json: res.to_json
   end
 
   def upload
-    auth!
     path = request.headers['X-Path']
     mtime = request.headers['X-MTime'].to_f / 1000
-    dest = dest_path path
-    FileUtils.mkdir_p File.dirname dest
-    temp = "#{dest}.#$$.tmp"
-    File.open temp, 'wb' do |f|
-      IO.copy_stream request.body, f
+    sha256 = request.headers['X-SHA256'].downcase
+    size = request.headers['X-Size'].to_i
+
+    data = request.body.read
+    if data.size != size
+      return render plain: "Size mismatch (header: #{size}, body: #{data.size})", status: :bad_request
     end
-    File.utime mtime, mtime, temp.to_s
-    File.rename temp, dest.to_s
+
+    if Digest::SHA256.hexdigest(data) != sha256
+      return render plain: "SHA256 mismatch (header: #{sha256}, body: #{Digest::SHA256.hexdigest(data)})", status: :bad_request
+    end
+
+    # Get content type using file -bi
+    Tempfile.open(['upload', '']) do |tempfile|
+      tempfile.binmode
+      tempfile.write data
+      content_type, status = Open3.capture2 'file', '-bi', tempfile.path
+      content_type = content_type.strip
+    end
+
+    s3_key = object_key sha256
+    Bucket.put_object(
+      key: s3_key,
+      body: data,
+      content_type: content_type
+    )
+
+    blob = CheeseBlob.create!(
+      user: @user,
+      device: @device,
+      path: path,
+      sha256: sha256,
+      size: size,
+      mtime: Time.at(mtime),
+    )
+
+    @device.update! last_upload_at: Time.current
+
+    source = Source.find_by device: @device
+    if source
+      Import.by_blob blob
+    end
+
     head :ok
   end
 
   private
 
-  def auth!
+  def require_auth!
     if request.headers['X-API-Version'] != "1.0"
       raise "Invalid API Version"
     end
     token = request.headers['Authorization']&.split(' ')&.last
-    payload = JWT.decode(token, Rails.application.secrets.secret_key_base).first
+    payload = JWT.decode(token, Rails.application.credentials.secret_key_base).first
     @user = User.find payload["user_id"]
-    @device = payload["device"]
-    raise "Authorization problem" unless @user && @device.present?
+    @device = Device.find_by_uuid payload["device"]
+    raise "Authorization problem" unless @user && @device
   end
 
   def handle_error exception
@@ -85,16 +180,7 @@ class FilesController < ApplicationController
     render plain: error_message, status: :internal_server_error
   end
 
-  def base_dir
-    Rails.root + "storage/uploads" + @user.id.to_s + @device
-  end
-
-  def dest_path remote_path
-    path = remote_path.sub(%r{\A/}, '')
-    dest = (base_dir + path).cleanpath
-    unless dest.to_s.start_with? base_dir.to_s
-      raise "Path is outside of expected base directory"
-    end
-    dest
+  def object_key sha256
+    "storage/#{sha256}"
   end
 end

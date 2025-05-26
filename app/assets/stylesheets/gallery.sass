@@ -1,0 +1,29 @@
+.react-wrapper
+  &.showing-upload
+    .global-upload-overlay
+      :display flex
+      :align-items center
+      :justify-content center
+      :position fixed
+      :top 0
+      :left 0
+      :right 0
+      :bottom 0
+      :background rgba(0, 0, 0, 0.8)
+      :z-index 1000
+
+      .upload-message
+        :text-align center
+        :color white
+        :padding 2em
+        :border 2px dashed white
+        :border-radius 8px
+
+        i
+          :font-size 48px
+          :margin-bottom 0.5em
+
+        p
+          :margin 0.5em 0
+          :font-size 18px
+

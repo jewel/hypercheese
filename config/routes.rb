@@ -63,11 +63,14 @@ HyperCheese::Application.routes.draw do
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
+  get 'upload' => 'home#index'
 
-  post 'files/authenticate' => 'files/authenticate'
-  post 'files/manifest' => 'files/manifest'
-  post 'files/hashes' => 'files/hashes'
-  put 'files' => 'files#upload'
+  scope :files do
+    post 'auth', to: 'files#authenticate'
+    post 'manifest', to: 'files#manifest'
+    post 'hashes', to: 'files#hashes'
+    put 'upload', to: 'files#upload'
+  end
 
   get 'data/resized/:size/:item_id.:ext' => 'items#resized', constraints: { item_id: /\d+/ }
 end

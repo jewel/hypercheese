@@ -9,7 +9,7 @@ BASE_DIR = "#{Rails.root}/public/data/resized"
 
 def move item, size, ext
   source = "#{BASE_DIR}/#{size}/#{item.id}.#{ext}"
-  return unless File.exists? source
+  return unless File.exist? source
   dest = "#{BASE_DIR}/#{size}/#{item.id}-#{item.code}.#{ext}"
   puts "#{source} -> #{dest}"
   File.rename source, dest

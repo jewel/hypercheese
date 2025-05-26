@@ -1,84 +1,89 @@
-@Swiper = createReactClass
-  onTouchStart: (e) ->
+component 'Swiper', ({children, curKey, prevKey, nextKey, prevSrc, nextSrc, moveTo}) ->
+  [position, setPosition] = useState null
+  [prevTime, setPrevTime] = useState null
+  [startTouch, setStartTouch] = useState null
+  [target, setTarget] = useState null
+
+  useEffect ->
+    if target?
+      window.requestAnimationFrame animate
+    ->
+  , [target]
+
+  onTouchStart = (e) ->
     return unless e.touches.length == 1
     touch = e.touches[0]
-    @startTouch = touch
-    @prevTime = performance.now()
+    setStartTouch touch
+    setPrevTime performance.now()
     null
 
-  onTouchMove: (e) ->
+  onTouchMove = (e) ->
     unless e.touches.length == 1
-      @startTouch = null
+      setStartTouch null
       return
-    return unless start = @startTouch
+    return unless start = startTouch
     touch = e.touches[0]
-    @position = touch.pageX - start.pageX
-    @time = performance.now()
-    @show @position
+    newPosition = touch.pageX - start.pageX
+    setPosition newPosition
+    setPrevTime performance.now()
 
-  onTouchEnd: (e) ->
-    return unless start = @startTouch
-    elapsed = @time - @prevTime
-    speed = @position / elapsed
+  onTouchEnd = (e) ->
+    return unless start = startTouch
+    elapsed = performance.now() - prevTime
+    speed = position / elapsed
     if Math.abs(speed) > 0.25
-      @target = Math.sign(speed)
+      setTarget Math.sign(speed)
     else
-      @target = 0
-    @prevTime = @time
-    window.requestAnimationFrame @animate
+      setTarget 0
+    setPrevTime performance.now()
 
-  animate: (now) ->
-    elapsed = now - @prevTime
-    @prevTime = now
+  animate = (now) ->
+    elapsed = now - prevTime
+    setPrevTime now
     speed = 4.0
-    speed *= -1 if @target < 0
-    speed *= -Math.sign(@position) if @target == 0
-    oldPosition = @position
-    @position += speed * elapsed
+    speed *= -1 if target < 0
+    speed *= -Math.sign(position) if target == 0
+    oldPosition = position
+    newPosition = position + speed * elapsed
 
     width = document.documentElement.clientWidth
 
-    if @target == 0 && Math.sign(@position) != Math.sign(oldPosition)
-      @reset()
-      @show 0
-    else if @target == 1 && @position > width * 1.02
-      @show width * 1.02
-      window.requestAnimationFrame =>
-        @moveTo -1
-    else if @target == -1 && @position < -width * 1.02
-      @show -width * 1.02
-      window.requestAnimationFrame =>
-        @moveTo 1
+    if target == 0 && Math.sign(newPosition) != Math.sign(oldPosition)
+      reset()
+      setPosition 0
+      setTarget null
+    else if target == 1 && newPosition > width * 1.02
+      setPosition width * 1.02
+      window.requestAnimationFrame ->
+        handleMoveTo -1
+    else if target == -1 && newPosition < -width * 1.02
+      setPosition -width * 1.02
+      window.requestAnimationFrame ->
+        handleMoveTo 1
     else
-      @show @position
-      window.requestAnimationFrame @animate
+      setPosition newPosition
+      window.requestAnimationFrame animate
 
-  reset: ->
-    @position = null
-    @prevTime = null
-    @startTouch = null
+  reset = ->
+    setPosition null
+    setPrevTime null
+    setStartTouch null
 
-  show: (position) ->
-    style = "translate3d(#{position}px, 0px, 0px)"
-    @refs.prev.style.transform = style if @refs.prev
-    @refs.cur.style.transform = style if @refs.cur
-    @refs.next.style.transform = style if @refs.next
+  handleMoveTo = (target) ->
+    moveTo target
+    reset()
 
-  moveTo: (dir) ->
-    @props.moveTo(dir)
-    @reset()
-    @show 0
+  transformStyle = "translate3d(#{position ? 0}px, 0px, 0px)"
 
-  render: ->
-    <div onTouchStart={@onTouchStart} onTouchMove={@onTouchMove} onTouchEnd={@onTouchEnd} onMouseMove={@onMouseMove}>
-      <div key={@props.curKey} ref="cur" className="detailed-image">
-       {@props.children}
-      </div>
-       
-      <div key={@props.prevKey} ref="prev" className="detailed-prev">
-        <img ref="prevImage" src={@props.prevSrc}/>
-      </div>
-      <div key={@props.nextKey} ref="next" className="detailed-next">
-        <img ref="nextImage" src={@props.nextSrc}/>
-      </div>
+  <div onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+    <div key={curKey} className="detailed-image" style={transform: transformStyle}>
+      {children}
     </div>
+
+    <div key={prevKey} className="detailed-prev" style={transform: transformStyle}>
+      <img src={prevSrc}/>
+    </div>
+    <div key={nextKey} className="detailed-next" style={transform: transformStyle}>
+      <img src={nextSrc}/>
+    </div>
+  </div>

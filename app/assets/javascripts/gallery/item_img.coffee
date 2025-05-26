@@ -1,4 +1,3 @@
-@ItemImg = createReactClass
-  render: ->
-    url = Store.resizedURL @props.size || "square", @props.id, @props.code
-    <img src={url} />
+component 'ItemImg', ({size, id, code}) ->
+  url = Store.resizedURL size || "square", id, code
+  <img src={url} />

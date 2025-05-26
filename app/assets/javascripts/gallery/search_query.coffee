@@ -39,18 +39,12 @@ class @SearchQuery
 
   @months: 'January February March April May June July August September October November December'.split ' '
 
-  constructor: ->
-    @reset()
-
-  reset: ->
+  constructor: (str = '', caretPosition = 0) ->
     @options = {}
     @tags = []
     @unknown = []
     @useOthers = false
     @others = []
-
-  parse: (str, caretPosition) ->
-    @reset()
 
     parts = TagMatch.matchMany(str, caretPosition)
     unused = []
@@ -62,7 +56,6 @@ class @SearchQuery
         if part.current
           @useOthers = true
           @others = part.otherTags
-
 
     str = unused.join ' '
 

@@ -1,86 +1,85 @@
-@ScrollButton = createReactClass
-  getInitialState: ->
-    position: null
+component 'ScrollButton', ({height, top, visible}) ->
+  [position, setPosition] = useState null
+  startY = useRef null
+  startPosition = useRef null
 
-  onMouseDown: (e) ->
+  onMouseDown = (e) ->
     return unless e.button == 0
-    @start e, e.clientY
+    start e, e.clientY
 
-  onTouchStart: (e) ->
+  onTouchStart = (e) ->
     return unless e.touches.length == 1
-    @start e, e.touches[0].clientY
+    start e, e.touches[0].clientY
 
-  start: (e, y) ->
+  start = (e, y) ->
     e.preventDefault()
     e.stopPropagation()
-    @startY = y
-    @startPosition = @initialPosition()
+    startY.current = y
+    startPosition.current = initialPosition()
 
-  onMouseMove: (e) ->
-    @move e, e.clientY
+  onMouseMove = (e) ->
+    move e, e.clientY
 
-  onTouchMove: (e) ->
+  onTouchMove = (e) ->
     return unless e.touches.length == 1
-    @move e, e.touches[0].clientY
+    move e, e.touches[0].clientY
 
-  move: (e, y) ->
-    return unless @startY?
+  move = (e, y) ->
+    return unless startY.current?
     e.preventDefault()
     e.stopPropagation()
-    diff = y - @startY
+    diff = y - startY.current
 
-    @setState
-      position: @startPosition + diff
-    @scrollWindow()
+    setPosition startPosition.current + diff
+    scrollWindow()
 
-  onMouseUp: (e) ->
-    @up e
+  onMouseUp = (e) ->
+    up e
 
-  onTouchEnd: (e) ->
-    @up e
+  onTouchEnd = (e) ->
+    up e
 
-  up: (e) ->
-    return unless @startY?
+  up = (e) ->
+    return unless startY.current?
     e.preventDefault()
     e.stopPropagation()
-    @startY = null
-    @startPosition = null
-    @scrollWindow()
-    @setState
-      position: null
+    startY.current = null
+    startPosition.current = null
+    scrollWindow()
+    setPosition null
 
-  scrollWindow: ->
+  scrollWindow = ->
     windowHeight = document.documentElement.clientHeight
-    targetTop = @state.position / (windowHeight - @height) * (@props.height - windowHeight)
+    targetTop = position / (windowHeight - height) * (height - windowHeight)
     window.scroll 0, targetTop
 
-  componentDidMount: ->
-    window.addEventListener 'mousemove', @onMouseMove, false
-    window.addEventListener 'mouseup', @onMouseUp, false
-
-  componentWillUnmount: ->
-    window.removeEventListener 'mousemove', @onMouseMove, false
-    window.removeEventListener 'mouseup', @onMouseUp, false
-
   # Height of widget in pixels
-  height: 40
+  height = 40
 
-  initialPosition: ->
+  initialPosition = ->
     windowHeight = document.documentElement.clientHeight
-    @props.top / (@props.height - windowHeight) * (windowHeight - @height)
+    top / (height - windowHeight) * (windowHeight - height)
 
-  render: ->
-    style =
-      position: 'fixed'
-      right: '0px'
-      top: "#{@initialPosition()}px"
+  useEffect ->
+    window.addEventListener 'mousemove', onMouseMove, false
+    window.addEventListener 'mouseup', onMouseUp, false
 
-    if @state.position != null
-      style.top = "#{@state.position}px"
+    ->
+      window.removeEventListener 'mousemove', onMouseMove, false
+      window.removeEventListener 'mouseup', onMouseUp, false
+  , []
 
-    classes = ["scroll-button", "btn", "btn-default", "btn-primary"]
-    classes.push "visible" if @props.visible || (@state.position != null)
+  style =
+    position: 'fixed'
+    right: '0px'
+    top: "#{initialPosition()}px"
 
-    <div style={style} onTouchStart={@onTouchStart} onTouchEnd={@onTouchEnd} onTouchMove={@onTouchMove} onMouseDown={@onMouseDown} onMouseMove={@onMouseMove} onMouseUp={@onMouseUp} className={classes.join ' '}>
-      <i className="fa fa-arrows-v"/>
-    </div>
+  if position != null
+    style.top = "#{position}px"
+
+  classes = ["scroll-button", "btn", "btn-default", "btn-primary"]
+  classes.push "visible" if visible || (position != null)
+
+  <div style={style} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onTouchMove={onTouchMove} onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} className={classes.join ' '}>
+    <i className="fa fa-arrows-v"/>
+  </div>

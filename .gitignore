@@ -38,3 +38,6 @@
 /storage
 
 /config/master.key
+
+/app/assets/builds/
+/node_modules/

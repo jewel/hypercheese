@@ -3,6 +3,8 @@
     playing: false
     showVideoControls: false
     showControls: true
+    videoRef: React.createRef()
+    curImageRef: React.createRef()
 
   componentDidMount: ->
     window.addEventListener 'keyup', @onKeyUp
@@ -63,11 +65,11 @@
       showControls: !@state.showControls
 
   onPlay: (e) ->
-    @refs.video.play()
+    @state.videoRef.current?.play()
     @hideControls()
 
   onPause: (e) ->
-    @refs.video.pause()
+    @state.videoRef.current?.pause()
 
   navigateNext: (e) ->
     e.preventDefault() if e
@@ -80,8 +82,8 @@
     Store.navigateWithoutHistory @linkTo(-1)
 
   stopVideo: ->
-    if @refs.video
-      @refs.video.pause()
+    if @state.videoRef.current
+      @state.videoRef.current.pause()
       @setState
         playing: false
 
@@ -158,26 +160,26 @@
           {
             if item && item.variety == 'video'
               <Video
-                ref="video"
+                ref={@state.videoRef}
                 setPlaying={@setPlaying}
                 toggleControls={@toggleControls}
                 showControls={@showControls}
-                poster={@largeURL item.id}
-                itemId={item.id}
+                poster={@largeURL(@props.itemId)}
+                itemId={@props.itemId}
                 itemCode={item.code}
               />
 
             else
-              <img ref="curImage" onClick={@toggleControls} src={@largeURL(@props.itemId)} />
+              <img ref={@state.curImageRef} onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
         </Swiper>
 
         {
           if item && item.variety == 'video'
             if @state.playing
-              <a title="Pause video" className="control video-control" href="javascript:void(0)" onClick={@onPause}><i className="fa fa-fw fa-pause"></i></a>
+              <button title="Pause video" className="control video-control" onClick={@onPause}><i className="fa fa-fw fa-pause"></i></button>
             else
-              <a title="Play video" className="control video-control" href="javascript:void(0)" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></a>
+              <button title="Play video" className="control video-control" onClick={@onPlay}><i className="fa fa-fw fa-play"></i></button>
         }
         <ControlIcon condition={prevLink} className="prev-control" href={prevLink} onClick={@navigatePrev} icon="fa-arrow-left" />
         <ControlIcon condition={nextLink} className="control next-control" href={nextLink} onClick={@navigateNext} icon="fa-arrow-right" />
@@ -190,9 +192,9 @@
             {
               # FIXME Only show this on devices without a keyboard
               if @fullScreenFunction()
-                <a className="control" href="javascript:void(0)" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></a>
+                <button className="control" onClick={@onFullScreen}><i className="fa fa-arrows-alt fa-fw"/></button>
             }
-            <a className="control" href="javascript:void(0)" onClick={@onClose}><i className="fa fa-close fa-fw"/></a>
+            <button className="control" onClick={@onClose}><i className="fa fa-close fa-fw"/></button>
           </div>
         </div>
       </div>

@@ -1,9 +1,10 @@
-#= require react
-#= require jquery
-#= require jquery_ujs
+#= require application
 #= require bootstrap-sprockets
+#= require ./component
+#= require ./error_boundary
 #= require_tree .
 
 $ ->
   Store.init()
-  ReactDOM.render <GalleryApp/>, document.getElementById('content')
+  root = createRoot document.getElementById('content')
+  root.render <GalleryApp/>

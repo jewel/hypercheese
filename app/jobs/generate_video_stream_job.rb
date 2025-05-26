@@ -6,7 +6,7 @@ class GenerateVideoStreamJob < ApplicationJob
     path = item.full_path
 
     dest = item.video_stream_path
-    return if File.exists? dest
+    return if File.exist? dest
 
     FileUtils.mkdir_p File.dirname( dest )
     tmp = "#{dest}.tmp"

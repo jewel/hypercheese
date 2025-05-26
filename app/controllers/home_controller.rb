@@ -8,7 +8,7 @@ class HomeController < ApplicationController
   def activity
     cache_path = Rails.root.join 'tmp/activities'
     json = {}
-    if File.exists? cache_path
+    if File.exist? cache_path
       json = JSON.parse File.binread(cache_path)
     end
 

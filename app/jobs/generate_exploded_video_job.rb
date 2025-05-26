@@ -4,7 +4,7 @@ class GenerateExplodedVideoJob < ApplicationJob
     return if item.deleted
 
     dest = item.resized_path :exploded
-    return if File.exists? dest
+    return if File.exist? dest
 
     tmp = "/tmp/make-exploded.#$$.#{rand 1_000_000}"
 

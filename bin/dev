@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+bundle check || bundle install --jobs 4
+yarn install
+
+rm -f tmp/pids/server.pid
+
+if ! command -v foreman &> /dev/null
+then
+  echo "Please install foreman"
+  exit 2
+fi
+
+foreman start -f Procfile.dev

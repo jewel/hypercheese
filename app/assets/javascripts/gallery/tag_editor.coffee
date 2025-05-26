@@ -1,125 +1,117 @@
-@TagEditor = createReactClass
-  getInitialState: ->
-    parent_id = @props.tag.parent_id
+component 'TagEditor', ({tag}) ->
+  [newLabel, setNewLabel] = useState tag?.label || ''
+  [newParent, setNewParent] = useState ->
+    parent_id = tag?.parent_id
     if parent_id
       parent = Store.state.tagsById[parent_id]
-      label = parent.label if parent
+      return parent?.label || ''
+    return ''
+  [newAlias, setNewAlias] = useState tag?.alias || ""
 
-    newLabel: @props.tag.label
-    newParent: label
-    newAlias: @props.tag.alias || ""
+  changeLabel = (e) ->
+    setNewLabel e.target.value
 
-  changeLabel: (e) ->
-    @setState
-      newLabel: e.target.value
+  changeParent = (e) ->
+    setNewParent e.target.value
 
-  changeParent: (e) ->
-    @setState
-      newParent: e.target.value
+  changeAlias = (e) ->
+    setNewAlias e.target.value
 
-  changeAlias: (e) ->
-    @setState
-      newAlias: e.target.value
-
-  saveChanges: (e) ->
+  saveChanges = (e) ->
     e.preventDefault()
-    @props.tag.label = @state.newLabel
+    tag.label = newLabel
 
     parent_id = null
     parent_label = ''
 
-    if @state.newParent
+    if newParent
       for t in Store.state.tags
-        if (t.alias || t.label).toLowerCase() == @state.newParent.toLowerCase()
+        if (t.alias || t.label).toLowerCase() == newParent.toLowerCase()
           parent_id = t.id
           parent_label = (t.alias || t.label)
 
-    @props.tag.parent_id = parent_id
-    @props.tag.alias = @state.newAlias
+    tag.parent_id = parent_id
+    tag.alias = newAlias
 
-    @setState
-      newParent: parent_label
+    setNewParent parent_label
 
-    Store.updateTag(@props.tag)
+    Store.updateTag tag
 
-  deleteTag: (tag) ->
+  deleteTag = (tag) ->
     if tag.item_count == null || tag.item_count <= 0
-      Store.deleteTag(tag.id)
+      Store.deleteTag tag.id
 
-  render: ->
-    tag = @props.tag
+  choices = Store.loadIconChoices tag
 
-    choices = Store.loadIconChoices tag
+  tagIconURL = Store.resizedURL "square", tag.icon_id, tag.icon_code
 
-    tagIconURL = Store.resizedURL "square", tag.icon_id, tag.icon_code
-
-    <div className="container-fluid tag-editor-page">
-      <a className="pull-right btn" href="javascript:void(0)" onClick={Store.navigateBack}><i className="fa fa-times"/></a>
-      <h1>Tag Editor</h1>
-      <div className="tag-frame">
-        <img className="third" src={tagIconURL}/>
-        <img className="second" src={tagIconURL}/>
-        <img className="first" src={tagIconURL}/>
-        <img className="second" src={tagIconURL}/>
-        <img className="third" src={tagIconURL}/>
-        <h2>&ldquo;{tag.alias || tag.label}&rdquo;</h2>
-      </div>
-      <ul>
-        <li>used {tag.item_count.toLocaleString()} times</li>
-        <li>search for <Link href={"/search/#{encodeURI(tag.alias || tag.label)}"}>{tag.alias || tag.label}</Link></li>
-        <li>search for <Link href={"/search/#{encodeURI("only #{tag.alias || tag.label}")}"}>{"only #{tag.alias || tag.label}"}</Link></li>
-        <li>search for <Link href={"/search/#{encodeURI("video #{tag.alias || tag.label}")}"}>{"video of #{tag.alias || tag.label}"}</Link></li>
-      </ul>
-      <Writer>
-        <form onSubmit={@saveChanges} style={width: "20em"}>
-          <div className="form-group">
-            <label htmlFor="label-input">Label</label>
-            <input id="label-input" onChange={@changeLabel} type="text" className="form-control" value={@state.newLabel}/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="parent-input">Parent</label>
-            <input id="parent-input" onChange={@changeParent} type="text" className="form-control" value={@state.newParent}/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="user-alias">Personal Alias</label>
-            <input id="user-alias" onChange={@changeAlias} type="text" className="form-control" value={@state.newAlias}/>
-            <p>This alias is used for faster tagging.  It is visible to you.</p>
-          </div>
-          <button type="submit" className="btn btn-primary">
-            <i className="fa fa-save"/>
-          </button>
-          {
-            if tag.item_count <= 0
-              <div>
-                <button className="btn btn-default" href="javascript:void(0)" onClick={@deleteTag.bind(@, tag)} type="button">
-                  <i className="fa fa-trash"/>
-                </button>
-              </div>
-          }
-        </form>
-      </Writer>
-
-      <Writer>
-        <h3>Change Icon</h3>
+  <div className="container-fluid tag-editor-page">
+    <button className="pull-right btn" onClick={Store.navigateBack}><i className="fa fa-times"/></button>
+    <h1>Tag Editor</h1>
+    <div className="tag-frame">
+      <img className="third" src={tagIconURL}/>
+      <img className="second" src={tagIconURL}/>
+      <img className="first" src={tagIconURL}/>
+      <img className="second" src={tagIconURL}/>
+      <img className="third" src={tagIconURL}/>
+      <h2>&ldquo;{tag.alias || tag.label}&rdquo;</h2>
+    </div>
+    <ul>
+      <li>used {tag.item_count.toLocaleString()} times</li>
+      <li>search for <Link href={"/search/#{encodeURI(tag.alias || tag.label)}"}>{tag.alias || tag.label}</Link></li>
+      <li>search for <Link href={"/search/#{encodeURI("only #{tag.alias || tag.label}")}"}>{"only #{tag.alias || tag.label}"}</Link></li>
+      <li>search for <Link href={"/search/#{encodeURI("video #{tag.alias || tag.label}")}"}>{"video of #{tag.alias || tag.label}"}</Link></li>
+    </ul>
+    <Writer>
+      <form onSubmit={saveChanges} style={width: "20em"}>
+        <div className="form-group">
+          <label htmlFor="label-input">Label</label>
+          <input id="label-input" onChange={changeLabel} type="text" className="form-control" value={newLabel}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="parent-input">Parent</label>
+          <input id="parent-input" onChange={changeParent} type="text" className="form-control" value={newParent}/>
+        </div>
+        <div className="form-group">
+          <label htmlFor="user-alias">Personal Alias</label>
+          <input id="user-alias" onChange={changeAlias} type="text" className="form-control" value={newAlias}/>
+          <p>This alias is used for faster tagging.  It is visible to you.</p>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          <i className="fa fa-save"/>
+        </button>
         {
-          if choices == null
-            <i className="fa fa-spinner fa-spin"/>
-          else
-            <div className="icon-choice-list">
-              {
-                choices.map (itemId) ->
-                  url = Store.resizedURL 'square', itemId
-                  updateIcon = ->
-                    tag.icon_id = itemId
-                    item = Store.getItem itemId
-                    tag.icon_code = item.code
-                    Store.updateTag tag
-
-                  <a key={itemId} href="javascript:void(0)" onClick={updateIcon}>
-                    <img src={url}/>
-                  </a>
-              }
+          if tag.item_count <= 0
+            <div>
+              <button className="btn btn-default" onClick={deleteTag.bind(null, tag)} type="button">
+                <i className="fa fa-trash"/>
+              </button>
             </div>
         }
-      </Writer>
-    </div>
+      </form>
+    </Writer>
+
+    <Writer>
+      <h3>Change Icon</h3>
+      {
+        if choices == null
+          <i className="fa fa-spinner fa-spin"/>
+        else
+          <div className="icon-choice-list">
+            {
+              choices.map (itemId) ->
+                url = Store.resizedURL 'square', itemId
+                updateIcon = ->
+                  tag.icon_id = itemId
+                  item = Store.getItem itemId
+                  tag.icon_code = item.code
+                  Store.updateTag tag
+
+                <button key={itemId} onClick={updateIcon}>
+                  <img src={url}/>
+                </button>
+            }
+          </div>
+      }
+    </Writer>
+  </div>

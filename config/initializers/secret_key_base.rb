@@ -1,6 +1,6 @@
 path = "#{Rails.root}/.secret_key_base"
 
-if !File.exists?(path)
+if !File.exist?(path)
   raise "Missing secret key.  Create it by running 'rake secret > #{path}'"
 end
 

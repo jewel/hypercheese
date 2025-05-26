@@ -1,0 +1,4 @@
+web: bin/rails server -p 3000
+js: yarn build --watch
+minio: minio server --console-address ":9001" originals/blobs/
+worker: rake jobs:work

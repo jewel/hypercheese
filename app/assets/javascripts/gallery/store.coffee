@@ -4,6 +4,10 @@ class @Store
     params.error ||= (xhr, status, error) ->
       alert "Problem with server: #{error}"
 
+    # Add CSRF token to headers
+    params.headers ||= {}
+    params.headers['X-CSRF-Token'] = $('meta[name="csrf-token"]').attr('content')
+
     params.url = '/api' + params.url
     $.ajax params
 
@@ -103,8 +107,7 @@ class @Store
     return item if item
     return null if @loading
 
-    query = new SearchQuery
-    query.parse @state.query
+    query = new SearchQuery @state.query
 
     @loading = true
     @jax
@@ -450,8 +453,7 @@ class @Store
     @state.searching = true
     @needsRedraw()
 
-    query = new SearchQuery
-    query.parse @state.query
+    query = new SearchQuery @state.query
 
     @searchRequest = @jax
       url: "/items"

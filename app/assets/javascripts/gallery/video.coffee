@@ -1,42 +1,39 @@
-@Video = createReactClass
-  getInitialState: ->
-    showVideoControls: false
+component 'Video', ({itemId, itemCode, poster, setPlaying, toggleControls, showControls, videoRef}) ->
+  [showVideoControls, setShowVideoControls] = React.useState false
 
-  pause: ->
-    @refs.video.pause()
-    @setState
-      showVideoControls: false
+  pause = ->
+    videoRef.current?.pause()
+    setShowVideoControls false
 
-  play: ->
-    @refs.video.play()
-    @setState
-      showVideoControls: true
+  play = ->
+    videoRef.current?.play()
+    setShowVideoControls true
 
-  currentTime: ->
-    @refs.video.currentTime
+  currentTime = ->
+    videoRef.current?.currentTime
 
-  onVideoPlaying: (e) ->
-    @props.setPlaying true
+  onVideoPlaying = (e) ->
+    setPlaying true
 
-  onVideoPause: (e) ->
-    @props.setPlaying false
+  onVideoPause = (e) ->
+    setPlaying false
 
-  onVideoEnded: (e) ->
-    @setState
-      showVideoControls: false
-    @props.showControls()
+  onVideoEnded = (e) ->
+    setShowVideoControls false
+    showControls()
 
-  render: ->
-    <video
-      src={Store.resizedURL 'stream', @props.itemId, @props.itemCode}
-      ref="video"
-      onClick={@props.toggleControls}
-      controls={@state.showVideoControls}
-      preload="none"
-      poster={@props.poster}
-      onPause={@onVideoPause}
-      onPlaying={@onVideoPlaying}
-      onEnded={@onVideoEnded}
-      playsInline
-    />
+  console.log "video: #{itemId} #{itemCode}"
+
+  <video
+    src={Store.resizedURL 'stream', itemId, itemCode}
+    ref={videoRef}
+    onClick={toggleControls}
+    controls={showVideoControls}
+    preload="none"
+    poster={poster}
+    onPause={onVideoPause}
+    onPlaying={onVideoPlaying}
+    onEnded={onVideoEnded}
+    playsInline
+  />
 

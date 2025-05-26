@@ -9,6 +9,6 @@
 
     squareImage = Store.resizedURL 'square', item
 
-    <a className="shared-item" key={item.id} href="javascript:void(0)" onClick={@onClick}>
+    <button className="shared-item" key={item.id} onClick={@onClick}>
       <img src={squareImage} />
-    </a>
+    </button>

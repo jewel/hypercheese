@@ -1,1 +1,1 @@
-Rails.application.config.assets.precompile += [ 'lightbox/*', 'gallery/index.js', 'share/index.js' ]
+Rails.application.config.assets.precompile += [ 'lightbox/*', 'gallery.js', 'share.js' ]

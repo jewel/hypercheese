@@ -1,18 +1,14 @@
-@Link = createReactClass
-  onClick: (e) ->
+component 'Link', ({onClick: propOnClick, href, children, ...props}) ->
+  onClick = (e) ->
     document.body.scrollTo 0, 0
 
-    if @props.onClick
-      @props.onClick e
+    if propOnClick
+      propOnClick e
 
     if e.button == 0
       e.preventDefault()
-      Store.navigate @props.href
+      Store.navigate href
 
-  render: ->
-    attrs = {}
-    Object.assign attrs, @props
-    delete attrs.children
-    attrs.onClick = @onClick
+  attrs = {onClick, href, ...props}
 
-    React.createElement "a", attrs, @props.children
+  React.createElement "a", attrs, children

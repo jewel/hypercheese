@@ -1,33 +1,85 @@
-@GalleryApp = createReactClass
-  getInitialState: ->
-    state = @parseUrl()
-    state.search ||= ''
-    state.update = 0
-    state
+parseUrl = ->
+  path = window.location.pathname
+  if path == '' || path == '/'
+    return
+      page: 'home'
 
-  componentDidMount: ->
-    Store.onChange =>
-      # FIXME React should batch these to only have one render event, but that
-      # does not seem to be working.
-      @setState
-        update: @state.update + 1
+  parts = path.split('/')
+  if parts.length == 1 || parts[0] != ''
+    console.warn "Invalid URL: #{path}"
+    return
+      page: 'home'
 
-    Store.onNavigate =>
-      @setState @parseUrl()
-      window.scrollTo 0, 0
+  if parts[1] == 'items'
+    return
+      page: 'item'
+      itemId: Math.round(parts[2])
 
-    window.addEventListener 'popstate', (e) =>
-      @setState @parseUrl()
-      if e.state.scrollPos?
-        window.requestAnimationFrame ->
-          window.scrollTo 0, e.state.scrollPos
+  if parts[1] == 'tags' && parts[2]
+    return
+      page: 'tag'
+      tagId: parts[2]
 
-    window.addEventListener 'keyup', @onKeyUp
+  if parts[1] == 'tags'
+    return
+      page: 'tags'
 
-  onKeyUp: (e) ->
+  if parts[1] == 'upload'
+    return
+      page: 'upload'
+
+  if parts[1] == 'search'
+    str = decodeURI parts[2]
+    Store.search str
+    return
+      page: 'search'
+      search: str
+
+  console.warn "Invalid URL: #{path}"
+  return
+    page: 'home'
+
+component 'GalleryApp', withErrorBoundary ->
+  # Break down state into separate variables
+  [page, setPage] = React.useState -> parseUrl().page
+  [itemId, setItemId] = React.useState -> parseUrl().itemId
+  [tagId, setTagId] = React.useState -> parseUrl().tagId
+  [search, setSearch] = React.useState -> parseUrl().search || ''
+  [update, setUpdate] = React.useState 0
+  [draggingCount, setDraggingCount] = React.useState 0
+  uploaderRef = React.useRef null
+
+  onGlobalDragEnter = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    # Only show upload dialog if dragging files
+    if e.dataTransfer.types.includes('Files')
+      setDraggingCount (prev) -> prev + 1
+
+  onGlobalDragLeave = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount (prev) -> prev - 1
+
+  onGlobalDragOver = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+  onGlobalDrop = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount 0
+
+    if e.dataTransfer.files.length > 0
+      # Navigate to upload page if not already there
+      if page != 'upload'
+        Store.navigate '/upload'
+      # Queue the files for upload
+      uploaderRef.current?.addFiles e.dataTransfer.files
+
+  onKeyUp = (e) ->
     if e.keyCode == 27
       while lastOpened = Store.state.openStack.pop()
-        page = @state.page
         if lastOpened == 'item' && page == 'item'
           Store.navigateBack()
           break
@@ -36,52 +88,7 @@
           Store.clearSelection()
           break
 
-
-  parseUrl: ->
-    path = window.location.pathname
-    if path == '' || path == '/'
-      return {
-        page: 'home'
-      }
-
-    parts = path.split('/')
-    if parts.length == 1 || parts[0] != ''
-      console.warn "Invalid URL: #{path}"
-      return {
-        page: 'home'
-      }
-
-    if parts[1] == 'items'
-      return {
-        page: 'item'
-        itemId: Math.round(parts[2])
-      }
-
-    if parts[1] == 'tags' && parts[2]
-      return {
-        page: 'tag'
-        tagId: parts[2]
-      }
-
-    if parts[1] == 'tags'
-      return {
-        page: 'tags'
-      }
-
-    if parts[1] == 'search'
-      str = decodeURI parts[2]
-      Store.search str
-      return {
-        page: 'search'
-        search: str
-      }
-
-    console.warn "Invalid URL: #{path}"
-    return {
-      page: 'home'
-    }
-
-  onTouchStart: ->
+  onTouchStart = ->
     # No way to flip-flop on this at the moment, since touch events also create
     # mouse events for backwards compatibility.
 
@@ -89,53 +96,100 @@
     # the select bar
     Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 600
 
-  render: ->
-    if @state.page == 'home'
-      return <div><NavBar initialSearch={@state.search} showingResults={false} /><Home/></div>
+  useEffect ->
+    Store.onChange ->
+      setUpdate (prev) -> prev + 1
 
-    if @state.page == 'tags'
-      return <TagList/>
+    Store.onNavigate ->
+      newState = parseUrl()
+      setPage newState.page
+      setItemId newState.itemId
+      setTagId newState.tagId
+      setSearch newState.search || ''
+      window.scrollTo 0, 0
 
-    if @state.page == 'tag'
-      tag = Store.state.tagsById[@state.tagId]
-      if !tag
-        if Store.state.tags.length > 0
-          return <h1>Tag not found</h1>
-        else
-          return <div>Loading...</div>
+    window.addEventListener 'popstate', (e) ->
+      newState = parseUrl()
+      setPage newState.page
+      setItemId newState.itemId
+      setTagId newState.tagId
+      setSearch newState.search || ''
+      if e.state.scrollPos?
+        window.requestAnimationFrame ->
+          window.scrollTo 0, e.state.scrollPos
 
-      return <TagEditor tag={tag}/>
+    window.addEventListener 'keyup', onKeyUp
 
-    unless @state.page == 'item' || @state.page == 'search'
-      return <div>Routing error for {@state.page}</div>
+    document.addEventListener 'dragenter', onGlobalDragEnter
+    document.addEventListener 'dragleave', onGlobalDragLeave
+    document.addEventListener 'dragover', onGlobalDragOver
+    document.addEventListener 'drop', onGlobalDrop
 
-    showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
-    showItem = @state.page == 'item' && @state.itemId != null
+    ->
+      document.removeEventListener 'dragenter', onGlobalDragEnter
+      document.removeEventListener 'dragleave', onGlobalDragLeave
+      document.removeEventListener 'dragover', onGlobalDragOver
+      document.removeEventListener 'drop', onGlobalDrop
+  , []
 
-    # The overflow-y parameter on the html tag needs to be set BEFORE
-    # Results.initialState is called.  That's because having a scrollbar appear
-    # doesn't cause a resize event to fire (and even if it did, it'd be too
-    # late to properly calculate our desired scroll position)
-    document.documentElement.style.overflowY = if showItem
-      'auto'
-    else
-      'scroll'
+  if page == 'home'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Home/></ErrorBoundary></div>
 
-    classes = ['react-wrapper']
-    classes.push 'showing-details' if showItem
+  if page == 'tags'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><TagList/></ErrorBoundary></div>
 
+  if page == 'upload'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>
 
-    <div className={classes.join ' '} onTouchStart={@onTouchStart}>
-      {
-        if !showItem && !showSelection
-          <NavBar initialSearch={@state.search} showingResults={true} />
-        else if showSelection
-          <SelectBar showZoom={!showItem} fixed={!showItem}/>
-      }
-      {
-        if showItem
-          <Details itemId={@state.itemId} search={@state.search}/>
-        else
-          <Results key="res"/>
-      }
-    </div>
+  if page == 'tag'
+    tag = Store.state.tagsById[tagId]
+    if !tag
+      if Store.state.tags.length > 0
+        return <div><NavBar initialSearch={search} showingResults={false} /><h1>Tag not found</h1></div>
+      else
+        return <div><NavBar initialSearch={search} showingResults={false} /><div>Loading...</div></div>
+
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><TagEditor tag={tag}/></ErrorBoundary></div>
+
+  unless page == 'item' || page == 'search'
+    return <div><NavBar initialSearch={search} showingResults={false} /><div>Routing error for {page}</div></div>
+
+  showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
+  showItem = page == 'item' && itemId != null
+
+  # The overflow-y parameter on the html tag needs to be set BEFORE
+  # Results.initialState is called.  That's because having a scrollbar appear
+  # doesn't cause a resize event to fire (and even if it did, it'd be too
+  # late to properly calculate our desired scroll position)
+  document.documentElement.style.overflowY = if showItem
+    'auto'
+  else
+    'scroll'
+
+  classes = ['react-wrapper']
+  classes.push 'showing-details' if showItem
+  classes.push 'showing-upload' if draggingCount > 0
+
+  <div className={classes.join ' '} onTouchStart={onTouchStart}>
+    {
+      if !showItem && !showSelection
+        <NavBar initialSearch={search} showingResults={true} />
+      else if showSelection
+        <SelectBar showZoom={!showItem} fixed={!showItem}/>
+    }
+    {
+      if showItem
+        <ErrorBoundary><Details itemId={itemId} search={search}/></ErrorBoundary>
+      else
+        <ErrorBoundary><Results key="res"/></ErrorBoundary>
+    }
+    {
+      if draggingCount > 0
+        <div className="global-upload-overlay">
+          <div className="upload-message">
+            <i className="fa fa-cloud-upload fa-3x"/>
+            <p>Drop files to upload</p>
+          </div>
+        </div>
+    }
+  </div>

@@ -1,4 +1,3 @@
-@Writer = createReactClass
-  render: ->
-    return null unless Store.canWrite()
-    @props.children
+component 'Writer', ({children}) ->
+  return null unless Store.canWrite()
+  children

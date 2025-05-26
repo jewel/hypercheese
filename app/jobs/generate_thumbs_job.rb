@@ -45,12 +45,12 @@ class GenerateThumbsJob < ApplicationJob
     tmp_file = "#{tmp}/snapshot.bmp"
 
     run "ffmpeg -v error -i #{se @item.full_path} -vsync 1 -vframes 1 -ss 2 -y #{se tmp_file}"
-    if !File.exists?(tmp_file)
+    if !File.exist?(tmp_file)
       warn "Error making thumbnail for #{@item.full_path}, trying at zero second mark"
       run "ffmpeg -v error -i #{se @item.full_path} -vsync 1 -vframes 1 -ss 0 -y #{se tmp_file}"
     end
 
-    raise "Error making thumbnail for #{@item.full_path}" unless File.exists? tmp_file
+    raise "Error making thumbnail for #{@item.full_path}" unless File.exist? tmp_file
 
     # Add filmstrip background
     filmstrip = "#{Rails.root}/app/assets/images/filmstrip.png"
