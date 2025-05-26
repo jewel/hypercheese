@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
-  create_table "bullhorns", id: :integer, charset: "latin1", force: :cascade do |t|
+ActiveRecord::Schema[7.2].define(version: 2025_05_13_043556) do
+  create_table "bullhorns", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "item_id", null: false
     t.datetime "created_at", precision: nil
@@ -19,7 +19,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["user_id"], name: "index_bullhorns_on_user_id"
   end
 
-  create_table "cheese_blobs", charset: "utf8mb3", force: :cascade do |t|
+  create_table "cheese_blobs", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "device_id", null: false
     t.string "path", null: false
@@ -35,7 +35,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["user_id"], name: "index_cheese_blobs_on_user_id"
   end
 
-  create_table "clip_frames", charset: "utf8mb3", force: :cascade do |t|
+  create_table "clip_frames", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.float "aesthetics_score", null: false
     t.float "timestamp", null: false
@@ -46,13 +46,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.text "text", size: :medium
     t.integer "user_id"
     t.integer "item_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["item_id"], name: "index_comments_on_item_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
-  create_table "delayed_jobs", charset: "utf8mb3", force: :cascade do |t|
+  create_table "delayed_jobs", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -67,7 +67,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "devices", charset: "utf8mb3", force: :cascade do |t|
+  create_table "devices", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "uuid", null: false
     t.string "nickname"
@@ -83,53 +83,54 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["uuid"], name: "index_devices_on_uuid", unique: true
   end
 
-  create_table "events", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "events", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "start", precision: nil
     t.datetime "finish", precision: nil
     t.text "description"
     t.integer "location_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "faces", charset: "latin1", force: :cascade do |t|
+  create_table "faces", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "tag_id"
     t.bigint "cluster_id"
     t.float "similarity"
-    t.json "position"
+    t.text "position", size: :long, collation: "utf8mb4_bin"
+    t.float "timestamp"
     t.integer "confirmed_by"
     t.datetime "confirmed_at", precision: nil
-    t.boolean "indexed_in_annoy", default: false
-    t.float "timestamp"
     t.index ["cluster_id"], name: "index_faces_on_cluster_id"
     t.index ["item_id"], name: "index_faces_on_item_id"
     t.index ["tag_id"], name: "index_faces_on_tag_id"
+    t.check_constraint "json_valid(`position`)", name: "position"
   end
 
-  create_table "groups", id: :integer, charset: "latin1", force: :cascade do |t|
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+  create_table "groups", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "item_locations", charset: "utf8mb3", force: :cascade do |t|
+  create_table "item_locations", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.bigint "item_id", null: false
     t.bigint "location_id", null: false
     t.index ["item_id"], name: "index_item_locations_on_item_id"
     t.index ["location_id"], name: "index_item_locations_on_location_id"
   end
 
-  create_table "item_paths", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "item_paths", id: :integer, charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "path"
     t.integer "item_id"
     t.bigint "source_id", null: false
     t.index ["item_id"], name: "index_item_paths_on_item_id"
-    t.index ["path"], name: "index_item_paths_on_path", unique: true
+    t.index ["path"], name: "index_item_paths_on_path"
+    t.index ["source_id", "path"], name: "unique_paths", unique: true
     t.index ["source_id"], name: "index_item_paths_on_source_id"
   end
 
-  create_table "item_tags", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "item_tags", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "item_id"
     t.integer "tag_id"
     t.integer "added_by"
@@ -139,7 +140,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["tag_id"], name: "index_item_tags_on_tag_id"
   end
 
-  create_table "items", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "items", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.datetime "taken", precision: nil
     t.text "description"
     t.string "md5"
@@ -148,8 +149,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.integer "view_count"
     t.integer "event_id"
     t.integer "group_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.datetime "deleted_at", precision: nil
     t.string "variety"
     t.boolean "deleted", default: false, null: false
@@ -164,15 +165,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["taken"], name: "index_items_on_taken"
   end
 
-  create_table "locations", charset: "utf8mb3", force: :cascade do |t|
+  create_table "locations", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "geoid", null: false
-    t.json "properties", null: false
+    t.text "properties", size: :long, null: false, collation: "utf8mb4_bin"
     t.index ["geoid"], name: "index_locations_on_geoid"
     t.index ["name"], name: "index_locations_on_name"
+    t.check_constraint "json_valid(`properties`)", name: "properties"
   end
 
-  create_table "ratings", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "ratings", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "value"
     t.integer "user_id"
     t.integer "item_id"
@@ -181,17 +183,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["item_id"], name: "index_ratings_on_item_id"
   end
 
-  create_table "share_items", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "share_items", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "share_id"
     t.integer "item_id"
   end
 
-  create_table "shares", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "shares", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id"
     t.string "code", null: false
   end
 
-  create_table "sources", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "sources", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "label"
     t.string "path"
     t.boolean "show_on_home", default: true, null: false
@@ -202,7 +204,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["user_id"], name: "index_sources_on_user_id"
   end
 
-  create_table "stars", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "stars", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "item_id", null: false
     t.datetime "created_at", precision: nil
@@ -210,24 +212,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.index ["user_id"], name: "index_stars_on_user_id"
   end
 
-  create_table "tag_aliases", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "tag_aliases", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "tag_id", null: false
     t.string "alias"
   end
 
-  create_table "tags", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "tags", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "label"
     t.datetime "birthday", precision: nil
     t.integer "item_count"
     t.integer "icon_item_id"
     t.integer "parent_tag_id"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["label"], name: "index_tags_on_label"
   end
 
-  create_table "users", id: :integer, charset: "latin1", force: :cascade do |t|
+  create_table "users", id: :integer, charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "email"
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -238,8 +240,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_043556) do
     t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "role"
     t.string "provider"
     t.string "uid"

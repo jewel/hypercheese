@@ -12,7 +12,7 @@ organize large photo collections from multiple sources.
 ```bash
 $ git clone https://github.com/jewel/hypercheese.git
 $ cd hypercheese
-$ sudo apt-get install bundler ruby-dev libmysqlclient-dev libsqlite3-dev build-essential nodejs libcurl4-openssl-dev
+$ sudo apt-get install bundler ruby-dev libmysqlclient-dev libsqlite3-dev build-essential nodejs libcurl4-openssl-dev libyaml-dev
 $ bundle install
 $ rake secret > .secret_key_base
 # seed the database with the default user:pwd of admin@example.com:password

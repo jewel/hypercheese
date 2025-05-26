@@ -160,9 +160,9 @@ component 'Details', ({itemId}) ->
     return Store.resizedURL size, item
 
   linkTo = (dir) ->
-    itemId = neighbor(dir)
-    if itemId
-      return '/items/' + itemId
+    newItemId = neighbor(dir)
+    if newItemId
+      return '/items/' + newItemId
 
   showControls = ->
     setShowControls(true)
