@@ -37,7 +37,7 @@
 /db/geo
 /storage
 
-/config/master.key
+/config/credentials/*.key
 
 /app/assets/builds/
 /node_modules/
