@@ -1,6 +1,29 @@
 component 'SelectBar', ({fixed}) ->
   [caretPosition, setCaretPosition] = useState 0
   [showTagLabels, setShowTagLabels] = useState false
+  [spacerHeight, setSpacerHeight] = useState 0
+  selectbarRef = React.useRef null
+
+  updateSpacerHeight = ->
+    if selectbarRef.current?
+      height = selectbarRef.current.offsetHeight
+      setSpacerHeight height
+
+  useEffect ->
+    # Initial height update
+    updateSpacerHeight()
+
+    # Create resize observer
+    resizeObserver = new ResizeObserver ->
+      updateSpacerHeight()
+
+    # Start observing the selectbar
+    if selectbarRef.current?
+      resizeObserver.observe selectbarRef.current
+
+    # Cleanup
+    -> resizeObserver.disconnect()
+  , []
 
   useEffect ->
     Store.state.openStack.push 'select'
@@ -86,11 +109,11 @@ component 'SelectBar', ({fixed}) ->
   convertLink = "/api/items/convert?ids=#{ids.join ','}"
   tags = Store.state.pendingTags
 
-  classes = ['navbar', 'select-navbar']
+  classes = ['navbar', 'select-navbar', 'navbar-expand-lg', 'navbar-light', 'bg-light']
   if fixed
-    classes.push 'navbar-fixed-top'
+    classes.push 'fixed-top'
   else
-    classes.push 'navbar-static-top'
+    classes.push 'static-top'
 
   helperClasses = ['tag-helper']
   if fixed
@@ -99,9 +122,9 @@ component 'SelectBar', ({fixed}) ->
   <div>
     {
       if fixed
-        <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
+        <div style={height: "#{spacerHeight}px"}></div>
     }
-    <nav className={classes.join ' '}>
+    <nav ref={selectbarRef} className={classes.join ' '}>
       <div className="container-fluid">
         <span className="navbar-text">{" #{Store.state.selectionCount.toLocaleString()} "}</span>
         <Writer>
@@ -110,35 +133,37 @@ component 'SelectBar', ({fixed}) ->
           </form>
         </Writer>
 
-        <div className="pull-right">
+        <div className="ms-auto">
           <Writer>
-            <a href="javascript:" title="Share" className="btn navbar-btn" onClick={shareSelection}><i className="fa fa-share-alt"/></a>
+            <button type="button" title="Share" className="btn btn-outline-secondary me-2" onClick={shareSelection}><i className="fa fa-share-alt"/></button>
           </Writer>
-          <a title="Download Originals" className="btn navbar-btn" href={downloadLink}><i className="fa fa-download"/></a>
-          <a href="javascript:" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
-            <i className="fa fa-ellipsis-v"/>
-          </a>
-          <ul className="dropdown-menu">
-            <li>
-              <a title="Convert to JPEG and Download" href={convertLink}><i className="fa fa-flask"/> Download as JPEG</a>
-            </li>
-            <Writer>
+          <a title="Download Originals" className="btn btn-outline-secondary me-2" href={downloadLink}><i className="fa fa-download"/></a>
+          <div className="btn-group me-2">
+            <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i className="fa fa-ellipsis-v"/>
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end">
               <li>
-                <a href="javascript:" onClick={publishSelection}><i className="fa fa-eye"/> Publish</a>
+                <a className="dropdown-item" title="Convert to JPEG and Download" href={convertLink}><i className="fa fa-flask"/> Download as JPEG</a>
               </li>
-              <li>
-                <a href="javascript:" onClick={restrictSelection}><i className="fa fa-eye-slash"/> Unpublish</a>
-              </li>
-            </Writer>
-          </ul>
-          <a
-            href="javascript:"
+              <Writer>
+                <li>
+                  <a className="dropdown-item" href="javascript:" onClick={publishSelection}><i className="fa fa-eye"/> Publish</a>
+                </li>
+                <li>
+                  <a className="dropdown-item" href="javascript:" onClick={restrictSelection}><i className="fa fa-eye-slash"/> Unpublish</a>
+                </li>
+              </Writer>
+            </ul>
+          </div>
+          <button
+            type="button"
             title="Close"
-            className="btn navbar-btn"
+            className="btn btn-outline-secondary"
             onClick={onExit}
           >
             <i className="fa fa-times"/>
-          </a>
+          </button>
         </div>
       </div>
     </nav>
@@ -167,7 +192,7 @@ component 'SelectBar', ({fixed}) ->
                   {img}
                   <span>
                     {" #{tag.alias || tag.label} (#{match.count}) "}
-                    <button className="delete btn" onClick={del}><i className="fa fa-trash"/></button>
+                    <button className="delete btn btn-sm btn-outline-danger" onClick={del}><i className="fa fa-trash"/></button>
                   </span>
                 </div>
               else

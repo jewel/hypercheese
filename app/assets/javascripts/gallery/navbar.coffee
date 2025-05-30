@@ -1,8 +1,31 @@
 component 'NavBar', ({showingResults}) ->
   [hidden, setHidden] = React.useState false
   [showSearchHelper, setShowSearchHelper] = React.useState false
+  [spacerHeight, setSpacerHeight] = React.useState 0
   prevTopRef = React.useRef null
   siteIconRef = React.useRef null
+  navbarRef = React.useRef null
+
+  updateSpacerHeight = ->
+    if navbarRef.current?
+      height = navbarRef.current.offsetHeight
+      setSpacerHeight height
+
+  useEffect ->
+    # Initial height update
+    updateSpacerHeight()
+
+    # Create resize observer
+    resizeObserver = new ResizeObserver ->
+      updateSpacerHeight()
+
+    # Start observing the navbar
+    if navbarRef.current?
+      resizeObserver.observe navbarRef.current
+
+    # Cleanup
+    -> resizeObserver.disconnect()
+  , []
 
   onScroll = React.useCallback (e) ->
     top = window.pageYOffset
@@ -50,46 +73,46 @@ component 'NavBar', ({showingResults}) ->
     elem = document.querySelector 'link[rel=icon]'
     siteIconRef.current = elem.href
 
-  classes = ['navbar', 'navbar-default', 'navbar-fixed-top']
+  classes = ['navbar', 'navbar-expand-lg', 'navbar-light', 'bg-light', 'fixed-top']
   classes.push 'navbar-hidden' if hidden
 
   <div>
-    <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
-    <nav id="main-navbar" className={classes.join ' '}>
+    <div style={height: "#{spacerHeight}px"}></div>
+    <nav id="main-navbar" ref={navbarRef} className={classes.join ' '}>
       <div className="container-fluid">
         <Link className="navbar-brand" href="/" onClick={closeSearchHelper}>
           <img style={height: '20px'} src={siteIcon()}/>
         </Link>
-        <button type="button" onClick={onToggleSearchHelper} className="btn navbar-btn btn-default search-button">
+        <button type="button" onClick={onToggleSearchHelper} className="btn btn-outline-secondary me-2 search-button">
           <i className="fa fa-search fa-fw"/>
           {" #{Store.state.query} "}
           {
             if Store.state.resultCount != null
-              <span className="badge">{Store.state.resultCount.toLocaleString()}</span>
+              <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
           }
         </button>
-        <div className="pull-right dropdown">
-          <button type="button" className="btn navbar-btn dropdown-toggle" data-toggle="dropdown">
+        <div className="ms-auto dropdown">
+          <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <i className="fa fa-ellipsis-v"/>
           </button>
           {
             if showingResults
-              <button title="Select Mode" type="button" onClick={onSelectMode} className="btn navbar-btn">
+              <button title="Select Mode" type="button" onClick={onSelectMode} className="btn btn-outline-secondary me-2">
                 <i className="fa fa-check-square-o"/>
               </button>
           }
-          <ul className="dropdown-menu">
-            <li><Link href="/tags">Tags</Link></li>
-            <li><Link href="/upload">Upload</Link></li>
+          <ul className="dropdown-menu dropdown-menu-end">
+            <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
+            <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
             {
               if Store.state.isAdmin
-                <li><Link href="/admin">Admin</Link></li>
+                <li><Link className="dropdown-item" href="/admin">Admin</Link></li>
             }
             <li>
-              <a href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
+              <a className="dropdown-item" href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
             </li>
             <li>
-              <a href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
+              <a className="dropdown-item" href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
             </li>
           </ul>
         </div>
