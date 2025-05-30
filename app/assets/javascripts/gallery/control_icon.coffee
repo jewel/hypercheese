@@ -6,7 +6,7 @@ component 'ControlIcon', ({condition, icon, active, title, className, href, onCl
   <a
     title={title}
     className="control #{className}"
-    href={href || "#!"}
+    href={href || "javascript:"}
     onClick={onClick}
   >
     <i className={iconClasses}></i>

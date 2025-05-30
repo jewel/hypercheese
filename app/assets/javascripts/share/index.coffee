@@ -1,3 +1,5 @@
+#= require application
+#= require ./component
 #= require_tree .
 
 $ ->

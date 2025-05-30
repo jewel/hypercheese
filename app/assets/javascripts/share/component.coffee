@@ -1,0 +1,1 @@
+../gallery/component.coffee
