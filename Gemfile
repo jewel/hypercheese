@@ -8,8 +8,6 @@ gem 'puma'
 
 gem 'jsbundling-rails'
 
-gem 'cssbundling-rails'
-
 gem 'react-rails'
 
 gem 'sassc'
