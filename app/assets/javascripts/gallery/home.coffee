@@ -11,34 +11,34 @@ component 'Home', ->
 
     <div>
       <div className="btn-group">
-        <Link className="btn btn-default btn-primary" href="/search/">All Photos</Link>
+        <Link className="btn btn-primary" href="/search/">All Photos</Link>
       </div>
       {' '}
       <div className="btn-group">
         {
           recent.sources.map (source) ->
             href = "/search/source:#{source.label}"
-            <Link key={source.path} className="btn btn-default" href={href}>{source.label} Photos</Link>
+            <Link key={source.path} className="btn btn-outline-secondary" href={href}>{source.label} Photos</Link>
         }
       </div>
     </div>
     <br/>
     <div>
       <div className="btn-group">
-        <Link className="btn btn-default" href="/tags/">Tags</Link>
+        <Link className="btn btn-outline-secondary" href="/tags/">Tags</Link>
       </div>
       {' '}
       <div className="btn-group">
-        <a className="btn btn-default" href="/faces/">Faces</a>
+        <a className="btn btn-outline-secondary" href="/faces/">Faces</a>
       </div>
       {' '}
       <Writer>
         <div className="btn-group">
-          <Link className="btn btn-default" href="/search/starred">My Stars</Link>
+          <Link className="btn btn-outline-secondary" href="/search/starred">My Stars</Link>
         </div>
         {' '}
         <div className="btn-group">
-          <Link className="btn btn-default" href="/search/unjudged%20sort:random">Judge Mode</Link>
+          <Link className="btn btn-outline-secondary" href="/search/unjudged%20sort:random">Judge Mode</Link>
         </div>
       </Writer>
     </div>
@@ -47,14 +47,14 @@ component 'Home', ->
       {
         if recent.new_items > 0
           <div className="btn-group">
-            <Link className="btn btn-default btn-primary" href="/search/visibility:unknown">{recent.new_items} New Item(s)</Link>
+            <Link className="btn btn-primary" href="/search/visibility:unknown">{recent.new_items} New Item(s)</Link>
           </div>
       }
       {' '}
       {
         if recent.private_items > 0
           <div className="btn-group">
-            <Link className="btn btn-default" href="/search/visibility:unpublished">Your {recent.private_items} Private Item(s)</Link>
+            <Link className="btn btn-outline-secondary" href="/search/visibility:unpublished">Your {recent.private_items} Private Item(s)</Link>
           </div>
       }
     </div>
