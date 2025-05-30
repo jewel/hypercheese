@@ -1,1 +1,2 @@
-Rails.application.config.assets.precompile += [ 'lightbox/*', 'gallery.js', 'share.js' ]
+Rails.application.config.assets.precompile += [ 'gallery.js', 'share.js', 'index.css' ]
+Rails.application.config.assets.paths << Rails.root.join('node_modules')

@@ -1,14 +1,11 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-bundle check || bundle install --jobs 4
-yarn install
-
-rm -f tmp/pids/server.pid
-
-if ! command -v foreman &> /dev/null
-then
-  echo "Please install foreman"
-  exit 2
+if gem list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
+  gem install foreman
 fi
 
-foreman start -f Procfile.dev
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
+
+exec foreman start -f Procfile.dev --env /dev/null "$@"

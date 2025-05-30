@@ -1,4 +1,5 @@
 // Entry point for the build script in your package.json
+
 import jQuery from 'jquery';
 window.jQuery = jQuery;
 window.$ = jQuery;
@@ -19,10 +20,11 @@ window.createReactClass = createReactClass;
 import { createRoot } from 'react-dom/client';
 window.createRoot = createRoot;
 
-// regenerator-runtime
-import regeneratorRuntime from 'regenerator-runtime/runtime';
-window.regeneratorRuntime = regeneratorRuntime;
-
 // hash-wasm
 import { createSHA256 } from 'hash-wasm';
 window.createSHA256 = createSHA256;
+
+// leaflet
+import L from 'leaflet';
+window.L = L;
+import * as bootstrap from "bootstrap"

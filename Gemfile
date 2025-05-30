@@ -10,17 +10,12 @@ gem 'jsbundling-rails'
 
 gem 'cssbundling-rails'
 
-gem 'jbuilder'
-
 gem 'react-rails'
 
 gem 'sassc'
 
 gem 'coffee-script'
 gem 'coffee-script-source', git: 'https://github.com/jewel/coffee-script-source'
-
-gem 'font-awesome-rails'
-gem 'bootstrap-sass'
 
 gem 'bootsnap', require: false
 

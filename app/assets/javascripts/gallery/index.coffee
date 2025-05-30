@@ -1,5 +1,4 @@
 #= require application
-#= require bootstrap-sprockets
 #= require ./component
 #= require ./error_boundary
 #= require_tree .
