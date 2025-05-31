@@ -14,13 +14,13 @@ component 'Home', ->
         <Link className="btn btn-primary" href="/search/">All Photos</Link>
       </div>
       {' '}
-      <div className="btn-group">
-        {
-          recent.sources.map (source) ->
-            href = "/search/source:#{source.label}"
-            <Link key={source.path} className="btn btn-outline-secondary" href={href}>{source.label} Photos</Link>
-        }
-      </div>
+      {
+        recent.sources.map (source) ->
+          href = "/search/source:#{source.label}"
+          <div key={source.path} className="btn-group">
+            <Link className="btn btn-outline-secondary" href={href}>{source.label} Photos</Link>
+          </div>
+      }
     </div>
     <br/>
     <div>

@@ -159,6 +159,8 @@ GEM
     execjs (2.10.0)
     exifr (1.4.1)
     ffi (1.17.2)
+    font-awesome-sass (6.7.2)
+      sassc (~> 2.0)
     foreman (0.88.1)
     globalid (1.2.1)
       activesupport (>= 6.1)
@@ -379,6 +381,7 @@ DEPENDENCIES
   delayed_job_active_record
   devise
   exifr
+  font-awesome-sass
   foreman
   haml-rails
   httparty

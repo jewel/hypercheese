@@ -31,6 +31,8 @@ gem 'devise'
 gem 'trestle'
 gem 'trestle-auth'
 
+gem 'font-awesome-sass'
+
 gem 'rgeo'
 gem 'rgeo-geojson'
 
