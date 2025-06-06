@@ -160,7 +160,7 @@
           {
             if item && item.variety == 'video'
               <Video
-                ref={@state.videoRef}
+                videoRef={@state.videoRef}
                 setPlaying={@setPlaying}
                 toggleControls={@toggleControls}
                 showControls={@showControls}

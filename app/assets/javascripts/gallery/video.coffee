@@ -22,8 +22,6 @@ component 'Video', ({itemId, itemCode, poster, setPlaying, toggleControls, showC
     setShowVideoControls false
     showControls()
 
-  console.log "video: #{itemId} #{itemCode}"
-
   <video
     src={Store.resizedURL 'stream', itemId, itemCode}
     ref={videoRef}
