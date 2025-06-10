@@ -9,7 +9,7 @@
     %meta(name="theme-color" content="#ffc100")
 
     %title= @title || "HyperCheese"
-    = stylesheet_link_tag "application", :media => "all"
+    = stylesheet_link_tag "index", :media => "all"
     = csrf_meta_tags
   %body
     .container-fluid
@@ -17,6 +17,3 @@
       %p.alert= alert
 
       = yield
-
-    = javascript_include_tag "application", type: "module"
-    = javascript_include_tag "application"
