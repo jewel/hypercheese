@@ -1,24 +1,16 @@
 component 'Video', ({itemId, itemCode, poster, setPlaying, toggleControls, showControls, videoRef}) ->
   [showVideoControls, setShowVideoControls] = React.useState false
 
-  pause = ->
-    videoRef.current?.pause()
-    setShowVideoControls false
-
-  play = ->
-    videoRef.current?.play()
-    setShowVideoControls true
-
-  currentTime = ->
-    videoRef.current?.currentTime
-
   onVideoPlaying = (e) ->
     setPlaying true
+    setShowVideoControls true
 
   onVideoPause = (e) ->
     setPlaying false
+    setShowVideoControls false
 
   onVideoEnded = (e) ->
+    setPlaying false
     setShowVideoControls false
     showControls()
 

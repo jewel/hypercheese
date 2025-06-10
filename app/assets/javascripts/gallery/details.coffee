@@ -1,10 +1,9 @@
 component 'Details', ({itemId}) ->
-  [playing, setPlaying] = React.useState(false)
-  [showVideoControls, setShowVideoControls] = React.useState(false)
-  [showControls, setShowControls] = React.useState(true)
-  [slideShow, setSlideShow] = React.useState(false)
-  [zoom, setZoom] = React.useState(false)
-  [infoVisible, setInfoVisible] = React.useState(false)
+  [playing, setPlaying] = React.useState false
+  [showControls, setShowControls] = React.useState true
+  [slideShow, setSlideShow] = React.useState false
+  [zoom, setZoom] = React.useState false
+  [infoVisible, setInfoVisible] = React.useState false
 
   videoRef = React.useRef()
   infoRef = React.useRef()
@@ -40,26 +39,26 @@ component 'Details', ({itemId}) ->
         item = Store.fetchItem itemId
         if videoRef.current
           if videoRef.current.currentTime > 0
-            hideControls()
+            setShowControls false
             stopVideo()
             Store.navigateWithoutHistory linkTo(1)
           else
             startVideo()
         else
-          hideControls()
+          setShowControls false
           stopVideo()
           Store.navigateWithoutHistory linkTo(1)
 
       when 'ArrowRight', 'KeyJ', 'KeyL'
-        hideControls()
+        setShowControls false
         stopVideo()
         Store.navigateWithoutHistory linkTo(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
-        hideControls()
+        setShowControls false
         stopVideo()
         Store.navigateWithoutHistory linkTo(-1)
       when 'KeyF'
-        hideControls()
+        setShowControls false
         onFullScreen()
       when 'KeyI'
         infoRef.current?.scrollIntoView behavior: 'smooth'
@@ -108,12 +107,13 @@ component 'Details', ({itemId}) ->
     Store.navigateBack()
 
   toggleControls = (e) ->
+    # Note: this preventDefault() causes the controls to be inoperable in FF
     e.preventDefault()
     setShowControls !showControls
 
   onPlay = ->
     videoRef.current?.play()
-    hideControls()
+    setShowControls false
 
   onPause = ->
     videoRef.current?.pause()
@@ -163,12 +163,6 @@ component 'Details', ({itemId}) ->
     newItemId = neighbor(dir)
     if newItemId
       return '/items/' + newItemId
-
-  showControls = ->
-    setShowControls(true)
-
-  hideControls = ->
-    setShowControls(false)
 
   siteIcon = ->
     return _siteIcon if _siteIcon?
@@ -226,7 +220,7 @@ component 'Details', ({itemId}) ->
               videoRef={videoRef}
               setPlaying={setPlaying}
               toggleControls={toggleControls}
-              showControls={showControls}
+              showControls={-> setShowControls true}
               poster={largeURL(itemId)}
               itemId={itemId}
               itemCode={item.code}
