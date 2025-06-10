@@ -276,13 +276,13 @@ component 'Details', ({itemId}) ->
               className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
               title="Tells others about this item"
               onClick={onBullhorn}
-              icon="fa-bullhorn"
+              icon="fas fa-bullhorn"
             />
             <ControlIcon
               className="star"
               title="Bookmark for future reference"
               onClick={onStar}
-              icon={if item && item.starred then "fa-star" else "fa-star-o"}
+              icon={if item && item.starred then "fas fa-star" else "far fa-star"}
             />
           </Writer>
           {
@@ -290,7 +290,7 @@ component 'Details', ({itemId}) ->
             if fullScreenFunction()
               <ControlIcon
                 onClick={onFullScreen}
-                icon="fa-arrows-alt"
+                icon="fas fa-expand"
               />
           }
 
@@ -298,14 +298,14 @@ component 'Details', ({itemId}) ->
             onClick={onSelect}
             icon={
               if Store.state.selection[itemId]
-                "fa-check-square-o"
+                "far fa-check-square"
               else
-                "fa-square-o"
+                "far fa-square"
             }
           />
           <ControlIcon
             onClick={onClose}
-            icon="fa-close"
+            icon="fas fa-times"
           />
         </div>
       </div>
@@ -314,9 +314,9 @@ component 'Details', ({itemId}) ->
           <div className="controls bottom">
             <div></div>
             <div className="centered">
-              <RateButton onNext={navigateNext} type="down" itemId={itemId} icon="fa-thumbs-o-down"/>
-              <RateButton onNext={navigateNext} type="meh" itemId={itemId} icon="fa-meh-o"/>
-              <RateButton onNext={navigateNext} type="up" itemId={itemId} icon="fa-thumbs-o-up"/>
+              <RateButton onNext={navigateNext} type="down" itemId={itemId} icon="far fa-thumbs-down"/>
+              <RateButton onNext={navigateNext} type="meh" itemId={itemId} icon="far fa-meh"/>
+              <RateButton onNext={navigateNext} type="up" itemId={itemId} icon="far fa-thumbs-up"/>
             </div>
             <div></div>
           </div>
