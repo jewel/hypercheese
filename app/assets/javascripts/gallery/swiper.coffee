@@ -50,8 +50,6 @@ component 'Swiper', ({children, curKey, prevKey, nextKey, prevSrc, nextSrc, move
 
     if target == 0 && Math.sign(newPosition) != Math.sign(oldPosition)
       reset()
-      setPosition 0
-      setTarget null
     else if target == 1 && newPosition > width * 1.02
       setPosition width * 1.02
       window.requestAnimationFrame ->
@@ -68,6 +66,7 @@ component 'Swiper', ({children, curKey, prevKey, nextKey, prevSrc, nextSrc, move
     setPosition null
     setPrevTime null
     setStartTouch null
+    setTarget null
 
   handleMoveTo = (target) ->
     moveTo target
