@@ -30,12 +30,15 @@ component 'Details', ({itemId}) ->
     if newInfoVisible != infoVisible
       setInfoVisible(newInfoVisible)
 
-  onKeyUp = (e) ->
+  onKeyDown = (e) ->
     if e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA"
       return
 
     switch e.code
       when 'Space'
+        # prevent scrolling the page
+        e.preventDefault()
+        e.stopPropagation()
         item = Store.fetchItem itemId
         if videoRef.current
           if videoRef.current.currentTime > 0
@@ -69,6 +72,14 @@ component 'Details', ({itemId}) ->
         onSlideShow()
       when 'KeyZ'
         onZoom()
+
+  useEffect ->
+    window.addEventListener 'keydown', onKeyDown
+    Store.state.openStack.push 'item'
+
+    ->
+      window.removeEventListener 'keydown', onKeyDown
+  , [itemId, videoRef, setShowControls, stopVideo, linkTo, setSlideShow, setZoom]
 
   onStar = (e) ->
     Store.toggleItemStar itemId
@@ -170,14 +181,11 @@ component 'Details', ({itemId}) ->
     _siteIcon = elem.href
 
   useEffect ->
-    window.addEventListener 'keyup', onKeyUp
-    Store.state.openStack.push 'item'
     window.addEventListener 'scroll', checkInfoVisibility
 
     ->
-      window.removeEventListener 'keyup', onKeyUp
       window.removeEventListener 'scroll', checkInfoVisibility
-  , []
+  , [infoRef, setInfoVisible, infoVisible]
 
   Store.state.highlight = itemId
   item = Store.fetchItem itemId
