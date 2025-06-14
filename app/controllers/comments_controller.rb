@@ -6,7 +6,7 @@ class CommentsController < ApplicationController
     require_write!
 
     c = Comment.new
-    c.update_attributes! comment_params
+    c.update! comment_params
     c.user = current_user
     c.save!
 
