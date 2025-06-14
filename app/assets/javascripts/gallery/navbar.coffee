@@ -91,16 +91,19 @@ component 'NavBar', ({showingResults}) ->
               <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
           }
         </button>
-        <div className="ms-auto dropdown">
-          <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i className="fa fa-ellipsis-v"/>
-          </button>
+        <div className="ms-auto d-flex gap-2">
           {
             if showingResults
-              <button title="Select Mode" type="button" onClick={onSelectMode} className="btn btn-outline-secondary me-2">
-                <i className="fa fa-check-square-o"/>
-              </button>
+              <React.Fragment>
+                <Zoom/>
+                <button title="Select Mode" type="button" onClick={onSelectMode} className="btn me-2">
+                  <i className="fa fa-check-square"/>
+                </button>
+              </React.Fragment>
           }
+          <button type="button" className="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i className="fa fa-ellipsis-v"/>
+          </button>
           <ul className="dropdown-menu dropdown-menu-end">
             <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
             <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
@@ -116,10 +119,6 @@ component 'NavBar', ({showingResults}) ->
             </li>
           </ul>
         </div>
-        {
-          if showingResults
-            <Zoom/>
-        }
       </div>
     </nav>
     {

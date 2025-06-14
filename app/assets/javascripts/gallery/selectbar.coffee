@@ -135,11 +135,11 @@ component 'SelectBar', ({fixed}) ->
 
         <div className="ms-auto">
           <Writer>
-            <button type="button" title="Share" className="btn btn-outline-secondary me-2" onClick={shareSelection}><i className="fa fa-share-alt"/></button>
+            <button type="button" title="Share" className="btn me-2" onClick={shareSelection}><i className="fa fa-share-alt"/></button>
           </Writer>
-          <a title="Download Originals" className="btn btn-outline-secondary me-2" href={downloadLink}><i className="fa fa-download"/></a>
+          <a title="Download Originals" className="btn me-2" href={downloadLink}><i className="fa fa-download"/></a>
           <div className="btn-group me-2">
-            <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" className="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <i className="fa fa-ellipsis-v"/>
             </button>
             <ul className="dropdown-menu dropdown-menu-end">
@@ -159,7 +159,7 @@ component 'SelectBar', ({fixed}) ->
           <button
             type="button"
             title="Close"
-            className="btn btn-outline-secondary"
+            className="btn"
             onClick={onExit}
           >
             <i className="fa fa-times"/>
