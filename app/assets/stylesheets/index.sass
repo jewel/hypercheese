@@ -25,3 +25,7 @@ html, body, .react-wrapper
 
 .navbar
   :margin-bottom 0px
+
+/* Override bootstrap 5's smooth scrolling with does not work well with an SPA */
+html
+  :scroll-behavior auto !important
