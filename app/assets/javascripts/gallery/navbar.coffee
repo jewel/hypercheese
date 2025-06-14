@@ -125,7 +125,7 @@ component 'NavBar', ({showingResults}) ->
     {
       if showSearchHelper
         <div className="search-helper-float">
-          <SearchHelper close={closeSearchHelper}/>
+          <SearchHelper spacerHeight={spacerHeight} close={closeSearchHelper}/>
         </div>
     }
   </div>

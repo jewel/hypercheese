@@ -1,4 +1,4 @@
-component 'SearchHelper', ({close}) ->
+component 'SearchHelper', ({close, spacerHeight}) ->
   [searchString, setSearchString] = React.useState Store.state.query
   [userInput, setUserInput] = React.useState null
   [showCriteriaPicker, setShowCriteriaPicker] = React.useState false
@@ -75,7 +75,7 @@ component 'SearchHelper', ({close}) ->
 
   query = new SearchQuery searchString, caretPosition
 
-  <div className="search-helper">
+  <div className="search-helper" style={{paddingTop: spacerHeight}}>
     <form onSubmit={onSearch} className="form-inline">
       <div className="form-group">
         <div className="input-group">
