@@ -32,7 +32,6 @@ class @SearchQuery
     day: true
     source: true
     item: true
-    clip: true
 
   @caseSensitive:
     shared: true
@@ -46,7 +45,22 @@ class @SearchQuery
     @useOthers = false
     @others = []
 
-    parts = TagMatch.matchMany(str, caretPosition)
+    # Extract quoted strings first and adjust caretPosition
+    adjustedCaretPosition = caretPosition
+    str = str.replace /"(.*?)"/g, (match, query, offset) =>
+      if offset < caretPosition
+        # If the quote starts before caret, we need to adjust caretPosition
+        if offset + match.length < caretPosition
+          # If caret is after the quote, reduce by the length of the quote
+          adjustedCaretPosition -= match.length
+        else
+          # If caret is inside the quote, move it to the start of the quote
+          adjustedCaretPosition = offset
+      @options.clip = query
+      ""
+
+    # Now do tag matching with adjusted caret position
+    parts = TagMatch.matchMany(str, adjustedCaretPosition)
     unused = []
     for part in parts
       if part.miss
@@ -133,8 +147,11 @@ class @SearchQuery
       if word.startsWith "+"
         word = word.slice(1)
 
-      @options.clip ?= []
-      @options.clip.push word
+      @options.clip ?= ""
+      @options.clip += " #{word}"
+
+    if @options.clip
+      @options.clip = @options.clip.trim()
 
     null
 
@@ -142,11 +159,12 @@ class @SearchQuery
     parts = @tags.map (tag) -> tag.alias || tag.label
     for k,v of @options
       if k == "clip"
-        for word in v
-          if TagMatch.matchPrefix(word).length > 0
-            parts.push "+#{word}"
-          else
-            parts.push word
+        if v.includes(" ")
+          parts.push "\"#{v}\""
+        else if TagMatch.matchPrefix(v).length > 0
+          parts.push "+#{v}"
+        else
+          parts.push v
       else if @constructor.keywords[k]
         parts.push k if v == "true" || v == true
       else if @constructor.multiple[k]

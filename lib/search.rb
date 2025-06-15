@@ -210,7 +210,7 @@ class Search
     end
 
     if @query[:clip]
-      string = @query[:clip].join ' '
+      string = @query[:clip]
       embedding = clip_embedding string
       threshold = 0.18
       if @query[:threshold]

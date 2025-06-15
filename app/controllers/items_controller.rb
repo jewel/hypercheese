@@ -37,6 +37,7 @@ class ItemsController < ApplicationController
     path.open('rb') do |f|
       f.seek offset * bytes_per_id
       str = f.read limit * bytes_per_id
+      str ||= ""
       subset = str.unpack 'V*'
     end
 
