@@ -74,15 +74,20 @@ component 'Swiper', ({children, curKey, prevKey, nextKey, prevSrc, nextSrc, move
 
   transformStyle = "translate3d(#{position ? 0}px, 0px, 0px)"
 
+  onLoad = (e) ->
+    # Pre-load and pre-decode the images.  Even on a non-touch device with no
+    # swiping, this will still speed up forward and back
+    e.target.decode()
+
   <div onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
     <div key={curKey} className="detailed-image" style={transform: transformStyle}>
       {children}
     </div>
 
     <div key={prevKey} className="detailed-prev" style={transform: transformStyle}>
-      <img src={prevSrc}/>
+      <img src={prevSrc} loading="eager" onLoad={onLoad}/>
     </div>
     <div key={nextKey} className="detailed-next" style={transform: transformStyle}>
-      <img src={nextSrc}/>
+      <img src={nextSrc} loading="eager" onLoad={onLoad}/>
     </div>
   </div>
