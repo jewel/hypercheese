@@ -49,6 +49,15 @@ component 'GalleryApp', withErrorBoundary ->
   [draggingCount, setDraggingCount] = React.useState 0
   uploaderRef = React.useRef null
 
+  # Update page title when search changes
+  useEffect ->
+    if search
+      document.title = "Hypercheese: #{search}"
+    else
+      document.title = "Hypercheese"
+    ->
+  , [search]
+
   onGlobalDragEnter = (e) ->
     e.preventDefault()
     e.stopPropagation()
