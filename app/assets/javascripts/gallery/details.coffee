@@ -1,4 +1,4 @@
-component 'Details', ({itemId}) ->
+component 'Details', ({itemId, search}) ->
   [playing, setPlaying] = React.useState false
   [showControls, setShowControls] = React.useState true
   [slideShow, setSlideShow] = React.useState false
@@ -173,7 +173,10 @@ component 'Details', ({itemId}) ->
   linkTo = (dir) ->
     newItemId = neighbor(dir)
     if newItemId
-      return '/items/' + newItemId
+      if search
+        return '/search/' + encodeURI(search) + '/' + newItemId
+      else
+        return '/items/' + newItemId
 
   siteIcon = ->
     return _siteIcon if _siteIcon?

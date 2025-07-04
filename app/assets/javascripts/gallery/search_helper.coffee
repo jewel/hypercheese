@@ -1,5 +1,5 @@
-component 'SearchHelper', ({close, spacerHeight}) ->
-  [searchString, setSearchString] = React.useState Store.state.query
+component 'SearchHelper', ({close, spacerHeight, initialSearch}) ->
+  [searchString, setSearchString] = React.useState initialSearch || Store.state.query
   [userInput, setUserInput] = React.useState null
   [showCriteriaPicker, setShowCriteriaPicker] = React.useState false
   [caretPosition, setCaretPosition] = React.useState 0
@@ -56,8 +56,25 @@ component 'SearchHelper', ({close, spacerHeight}) ->
       return
 
     close()
+    
+    # Check if we're currently viewing a photo
+    currentUrl = window.location.pathname
+    currentItemId = null
+    
+    # Extract current item ID from URL if viewing a photo
+    if currentUrl.match(/^\/items\/(\d+)$/)
+      currentItemId = parseInt(RegExp.$1)
+    else if currentUrl.match(/^\/search\/[^\/]+\/(\d+)$/)
+      currentItemId = parseInt(RegExp.$1)
+    
+    # Store the current item ID for later use
+    Store.state.pendingItemCheck = currentItemId
+    
     Store.search searchString, true
-    Store.navigate '/search/' + encodeURI(searchString)
+    
+    # If no photo is open, just navigate to search results
+    if !currentItemId
+      Store.navigate '/search/' + encodeURI(searchString)
 
   optionHelper = (field, options...) ->
     val = ""

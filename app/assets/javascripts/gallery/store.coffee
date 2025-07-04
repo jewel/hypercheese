@@ -473,7 +473,49 @@ class @Store
 
         @state.searchKey = res.meta.search_key
 
+        # Check if we have a pending item to check for inclusion in results
+        if @state.pendingItemCheck
+          itemId = @state.pendingItemCheck
+          @state.pendingItemCheck = null
+          
+          # Check if the current photo is in the new search results
+          itemInResults = false
+          for item in res.items
+            if item.id == itemId
+              itemInResults = true
+              break
+          
+          # If not in current batch, check if it might be in other batches
+          if !itemInResults && @state.itemsById[itemId]
+            # Check if the item exists in the new search context
+            @fetchItemInSearch itemId, @state.query
+          else if itemInResults
+            # Item is in results, navigate to search context
+            @navigate '/search/' + encodeURI(@state.query) + '/' + itemId
+          else
+            # Item not in results, navigate to search page
+            @navigate '/search/' + encodeURI(@state.query)
+
         @needsRedraw()
+
+  @fetchItemInSearch: (itemId, searchQuery) ->
+    # Make a specific API call to check if the item exists in the search results
+    query = new SearchQuery searchQuery
+    
+    @jax
+      url: "/items/#{itemId}"
+      data:
+        query: query.as_json()
+      success: (res) =>
+        if res.meta.index >= 0
+          # Item is in search results, navigate to search context
+          @navigate '/search/' + encodeURI(searchQuery) + '/' + itemId
+        else
+          # Item not in results, navigate to search page
+          @navigate '/search/' + encodeURI(searchQuery)
+      error: (xhr, status, error) =>
+        # If there's an error or item not found, navigate to search page
+        @navigate '/search/' + encodeURI(searchQuery)
 
   @loadIconChoices: (tag) ->
     if tag.id == @state.tagIconChoicesId

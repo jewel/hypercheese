@@ -1,4 +1,4 @@
-component 'NavBar', ({showingResults}) ->
+component 'NavBar', ({showingResults, initialSearch}) ->
   [hidden, setHidden] = React.useState false
   [showSearchHelper, setShowSearchHelper] = React.useState false
   [spacerHeight, setSpacerHeight] = React.useState 0
@@ -85,7 +85,7 @@ component 'NavBar', ({showingResults}) ->
         </Link>
         <button type="button" onClick={onToggleSearchHelper} className="btn btn-outline-secondary me-2 search-button">
           <i className="fa fa-search fa-fw"/>
-          {" #{Store.state.query} "}
+          {" #{initialSearch || Store.state.query} "}
           {
             if Store.state.resultCount != null
               <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
@@ -124,7 +124,7 @@ component 'NavBar', ({showingResults}) ->
     {
       if showSearchHelper
         <div className="search-helper-float">
-          <SearchHelper spacerHeight={spacerHeight} close={closeSearchHelper}/>
+          <SearchHelper spacerHeight={spacerHeight} close={closeSearchHelper} initialSearch={initialSearch}/>
         </div>
     }
   </div>

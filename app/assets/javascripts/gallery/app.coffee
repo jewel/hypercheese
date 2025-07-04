@@ -31,6 +31,15 @@ parseUrl = ->
   if parts[1] == 'search'
     str = decodeURI parts[2]
     Store.search str
+    
+    # Check if there's an item ID in the search URL (new format: /search/{query}/{item_id})
+    if parts[3]
+      itemId = Math.round(parts[3])
+      return
+        page: 'item'
+        itemId: itemId
+        search: str
+    
     return
       page: 'search'
       search: str
@@ -185,6 +194,8 @@ component 'GalleryApp', withErrorBoundary ->
         <NavBar initialSearch={search} showingResults={true} />
       else if showSelection
         <SelectBar showZoom={!showItem} fixed={!showItem}/>
+      else if showItem
+        <NavBar initialSearch={search} showingResults={false} />
     }
     {
       if showItem
