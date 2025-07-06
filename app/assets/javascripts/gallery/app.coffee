@@ -24,6 +24,10 @@ parseUrl = ->
     return
       page: 'tags'
 
+  if parts[1] == 'locations'
+    return
+      page: 'locations'
+
   if parts[1] == 'upload'
     return
       page: 'upload'
@@ -146,6 +150,9 @@ component 'GalleryApp', withErrorBoundary ->
 
   if page == 'tags'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><TagList/></ErrorBoundary></div>
+
+  if page == 'locations'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Locations/></ErrorBoundary></div>
 
   if page == 'upload'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>
