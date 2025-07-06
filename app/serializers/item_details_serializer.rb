@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations, :places
   has_many :comments, include: true
 
   def exif
@@ -12,6 +12,9 @@ class ItemDetailsSerializer < ActiveModel::Serializer
 
   def locations
     object.locations.map &:name
+
+  def places
+    object.places.map &:name
   end
 
   def paths

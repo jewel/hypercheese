@@ -6,6 +6,8 @@ class Item < ActiveRecord::Base
   has_many :tags, through: :item_tags
   has_many :item_locations
   has_many :locations, through: :item_locations
+  has_many :item_places
+  has_many :places, through: :item_places
   has_many :comments
   has_many :item_paths
   has_many :stars
@@ -167,6 +169,21 @@ class Item < ActiveRecord::Base
     ids = output.map { _1.last }
     ids = ids - [id]
     Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find ids.first(20)
+  end
+
+  # Assign places based on GPS coordinates
+  def assign_places!
+    return if latitude.nil? || longitude.nil?
+    
+    # Find all places that contain this item's coordinates
+    containing_places = Place.containing_coordinate(latitude, longitude)
+    
+    containing_places.each do |place|
+      # Only add if not already associated
+      unless item_places.exists?(place_id: place.id)
+        item_places.create!(place_id: place.id, created_at: Time.current)
+      end
+    end
   end
 end
 

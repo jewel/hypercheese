@@ -50,6 +50,9 @@ class GeolocateJob < ApplicationJob
         end
         ItemLocation.create! item_id: item.id, location_id: location.id
       end
+      
+      # Also assign places based on GPS coordinates
+      item.assign_places!
     end
   end
 

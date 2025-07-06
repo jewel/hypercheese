@@ -34,6 +34,7 @@ HyperCheese::Application.routes.draw do
 
     resources :tags
     get 'users/current', to: 'current_user#current'
+    resources :places
   end
 
   scope :shares do
@@ -63,6 +64,7 @@ HyperCheese::Application.routes.draw do
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
+  get 'places/(*path)' => 'home#index'
   get 'upload' => 'home#index'
 
   scope :files do
