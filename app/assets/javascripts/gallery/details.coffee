@@ -260,7 +260,7 @@ component 'Details', ({itemId}) ->
 
         <div className="right-side">
           {
-            if item
+            if item && !Store.state.shareMode
               item.tag_ids.map (tag_id) ->
                 tag = Store.state.tagsById[tag_id]
                 if tag
@@ -271,20 +271,27 @@ component 'Details', ({itemId}) ->
             streamUrl={item && item.variety == 'video' && Store.resizedURL('stream', item.id, item.code)}
             video={videoRef.current}
           />
-          <Writer>
-            <ControlIcon
-              className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
-              title="Tells others about this item"
-              onClick={onBullhorn}
-              icon="fas fa-bullhorn"
-            />
-            <ControlIcon
-              className="star"
-              title="Bookmark for future reference"
-              onClick={onStar}
-              icon={if item && item.starred then "fas fa-star" else "far fa-star"}
-            />
-          </Writer>
+          {
+            if Store.state.shareMode
+              <a className="control" href="/shares/#{Store.state.shareCode}/download_item/#{itemId}">
+                <i className="fa fa-download fa-fw"/>
+              </a>
+            else
+              <Writer>
+                <ControlIcon
+                  className={ "bullhorn" + if item && item.bullhorned then " active" else "" }
+                  title="Tells others about this item"
+                  onClick={onBullhorn}
+                  icon="fas fa-bullhorn"
+                />
+                <ControlIcon
+                  className="star"
+                  title="Bookmark for future reference"
+                  onClick={onStar}
+                  icon={if item && item.starred then "fas fa-star" else "far fa-star"}
+                />
+              </Writer>
+          }
           {
             # FIXME Only show this on devices without a keyboard
             if fullScreenFunction()
@@ -294,15 +301,18 @@ component 'Details', ({itemId}) ->
               />
           }
 
-          <ControlIcon
-            onClick={onSelect}
-            icon={
-              if Store.state.selection[itemId]
-                "far fa-check-square"
-              else
-                "far fa-square"
-            }
-          />
+          {
+            if !Store.state.shareMode
+              <ControlIcon
+                onClick={onSelect}
+                icon={
+                  if Store.state.selection[itemId]
+                    "far fa-check-square"
+                  else
+                    "far fa-square"
+                }
+              />
+          }
           <ControlIcon
             onClick={onClose}
             icon="fas fa-times"

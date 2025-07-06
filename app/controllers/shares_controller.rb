@@ -10,7 +10,7 @@ class SharesController < ApplicationController
 
     @og_image = request.base_url + @items.first.resized_url(:large)
 
-    render layout: 'share'
+    render layout: 'gallery'
   end
 
   def items

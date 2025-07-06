@@ -54,9 +54,16 @@ component 'Info', ({item, isVisible, containerRef}) ->
             </div>
 
             <div>
-              <a href="/api/items/download?ids=#{item.id}">
-                <i className="fa fa-download"/> Download
-              </a>
+              {
+                if Store.state.shareMode
+                  <a href="/shares/#{Store.state.shareCode}/download_item/#{item.id}">
+                    <i className="fa fa-download"/> Download
+                  </a>
+                else
+                  <a href="/api/items/download?ids=#{item.id}">
+                    <i className="fa fa-download"/> Download
+                  </a>
+              }
             </div>
           </td>
         </tr>
@@ -125,28 +132,32 @@ component 'Info', ({item, isVisible, containerRef}) ->
       </tbody>
     </table>
     {
-      details.comments.map (comment) ->
-        <p key={comment.id} className="comment">
-          {comment.text}<br/>
-          <small>
-            <strong>{comment.username}</strong> &mdash;
-            <em>{new Date(comment.created_at).toLocaleString()}</em>
-          </small>
-        </p>
+      if !Store.state.shareMode
+        details.comments.map (comment) ->
+          <p key={comment.id} className="comment">
+            {comment.text}<br/>
+            <small>
+              <strong>{comment.username}</strong> &mdash;
+              <em>{new Date(comment.created_at).toLocaleString()}</em>
+            </small>
+          </p>
     }
     {
-      if isVisible
+      if isVisible && !Store.state.shareMode
         <FacesAndTags item={item} details={details}/>
     }
-    <Writer>
-      <form key="new" className="comment" onSubmit={onComment}>
-        <textarea placeholder="What a great picture!" value={newComment} onChange={onChangeNewComment}/>
-        <br/>
-        <button className="btn btn-default">Submit</button>
-      </form>
-    </Writer>
     {
-      if isVisible
+      if !Store.state.shareMode
+        <Writer>
+          <form key="new" className="comment" onSubmit={onComment}>
+            <textarea placeholder="What a great picture!" value={newComment} onChange={onChangeNewComment}/>
+            <br/>
+            <button className="btn btn-default">Submit</button>
+          </form>
+        </Writer>
+    }
+    {
+      if isVisible && !Store.state.shareMode
         <SimilarPhotos key={item.id} itemId={item.id}/>
     }
   </div>

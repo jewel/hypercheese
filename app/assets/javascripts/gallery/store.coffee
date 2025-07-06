@@ -63,6 +63,64 @@ class @Store
       judgeIcons: false
       canWrite: true
       isAdmin: false
+      shareMode: false
+      shareCode: null
+
+  @initShare: (shareCode) ->
+    @jax
+      url: "/shares/#{shareCode}/items"
+      success: (res) =>
+        @state.items = {}
+        @state.itemsById = {}
+        @state.resultCount = res.items.length
+        
+        for item, index in res.items
+          item.index = index
+          item.tag_ids = []  # Anonymous users don't see tags
+          @state.items[index] = item.id
+          @state.itemsById[item.id] = item
+
+        @state.tagsLoaded = true  # Skip tag loading for share mode
+        @needsRedraw()
+
+    if document.documentElement.clientWidth > 960
+      defaultZoom = 7
+    else
+      defaultZoom = 5
+
+    @state =
+      tags: []
+      tagsLoaded: false
+      tagsById: {}
+      tagIconChoices: null
+      tagIconChoicesId: null
+      details: {}
+      searchKey: null
+      query: ''
+      items: {}
+      itemsById: {}
+      resultCount: null
+      selection: {}
+      selectMode: false
+      selectionCount: 0
+      pendingTags: []
+      pendingTagString: ""
+      lastTags: []
+      rangeStart: null
+      dragStart: null
+      dragEnd: null
+      dragLeftStart: false
+      dragging: {}
+      zoom: defaultZoom
+      highlight: null
+      recent: null
+      hasTouch: false
+      openStack: []
+      judgeIcons: false
+      canWrite: false  # Anonymous users can't write
+      isAdmin: false
+      shareMode: true
+      shareCode: shareCode
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
@@ -534,10 +592,29 @@ class @Store
   @navigate: (url) ->
     # Save off scroll position in old state
     history.replaceState {scrollPos: window.scrollY}, '', window.location
+    
+    # Handle share mode navigation
+    if @state.shareMode
+      # For share mode, construct URLs in the format /shares/:shareCode/path
+      if url.startsWith('/items/')
+        itemId = url.split('/')[2]
+        url = "/shares/#{@state.shareCode}/#{itemId}"
+      else if url == '/upload' || url.startsWith('/tags') || url.startsWith('/search')
+        # These pages are not available in share mode, redirect to base share
+        url = "/shares/#{@state.shareCode}"
+    
     history.pushState {}, '', url
     @navigateCallback() if @navigateCallback
 
   @navigateWithoutHistory: (url) ->
+    # Handle share mode navigation
+    if @state.shareMode
+      if url.startsWith('/items/')
+        itemId = url.split('/')[2]
+        url = "/shares/#{@state.shareCode}/#{itemId}"
+      else if url == '/upload' || url.startsWith('/tags') || url.startsWith('/search')
+        url = "/shares/#{@state.shareCode}"
+    
     history.replaceState {}, '', url
     @navigateCallback() if @navigateCallback
 

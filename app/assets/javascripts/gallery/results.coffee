@@ -150,7 +150,9 @@ component 'Results', ->
   # fetched.  When the results come back, they will cause a re-render
   Store.executeSearch startIndex, endIndex
 
-  <div className="results" style={resultsStyle}>
+  resultsClass = if Store.state.shareMode then "share-results" else "results"
+
+  <div className={resultsClass} style={resultsStyle}>
     <ScrollButton height={windowHeight} top={scrollTop} visible={showScrollButton}/>
     <div className="viewport" style={viewPortStyle}>
       {

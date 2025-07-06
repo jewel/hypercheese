@@ -10,6 +10,25 @@ parseUrl = ->
     return
       page: 'home'
 
+  # Handle share mode URLs: /shares/:shareCode/... 
+  if parts[1] == 'shares' && parts[2]
+    # Check if we're in share mode
+    if Store.state?.shareMode
+      if parts.length == 3
+        # Base share URL: /shares/:shareCode
+        Store.search ''
+        return
+          page: 'search'
+          search: ''
+      else if parts.length == 4
+        # Item URL: /shares/:shareCode/:itemId
+        return
+          page: 'item'
+          itemId: Math.round(parts[3])
+    return
+      page: 'search'
+      search: ''
+
   if parts[1] == 'items'
     return
       page: 'item'
@@ -141,6 +160,12 @@ component 'GalleryApp', withErrorBoundary ->
       document.removeEventListener 'drop', onGlobalDrop
   , []
 
+  # In share mode, redirect unsupported pages to search
+  if Store.state.shareMode
+    if page == 'home' || page == 'tags' || page == 'upload' || page == 'tag'
+      page = 'search'
+      search = ''
+
   if page == 'home'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Home/></ErrorBoundary></div>
 
@@ -165,6 +190,10 @@ component 'GalleryApp', withErrorBoundary ->
 
   showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
   showItem = page == 'item' && itemId != null
+
+  # In share mode, never show selection
+  if Store.state.shareMode
+    showSelection = false
 
   # The overflow-y parameter on the html tag needs to be set BEFORE
   # Results.initialState is called.  That's because having a scrollbar appear

@@ -11,6 +11,35 @@
     %title= @title || "HyperCheese"
     = stylesheet_link_tag "index", :media => "all"
     = csrf_meta_tags
+    = yield :opengraph
+    - if params[:share_id]
+      :css
+        html, .share-results {
+          background: black;
+        }
+
+        .share-results .shared-item {
+          display: inline-block;
+          width: 200px;
+          height: 200px;
+          margin: 2px;
+        }
+
+        @media only screen and (max-width: 610px) {
+          .share-results .shared-item {
+            width: 30vw;
+            height: 30vw;
+          }
+
+          .share-results .shared-item img {
+            width: 30vw;
+            height: 30vw;
+          }
+        }
+
+        .shared-item img {
+          border: 1px solid #444;
+        }
   %body
     #content
       Making cheese...

@@ -83,46 +83,68 @@ component 'NavBar', ({showingResults}) ->
         <Link className="navbar-brand" href="/" onClick={closeSearchHelper}>
           <img style={height: '20px'} src={siteIcon()}/>
         </Link>
-        <button type="button" onClick={onToggleSearchHelper} className="btn btn-outline-secondary me-2 search-button">
-          <i className="fa fa-search fa-fw"/>
-          {" #{Store.state.query} "}
-          {
-            if Store.state.resultCount != null
-              <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
-          }
-        </button>
-        <div className="ms-auto d-flex gap-2">
-          {
-            if showingResults
-              <React.Fragment>
-                <Zoom/>
-                <button title="Select Mode" type="button" onClick={onSelectMode} className="btn me-2">
-                  <i className="fa fa-check-square"/>
+        {
+          if Store.state.shareMode
+            # Share mode - limited navbar
+            <React.Fragment>
+              <span className="navbar-text me-2">
+                {Store.state.resultCount?.toLocaleString() || 0} shared photo{if Store.state.resultCount == 1 then '' else 's'}
+              </span>
+              <div className="ms-auto d-flex gap-2">
+                {
+                  if showingResults
+                    <Zoom/>
+                }
+                <a href="/shares/#{Store.state.shareCode}/download" className="btn btn-outline-primary">
+                  <i className="fa fa-download fa-fw"/> Download All
+                </a>
+              </div>
+            </React.Fragment>
+          else
+            # Normal mode - full navbar
+            <React.Fragment>
+              <button type="button" onClick={onToggleSearchHelper} className="btn btn-outline-secondary me-2 search-button">
+                <i className="fa fa-search fa-fw"/>
+                {" #{Store.state.query} "}
+                {
+                  if Store.state.resultCount != null
+                    <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
+                }
+              </button>
+              <div className="ms-auto d-flex gap-2">
+                {
+                  if showingResults
+                    <React.Fragment>
+                      <Zoom/>
+                      <button title="Select Mode" type="button" onClick={onSelectMode} className="btn me-2">
+                        <i className="fa fa-check-square"/>
+                      </button>
+                    </React.Fragment>
+                }
+                <button type="button" className="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i className="fa fa-ellipsis-v"/>
                 </button>
-              </React.Fragment>
-          }
-          <button type="button" className="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i className="fa fa-ellipsis-v"/>
-          </button>
-          <ul className="dropdown-menu dropdown-menu-end">
-            <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
-            <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
-            {
-              if Store.state.isAdmin
-                <li><Link className="dropdown-item" href="/admin">Admin</Link></li>
-            }
-            <li>
-              <a className="dropdown-item" href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
-            </li>
-            <li>
-              <a className="dropdown-item" href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
-            </li>
-          </ul>
-        </div>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
+                  <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
+                  {
+                    if Store.state.isAdmin
+                      <li><Link className="dropdown-item" href="/admin">Admin</Link></li>
+                  }
+                  <li>
+                    <a className="dropdown-item" href="https://www.rickety.us/sundry/hypercheese-help/">Help</a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="/users/sign_out" data-method="delete" rel="nofollow">Sign out</a>
+                  </li>
+                </ul>
+              </div>
+            </React.Fragment>
+        }
       </div>
     </nav>
     {
-      if showSearchHelper
+      if showSearchHelper && !Store.state.shareMode
         <div className="search-helper-float">
           <SearchHelper spacerHeight={spacerHeight} close={closeSearchHelper}/>
         </div>

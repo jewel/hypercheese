@@ -100,12 +100,12 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
   else
     squareImage = "/images/loading.png"
 
-  classes = ["item"]
+  classes = if Store.state.shareMode then ["shared-item"] else ["item"]
   classes.push 'selected' if selected
   classes.push 'dragging' if Store.state.dragging[item.id]
   classes.push 'highlight' if Store.state.highlight? && Store.state.highlight == item.id
 
-  if showTagbox
+  if showTagbox && !Store.state.shareMode
     used = {}
     tags = []
     if item.tag_ids
@@ -134,12 +134,14 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
       if tag
         extraTagsLabels.push(tag.alias || tag.label)
 
+  itemUrl = if Store.state.shareMode then "/shares/#{Store.state.shareCode}/#{item.id}" else "/items/#{item.id}"
+
   <div className={classes.join ' '} key="#{item.index}">
-    <a href={"/items/#{item.id}"} onClick={onClick} onMouseDown={onMouseDown} onMouseOver={onMouseOver} onMouseUp={onMouseUp} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onContextMenu={onContextMenu}>
+    <a href={itemUrl} onClick={onClick} onMouseDown={onMouseDown} onMouseOver={onMouseOver} onMouseUp={onMouseUp} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onContextMenu={onContextMenu}>
       <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={disableDefault} onContextMenu={onContextMenu}/>
     </a>
     {
-      if showTagbox
+      if showTagbox && !Store.state.shareMode
         <div className="tagbox">
           {
             if item.has_comments
