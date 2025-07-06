@@ -1,0 +1,244 @@
+component 'GeotaggingMap', ({item, exif, onSave, isGeotagging, onCancel}) ->
+  # Configure Leaflet icon paths to work with Rails asset pipeline
+  delete L.Icon.Default.prototype._getIconUrl
+  L.Icon.Default.mergeOptions
+    iconRetinaUrl: <%= asset_url('leaflet/marker-icon-2x.png').to_json %>
+    iconUrl: <%= asset_url('leaflet/marker-icon.png').to_json %>
+    shadowUrl: <%= asset_url('leaflet/marker-shadow.png').to_json %>
+
+  mapRef = React.useRef()
+  mapInstanceRef = React.useRef()
+  markerRef = React.useRef()
+  precisionCircleRef = React.useRef()
+  
+  [selectedLocation, setSelectedLocation] = useState(null)
+  [precision, setPrecision] = useState(item?.precision || null)
+  [searchQuery, setSearchQuery] = useState('')
+  [searchResults, setSearchResults] = useState([])
+  [isSearching, setIsSearching] = useState(false)
+
+  r = (frac) ->
+    parts = frac.split "/"
+    n = parseInt parts[0], 10
+    d = parseInt parts[1], 10
+    n / d
+
+  coord = (input) ->
+    c = r(input[0]) + r(input[1])/60 + r(input[2])/3600
+    c.toFixed 7
+
+  # Get current location for display
+  getCurrentLocation = ->
+    if item?.latitude && item?.longitude
+      { lat: item.latitude, lng: item.longitude }
+    else if exif?.gps_latitude && exif?.gps_longitude
+      lat = coord exif.gps_latitude
+      lat *= -1 if exif.gps_latitude_ref == "S"
+      lng = coord exif.gps_longitude
+      lng *= -1 if exif.gps_longitude_ref == "W"
+      { lat: parseFloat(lat), lng: parseFloat(lng) }
+    else
+      null
+
+  # Initialize map
+  useEffect ->
+    return unless mapRef.current
+    
+    currentLocation = getCurrentLocation()
+    
+    # Set default view
+    if currentLocation || isGeotagging
+      center = currentLocation || [40.7128, -74.0060] # Default to NYC
+      zoom = 12
+    else
+      return # Don't show map if no location and not geotagging
+    
+    # Create map
+    mapInstanceRef.current = L.map(mapRef.current, {
+      scrollWheelZoom: true
+      doubleClickZoom: false
+    }).setView(center, zoom)
+    
+    # Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(mapInstanceRef.current)
+    
+    # Add existing location marker if available
+    if currentLocation
+      markerRef.current = L.marker([currentLocation.lat, currentLocation.lng]).addTo(mapInstanceRef.current)
+      setSelectedLocation(currentLocation)
+      
+      # Add precision circle if available
+      if precision
+        precisionCircleRef.current = L.circle([currentLocation.lat, currentLocation.lng], {
+          radius: precision
+          color: 'blue'
+          fillColor: '#3388ff'
+          fillOpacity: 0.2
+        }).addTo(mapInstanceRef.current)
+    
+    # Add click handler for geotagging mode
+    if isGeotagging
+      mapInstanceRef.current.on 'click', (e) ->
+        newLocation = { lat: e.latlng.lat, lng: e.latlng.lng }
+        setSelectedLocation(newLocation)
+        
+        # Remove existing marker
+        if markerRef.current
+          mapInstanceRef.current.removeLayer(markerRef.current)
+        
+        # Add new marker
+        markerRef.current = L.marker([newLocation.lat, newLocation.lng]).addTo(mapInstanceRef.current)
+        
+        # Update precision circle
+        updatePrecisionCircle(newLocation)
+    
+    # Cleanup
+    -> 
+      if mapInstanceRef.current
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+        markerRef.current = null
+        precisionCircleRef.current = null
+  , [isGeotagging, item?.latitude, item?.longitude, exif]
+
+  # Update precision circle
+  updatePrecisionCircle = (location) ->
+    if precisionCircleRef.current
+      mapInstanceRef.current.removeLayer(precisionCircleRef.current)
+    
+    if precision && location
+      precisionCircleRef.current = L.circle([location.lat, location.lng], {
+        radius: precision
+        color: 'blue'
+        fillColor: '#3388ff'
+        fillOpacity: 0.2
+      }).addTo(mapInstanceRef.current)
+
+  # Handle precision change
+  handlePrecisionChange = (e) ->
+    newPrecision = e.target.value ? parseFloat(e.target.value) : null
+    setPrecision(newPrecision)
+    
+    if selectedLocation
+      updatePrecisionCircle(selectedLocation)
+
+  # Search places
+  searchPlaces = (query) ->
+    return unless query.length > 2
+    
+    setIsSearching(true)
+    fetch("/api/locations/search?q=#{encodeURIComponent(query)}")
+      .then (response) -> response.json()
+      .then (results) ->
+        setSearchResults(results)
+        setIsSearching(false)
+      .catch ->
+        setIsSearching(false)
+
+  # Handle search input change
+  handleSearchChange = (e) ->
+    query = e.target.value
+    setSearchQuery(query)
+    
+    if query.length > 2
+      clearTimeout(window.searchTimeout) if window.searchTimeout
+      window.searchTimeout = setTimeout ->
+        searchPlaces(query)
+      , 300
+
+  # Handle place selection
+  handlePlaceSelect = (place) ->
+    if mapInstanceRef.current && place.bounds
+      bounds = L.latLngBounds(place.bounds)
+      mapInstanceRef.current.fitBounds(bounds)
+      
+      # Set location to center of bounds
+      center = bounds.getCenter()
+      newLocation = { lat: center.lat, lng: center.lng }
+      setSelectedLocation(newLocation)
+      
+      # Remove existing marker
+      if markerRef.current
+        mapInstanceRef.current.removeLayer(markerRef.current)
+      
+      # Add new marker
+      markerRef.current = L.marker([center.lat, center.lng]).addTo(mapInstanceRef.current)
+      
+      # Update precision circle
+      updatePrecisionCircle(newLocation)
+    
+    setSearchResults([])
+    setSearchQuery('')
+
+  # Handle save
+  handleSave = ->
+    if selectedLocation && onSave
+      onSave({
+        latitude: selectedLocation.lat
+        longitude: selectedLocation.lng
+        precision: precision
+      })
+
+  # Render map
+  renderMap = ->
+    <div className="geotagging-map-container">
+      <div className="leaflet-map" ref={mapRef} style={height: '400px', width: '100%', marginBottom: '10px'}/>
+      
+      {if isGeotagging
+        <div className="geotagging-controls">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search for a place..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="form-control"
+            />
+            {if isSearching
+              <div className="search-loading">Searching...</div>
+            }
+            {if searchResults.length > 0
+              <div className="search-results">
+                {searchResults.map (place) ->
+                  <div key={place.id} className="search-result" onClick={() -> handlePlaceSelect(place)}>
+                    <strong>{place.name}</strong>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          
+          <div className="precision-container">
+            <label>Location Precision:</label>
+            <select value={precision || ''} onChange={handlePrecisionChange} className="form-control">
+              <option value="">Exact location</option>
+              <option value="50">±50 meters</option>
+              <option value="100">±100 meters</option>
+              <option value="500">±500 meters</option>
+              <option value="1000">±1 kilometer</option>
+              <option value="5000">±5 kilometers</option>
+              <option value="10000">±10 kilometers</option>
+            </select>
+          </div>
+          
+          <div className="action-buttons">
+            <button className="btn btn-primary" onClick={handleSave} disabled={!selectedLocation}>
+              Save Location
+            </button>
+            <button className="btn btn-secondary" onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+  currentLocation = getCurrentLocation()
+  
+  # Only render if we have a location or are in geotagging mode
+  if currentLocation || isGeotagging
+    renderMap()
+  else
+    null

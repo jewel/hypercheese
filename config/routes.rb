@@ -28,12 +28,19 @@ HyperCheese::Application.routes.draw do
       post :toggle_star
       post :toggle_bullhorn
       post :rate
+      post :geotag
     end
 
     resources :comments
 
     resources :tags
     get 'users/current', to: 'current_user#current'
+    
+    resources :locations, only: [] do
+      collection do
+        get :search
+      end
+    end
   end
 
   scope :shares do

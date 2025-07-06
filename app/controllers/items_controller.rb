@@ -204,6 +204,24 @@ class ItemsController < ApplicationController
     render json: @item, serializer: ItemSerializer
   end
 
+  def geotag
+    require_write!
+
+    @item = Item.find params[:item_id].to_i
+    @item.check_visibility_for current_user
+    
+    @item.latitude = params[:latitude].to_f if params[:latitude]
+    @item.longitude = params[:longitude].to_f if params[:longitude]
+    @item.precision = params[:precision].to_f if params[:precision]
+    
+    @item.save!
+    
+    # Trigger geolocation job to find matching locations
+    GeolocateJob.perform_later @item.id
+    
+    render json: @item, serializer: ItemSerializer
+  end
+
   def download
     ids = params[:ids].split(/,/).map { |_| _.to_i }
     items = Item.where(id: ids).includes(:item_paths)

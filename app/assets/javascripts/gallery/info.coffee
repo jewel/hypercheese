@@ -1,5 +1,6 @@
 component 'Info', ({item, isVisible, containerRef}) ->
   [newComment, setNewComment] = useState ''
+  [isGeotagging, setIsGeotagging] = useState false
 
   onChangeNewComment = (e) ->
     setNewComment e.target.value
@@ -9,6 +10,29 @@ component 'Info', ({item, isVisible, containerRef}) ->
     return unless newComment
     Store.newComment item.id, newComment
     setNewComment ''
+
+  onStartGeotagging = ->
+    setIsGeotagging true
+
+  onCancelGeotagging = ->
+    setIsGeotagging false
+
+  onSaveGeotag = (locationData) ->
+    fetch("/api/items/#{item.id}/geotag", {
+      method: 'POST'
+      headers: {
+        'Content-Type': 'application/json'
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
+      }
+      body: JSON.stringify(locationData)
+    })
+    .then (response) -> response.json()
+    .then (data) ->
+      setIsGeotagging false
+      # Update the item in the store
+      Store.updateItem data
+    .catch (error) ->
+      console.error 'Error saving geotag:', error
 
   neighbor = (dir) ->
     newIndex = item.index + dir
@@ -64,7 +88,13 @@ component 'Info', ({item, isVisible, containerRef}) ->
         {
           fact('location-arrow',
             <React.Fragment>
-              <LeafletMap exif={details.exif}/>
+              <GeotaggingMap 
+                item={item} 
+                exif={details.exif} 
+                isGeotagging={isGeotagging}
+                onSave={onSaveGeotag}
+                onCancel={onCancelGeotagging}
+              />
               <GPSCoord exif={details.exif}/>
               {
                 if details.locations?.length > 0
@@ -76,6 +106,17 @@ component 'Info', ({item, isVisible, containerRef}) ->
                       locations.join(", ")
                     }
                   </React.Fragment>
+              }
+              {
+                unless isGeotagging
+                  <div className="geotag-button-container">
+                    <button 
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={onStartGeotagging}
+                    >
+                      <i className="fa fa-map-marker"/> {if item.latitude && item.longitude then 'Edit Location' else 'Add Location'}
+                    </button>
+                  </div>
               }
             </React.Fragment>
           )

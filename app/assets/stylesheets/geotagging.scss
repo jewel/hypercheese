@@ -1,0 +1,102 @@
+.geotagging-map-container {
+  .geotagging-controls {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    
+    .search-container {
+      margin-bottom: 15px;
+      position: relative;
+      
+      .search-loading {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        padding: 5px 10px;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        color: #6c757d;
+        font-size: 0.9em;
+      }
+      
+      .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 5px 5px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        
+        .search-result {
+          padding: 10px 15px;
+          cursor: pointer;
+          border-bottom: 1px solid #eee;
+          
+          &:hover {
+            background-color: #f8f9fa;
+          }
+          
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+    
+    .precision-container {
+      margin-bottom: 15px;
+      
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #495057;
+      }
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      
+      .btn {
+        flex: 1;
+        max-width: 120px;
+      }
+    }
+  }
+}
+
+.geotag-button-container {
+  margin-top: 10px;
+  
+  .btn {
+    width: 100%;
+    
+    i {
+      margin-right: 5px;
+    }
+  }
+}
+
+// Leaflet map specific styles for geotagging
+.leaflet-container {
+  &.geotagging-mode {
+    cursor: crosshair;
+  }
+}
+
+// Precision circle styles
+.leaflet-interactive {
+  &.precision-circle {
+    pointer-events: none;
+  }
+}

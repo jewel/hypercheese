@@ -356,6 +356,10 @@ class @Store
         item.index = oldItem.index
       @state.itemsById[item.id] = item
 
+  @updateItem: (item) ->
+    @_ingestItemUpdates [item]
+    @needsRedraw()
+
   @removeTagFromSelection: (tagId) ->
     itemIds = []
     for id of @state.selection
