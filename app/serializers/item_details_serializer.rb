@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :face_trails, :aesthetics_score, :locations
   has_many :comments, include: true
 
   def exif
@@ -28,13 +28,48 @@ class ItemDetailsSerializer < ActiveModel::Serializer
   end
 
   def faces
-    object.faces.includes(:cluster).order(:timestamp, :cluster_id).map do |face|
-      {
-        id: face.id,
-        tag_id: face.tag_id,
-        cluster_tag_id: face.cluster&.tag_id,
-        similarity: face.similarity,
-      }
+    # For photos, return individual faces
+    if object.photo?
+      object.faces.includes(:cluster).order(:timestamp, :cluster_id).map do |face|
+        {
+          id: face.id,
+          tag_id: face.tag_id,
+          cluster_tag_id: face.cluster&.tag_id,
+          similarity: face.similarity,
+        }
+      end
+    else
+      # For videos, return empty array since we use face_trails
+      []
+    end
+  end
+
+  def face_trails
+    # Only return face trails for videos
+    if object.video?
+      object.face_trails.includes(representative_face: [:tag, :cluster]).map do |trail|
+        {
+          id: trail.id,
+          start_timestamp: trail.start_timestamp,
+          end_timestamp: trail.end_timestamp,
+          center_x: trail.center_x,
+          center_y: trail.center_y,
+          width: trail.width,
+          height: trail.height,
+          representative_face: trail.representative_face ? {
+            id: trail.representative_face.id,
+            tag_id: trail.representative_face.tag_id,
+            cluster_tag_id: trail.representative_face.cluster&.tag_id,
+            similarity: trail.representative_face.similarity,
+          } : nil,
+          tag_names: trail.tag_names,
+          primary_tag_name: trail.primary_tag_name,
+          face_count: trail.faces.count,
+          embedding_face_count: trail.faces_with_embeddings.count
+        }
+      end
+    else
+      []
     end
   end
 

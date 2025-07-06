@@ -30,3 +30,143 @@
   .item
     img
       :height 256px
+
+.face-trail
+  :display flex
+  :flex-direction row
+  :align-items center
+  :gap 10px
+  :padding 8px
+  :border 1px solid #e0e0e0
+  :border-radius 4px
+  :margin-bottom 8px
+  :background-color #f9f9f9
+
+  .trail-image
+    :cursor pointer
+    :flex-shrink 0
+    
+    img
+      :width 64px
+      :height 64px
+      :border-radius 4px
+      :object-fit cover
+
+    .no-representative
+      :width 64px
+      :height 64px
+      :border-radius 4px
+      :background-color #ddd
+      :display flex
+      :align-items center
+      :justify-content center
+      :font-size 12px
+      :color #666
+
+  .trail-info
+    :flex-grow 1
+    :font-size 14px
+    
+    .trail-names
+      :font-weight bold
+      :margin-bottom 4px
+      
+    .trail-meta
+      :color #666
+      :font-size 12px
+
+.trail-detail-overlay
+  :position fixed
+  :top 0
+  :left 0
+  :right 0
+  :bottom 0
+  :background-color rgba(0, 0, 0, 0.7)
+  :display flex
+  :align-items center
+  :justify-content center
+  :z-index 1000
+
+.trail-detail-dialog
+  :background-color white
+  :border-radius 8px
+  :max-width 90vw
+  :max-height 90vh
+  :width 800px
+  :overflow hidden
+  :box-shadow 0 4px 20px rgba(0, 0, 0, 0.3)
+
+  .dialog-header
+    :display flex
+    :justify-content space-between
+    :align-items center
+    :padding 16px 20px
+    :border-bottom 1px solid #e0e0e0
+    :background-color #f8f9fa
+
+    h3
+      :margin 0
+      :font-size 18px
+
+    .close-button
+      :background none
+      :border none
+      :font-size 20px
+      :cursor pointer
+      :color #666
+      :padding 4px
+
+  .dialog-content
+    :padding 20px
+    :max-height calc(90vh - 120px)
+    :overflow-y auto
+
+    .trail-summary
+      :margin-bottom 20px
+      :padding-bottom 16px
+      :border-bottom 1px solid #e0e0e0
+
+      h4
+        :margin 0 0 8px 0
+        :font-size 16px
+
+      .trail-tags
+        :margin-bottom 8px
+        :color #666
+
+      .trail-info
+        :font-size 14px
+        :color #666
+
+        div
+          :margin-bottom 4px
+
+    .trail-faces
+      .loading
+        :text-align center
+        :padding 20px
+        :color #666
+
+      .faces-grid
+        :display grid
+        :grid-template-columns repeat(auto-fill, minmax(120px, 1fr))
+        :gap 12px
+
+        .trail-face
+          :text-align center
+
+          img
+            :width 100%
+            :height 100px
+            :object-fit cover
+            :border-radius 4px
+
+          .face-timestamp
+            :font-size 12px
+            :color #666
+            :margin-top 4px
+
+      .no-faces
+        :text-align center
+        :color #666
+        :padding 20px

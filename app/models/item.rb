@@ -15,6 +15,7 @@ class Item < ActiveRecord::Base
   has_many :ratings
   has_many :sources, through: :item_paths
   has_many :faces
+  has_many :face_trails
   has_many :clip_frames
   belongs_to :group
   belongs_to :event

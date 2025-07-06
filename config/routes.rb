@@ -59,6 +59,14 @@ HyperCheese::Application.routes.draw do
     end
   end
 
+  scope path: '/api' do
+    resources :face_trails, only: [:show] do
+      member do
+        get 'faces'
+      end
+    end
+  end
+
 
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'

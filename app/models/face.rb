@@ -4,6 +4,7 @@ class Face < ActiveRecord::Base
   belongs_to :item
   belongs_to :tag
   belongs_to :cluster, class_name: 'Face'
+  belongs_to :face_trail, optional: true
 
   DISTANCE_THRESHOLD = 0.7
 
