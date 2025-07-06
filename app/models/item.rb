@@ -1,5 +1,6 @@
 require 'exifr/jpeg'
 require_dependency 'probe'
+require_dependency 'motion_photo_extractor'
 
 class Item < ActiveRecord::Base
   has_many :item_tags
@@ -75,6 +76,25 @@ class Item < ActiveRecord::Base
     "/data/resized/stream/#{id}-#{code}.mp4"
   end
 
+  # Motion video methods
+  def motion_video_full_path
+    return nil unless motion_video_path
+    "#{Rails.root}/public/data/motion_videos/#{motion_video_path}"
+  end
+
+  def motion_video_url
+    return nil unless motion_video_path
+    "/data/motion_videos/#{motion_video_path}"
+  end
+
+  def has_motion_video?
+    motion_video_path.present? && File.exist?(motion_video_full_path)
+  end
+
+  def motion_photo?
+    photo? && MotionPhotoExtractor.motion_photo?(full_path)
+  end
+
   def tag_ids_as_hash
     hash = {}
     tags.each do |t|
@@ -114,6 +134,8 @@ class Item < ActiveRecord::Base
       GenerateExplodedVideoJob.set(priority: 2 + p).perform_later id
       GenerateVideoStreamJob.set(priority: 3 + p).perform_later id
     end
+    # Check for motion photos after metadata is loaded
+    ExtractMotionVideoJob.set(priority: 1.5 + p).perform_later id if photo?
     GeolocateJob.set(priority: 4 + p).perform_later id
     FindFacesJob.set(priority: 5 + p).perform_later id
     IndexVisuallyJob.set(priority: 6 + p).perform_later id

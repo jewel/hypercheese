@@ -137,6 +137,12 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
   <div className={classes.join ' '} key="#{item.index}">
     <a href={"/items/#{item.id}"} onClick={onClick} onMouseDown={onMouseDown} onMouseOver={onMouseOver} onMouseUp={onMouseUp} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onContextMenu={onContextMenu}>
       <img className="thumb" style={imageStyle} src={squareImage} onMouseDown={disableDefault} onContextMenu={onContextMenu}/>
+      {
+        if item.has_motion_video && item.variety == 'photo'
+          <div className="motion-video-overlay">
+            <i className="fas fa-play-circle" title="Motion Photo - Click to play video"></i>
+          </div>
+      }
     </a>
     {
       if showTagbox

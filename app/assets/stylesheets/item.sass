@@ -6,6 +6,24 @@
   :text-align center
   :background #444
 
+  .motion-video-overlay
+    :position absolute
+    :top 50%
+    :left 50%
+    :transform translate(-50%, -50%)
+    :font-size 20px
+    :color white
+    :text-shadow 0 0 4px rgba(0, 0, 0, 0.8)
+    :opacity 0.8
+    :transition opacity 0.2s
+    :pointer-events none
+
+    &:hover
+      :opacity 1
+
+  &:hover .motion-video-overlay
+    :opacity 1
+
   .tagbox
     :height 30px
 

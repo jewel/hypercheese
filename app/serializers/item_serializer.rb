@@ -1,5 +1,5 @@
 class ItemSerializer < ActiveModel::Serializer
-  attributes :id, :code, :has_comments, :variety, :starred, :bullhorned, :rating, :tag_ids
+  attributes :id, :code, :has_comments, :variety, :starred, :bullhorned, :rating, :tag_ids, :has_motion_video, :motion_video_url
 
   def has_comments
     object.comments.any?
@@ -29,5 +29,13 @@ class ItemSerializer < ActiveModel::Serializer
       rating = object.ratings.to_a.select{ |rating| rating.user_id == scope.id }.first
       rating.value if rating
     end
+  end
+
+  def has_motion_video
+    object.has_motion_video?
+  end
+
+  def motion_video_url
+    object.motion_video_url
   end
 end

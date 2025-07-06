@@ -4,8 +4,10 @@ component 'Details', ({itemId}) ->
   [slideShow, setSlideShow] = React.useState false
   [zoom, setZoom] = React.useState false
   [infoVisible, setInfoVisible] = React.useState false
+  [playingMotion, setPlayingMotion] = React.useState false
 
   videoRef = React.useRef()
+  motionVideoRef = React.useRef()
   infoRef = React.useRef()
 
   fullscreenFunctions = [
@@ -47,6 +49,10 @@ component 'Details', ({itemId}) ->
             Store.navigateWithoutHistory linkTo(1)
           else
             startVideo()
+        else if motionVideoRef.current && playingMotion
+          stopMotionVideo()
+        else if item.has_motion_video && item.variety == 'photo'
+          startMotionVideo()
         else
           setShowControls false
           stopVideo()
@@ -55,10 +61,12 @@ component 'Details', ({itemId}) ->
       when 'ArrowRight', 'KeyJ', 'KeyL'
         setShowControls false
         stopVideo()
+        stopMotionVideo()
         Store.navigateWithoutHistory linkTo(1)
       when 'ArrowLeft', 'KeyH', 'KeyK'
         setShowControls false
         stopVideo()
+        stopMotionVideo()
         Store.navigateWithoutHistory linkTo(-1)
       when 'KeyF'
         setShowControls false
@@ -72,6 +80,14 @@ component 'Details', ({itemId}) ->
         onSlideShow()
       when 'KeyZ'
         onZoom()
+      when 'KeyM'
+        # Toggle motion video for photos
+        item = Store.fetchItem itemId
+        if item.has_motion_video && item.variety == 'photo'
+          if playingMotion
+            stopMotionVideo()
+          else
+            startMotionVideo()
 
   useEffect ->
     window.addEventListener 'keydown', onKeyDown
@@ -79,7 +95,7 @@ component 'Details', ({itemId}) ->
 
     ->
       window.removeEventListener 'keydown', onKeyDown
-  , [itemId, videoRef, setShowControls, stopVideo, linkTo, setSlideShow, setZoom]
+  , [itemId, videoRef, motionVideoRef, setShowControls, stopVideo, linkTo, setSlideShow, setZoom, playingMotion]
 
   onStar = (e) ->
     Store.toggleItemStar itemId
@@ -111,6 +127,7 @@ component 'Details', ({itemId}) ->
 
   moveTo = (dir) ->
     stopVideo()
+    stopMotionVideo()
     Store.navigateWithoutHistory linkTo(dir)
 
   onClose = (e) ->
@@ -122,6 +139,15 @@ component 'Details', ({itemId}) ->
     e.preventDefault()
     setShowControls !showControls
 
+  onMotionVideoClick = (e) ->
+    e.preventDefault()
+    item = Store.fetchItem itemId
+    if item.has_motion_video && item.variety == 'photo'
+      if playingMotion
+        stopMotionVideo()
+      else
+        startMotionVideo()
+
   onPlay = ->
     videoRef.current?.play()
     setShowControls false
@@ -132,11 +158,13 @@ component 'Details', ({itemId}) ->
   navigateNext = (e) ->
     e.preventDefault() if e
     stopVideo()
+    stopMotionVideo()
     Store.navigateWithoutHistory linkTo(1)
 
   navigatePrev = (e) ->
     e.preventDefault() if e
     stopVideo()
+    stopMotionVideo()
     Store.navigateWithoutHistory linkTo(-1)
 
   stopVideo = ->
@@ -148,6 +176,23 @@ component 'Details', ({itemId}) ->
     if videoRef.current
       videoRef.current.play()
       setPlaying(true)
+
+  startMotionVideo = ->
+    if motionVideoRef.current
+      motionVideoRef.current.currentTime = 0
+      motionVideoRef.current.play()
+      setPlayingMotion(true)
+      setShowControls false
+
+  stopMotionVideo = ->
+    if motionVideoRef.current
+      motionVideoRef.current.pause()
+      setPlayingMotion(false)
+      setShowControls true
+
+  onMotionVideoEnded = ->
+    setPlayingMotion(false)
+    setShowControls true
 
   neighbor = (dir) ->
     item = Store.getItem itemId
@@ -233,12 +278,30 @@ component 'Details', ({itemId}) ->
               itemId={itemId}
               itemCode={item.code}
             />
-          else
-            <img
+          else if item && playingMotion && item.motion_video_url
+            <video
+              ref={motionVideoRef}
+              src={item.motion_video_url}
+              autoPlay
+              loop
+              playsInline
+              onEnded={onMotionVideoEnded}
+              onClick={onMotionVideoClick}
               style={imageStyle}
-              onClick={toggleControls}
-              src={largeURL(itemId)}
             />
+          else
+            <div className="photo-container" onClick={onMotionVideoClick}>
+              <img
+                style={imageStyle}
+                src={largeURL(itemId)}
+              />
+              {
+                if item && item.has_motion_video && item.variety == 'photo' && !playingMotion
+                  <div className="motion-play-overlay">
+                    <i className="fas fa-play-circle" title="Click to play motion video (press M)"></i>
+                  </div>
+              }
+            </div>
         }
       </Swiper>
 
@@ -248,6 +311,13 @@ component 'Details', ({itemId}) ->
             <ControlIcon title="Pause video" className="video-control" onClick={onPause} icon="fa-pause"/>
           else
             <ControlIcon title="Play video" className="video-control" onClick={onPlay} icon="fa-play"/>
+      }
+      {
+        if item && item.has_motion_video && item.variety == 'photo'
+          if playingMotion
+            <ControlIcon title="Stop motion video" className="motion-control" onClick={stopMotionVideo} icon="fa-stop"/>
+          else
+            <ControlIcon title="Play motion video" className="motion-control" onClick={startMotionVideo} icon="fa-play"/>
       }
       <ControlIcon condition={prevLink} className="prev-control" href={prevLink} onClick={navigatePrev} icon="fa-arrow-left" />
       <ControlIcon condition={nextLink} className="control next-control" href={nextLink} onClick={navigateNext} icon="fa-arrow-right" />
