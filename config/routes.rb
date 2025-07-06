@@ -22,6 +22,7 @@ HyperCheese::Application.routes.draw do
         get :convert
         post :shares
         post :visibility
+        get :map_search
       end
       get :details
       get :similar
@@ -64,6 +65,7 @@ HyperCheese::Application.routes.draw do
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
   get 'upload' => 'home#index'
+  get 'map' => 'home#index'
 
   scope :files do
     post 'auth', to: 'files#authenticate'

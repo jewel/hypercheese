@@ -5,3 +5,31 @@
   :border-radius 4px
   :overflow hidden
   :z-index 1
+
+.custom-map-marker
+  :background none
+  :border none
+
+.map-photo-marker
+  :transition all 0.2s ease
+  
+  &:hover
+    :transform scale(1.1)
+    :z-index 1000
+
+.photo-overlay
+  :transition all 0.2s ease-in-out
+  
+.photo-overlay-backdrop
+  :animation fadeIn 0.2s ease-in-out
+
+@keyframes fadeIn
+  from
+    :opacity 0
+  to
+    :opacity 1
+
+.map-search-container
+  :position relative
+  :height 100vh
+  :overflow hidden

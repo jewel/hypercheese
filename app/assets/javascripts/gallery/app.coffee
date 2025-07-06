@@ -35,6 +35,10 @@ parseUrl = ->
       page: 'search'
       search: str
 
+  if parts[1] == 'map'
+    return
+      page: 'map'
+
   console.warn "Invalid URL: #{path}"
   return
     page: 'home'
@@ -149,6 +153,9 @@ component 'GalleryApp', withErrorBoundary ->
 
   if page == 'upload'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>
+
+  if page == 'map'
+    return <div><ErrorBoundary><MapSearch/></ErrorBoundary></div>
 
   if page == 'tag'
     tag = Store.state.tagsById[tagId]

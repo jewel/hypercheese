@@ -107,6 +107,7 @@ component 'NavBar', ({showingResults}) ->
           <ul className="dropdown-menu dropdown-menu-end">
             <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
             <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
+            <li><Link className="dropdown-item" href="/map">Map Search</Link></li>
             {
               if Store.state.isAdmin
                 <li><Link className="dropdown-item" href="/admin">Admin</Link></li>

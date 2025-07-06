@@ -242,6 +242,55 @@ class ItemsController < ApplicationController
     end
   end
 
+  # GET /items/map_search
+  def map_search
+    north = params[:north].to_f
+    south = params[:south].to_f
+    east = params[:east].to_f
+    west = params[:west].to_f
+    
+    # Basic validation
+    return render json: { error: 'Invalid bounding box' }, status: 400 if north <= south || east <= west
+    
+    # Find items within the bounding box that have GPS coordinates
+    items = Item.where(
+      'latitude IS NOT NULL AND longitude IS NOT NULL AND 
+       latitude >= ? AND latitude <= ? AND 
+       longitude >= ? AND longitude <= ?', 
+      south, north, west, east
+    )
+    
+    # Apply visibility filtering
+    if params[:visibility] != 'all'
+      items = items.where(published: true)
+    elsif current_user
+      # Include unpublished items from user's own sources
+      sources = Source.where(user_id: current_user.id)
+      items = items.where(
+        'published = true OR id IN (
+          SELECT item_id FROM item_paths WHERE source_id IN (?)
+        )', sources.map(&:id)
+      )
+    else
+      items = items.where(published: true)
+    end
+    
+    # Limit results to avoid overwhelming the map
+    items = items.limit(500)
+    
+    # Return items with basic info plus coordinates
+    render json: items.map { |item|
+      {
+        id: item.id,
+        code: item.code,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        variety: item.variety,
+        taken: item.taken
+      }
+    }
+  end
+
   private
 
   def items_params
