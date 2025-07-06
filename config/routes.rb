@@ -22,9 +22,11 @@ HyperCheese::Application.routes.draw do
         get :convert
         post :shares
         post :visibility
+        post :search_by_exif
       end
       get :details
       get :similar
+      get :exif_fields
       post :toggle_star
       post :toggle_bullhorn
       post :rate

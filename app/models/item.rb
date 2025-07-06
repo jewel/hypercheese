@@ -24,6 +24,20 @@ class Item < ActiveRecord::Base
     where published: true
   end
 
+  # Search items by EXIF data
+  def self.search_by_exif(field, value)
+    where("JSON_EXTRACT(exif_data, ?) LIKE ?", "$.#{field}", "%#{value}%")
+  end
+
+  # Search items by multiple EXIF fields
+  def self.search_by_exif_fields(conditions)
+    query = self
+    conditions.each do |field, value|
+      query = query.where("JSON_EXTRACT(exif_data, ?) LIKE ?", "$.#{field}", "%#{value}%")
+    end
+    query
+  end
+
   # Check visibility on small groups of items
   #
   # The main search results shouldn't use this, it's inefficient.
@@ -84,9 +98,58 @@ class Item < ActiveRecord::Base
   end
 
   def exif
+    # Return parsed EXIF data from database if available
+    return parsed_exif_data if exif_data.present?
+    
+    # Fallback to reading from file if no database data
     EXIFR::JPEG.new full_path
   rescue
     nil
+  end
+
+  def parsed_exif_data
+    @parsed_exif_data ||= begin
+      return nil unless exif_data.present?
+      
+      data = JSON.parse(exif_data)
+      
+      # Create a simple object that behaves like EXIFR::JPEG for backward compatibility
+      exif_object = OpenStruct.new
+      
+      data.each do |key, value|
+        # Convert date strings back to DateTime objects if they look like dates
+        if key.include?('date') || key.include?('time') 
+          begin
+            if value.is_a?(String) && value.match?(/^\d{4}[:-]\d{2}[:-]\d{2}/)
+              value = DateTime.parse(value)
+            end
+          rescue
+            # Keep as string if parsing fails
+          end
+        end
+        
+        exif_object[key] = value
+        
+        # Also make it accessible as a method for backward compatibility
+        exif_object.define_singleton_method(key.to_sym) { value } unless exif_object.respond_to?(key.to_sym)
+      end
+      
+      exif_object
+    rescue JSON::ParserError
+      nil
+    end
+  end
+
+  # Get specific EXIF field value
+  def exif_field(field)
+    return nil unless exif_data.present?
+    
+    begin
+      data = JSON.parse(exif_data)
+      data[field.to_s]
+    rescue JSON::ParserError
+      nil
+    end
   end
 
   def probe

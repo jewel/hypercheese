@@ -242,6 +242,64 @@ class ItemsController < ApplicationController
     end
   end
 
+  # POST /items/search_by_exif
+  def search_by_exif
+
+    exif_conditions = params[:exif_conditions]
+    return render json: { error: "Missing exif_conditions parameter" }, status: 400 unless exif_conditions
+
+    limit = (params[:limit] || 100).to_i
+    offset = (params[:offset] || 0).to_i
+
+    begin
+      # Build the query based on provided EXIF conditions
+      query = Item.published
+      
+      if exif_conditions.is_a?(Hash)
+        # Multiple field search
+        query = query.search_by_exif_fields(exif_conditions)
+      elsif params[:field] && params[:value]
+        # Single field search
+        query = query.search_by_exif(params[:field], params[:value])
+      else
+        return render json: { error: "Invalid search parameters" }, status: 400
+      end
+
+      # Apply visibility check for current user
+      if current_user
+        query = query.where(published: true)
+      end
+
+      total = query.count
+      items = query.includes(:comments, :tags, :stars, :bullhorns, :ratings)
+                   .limit(limit)
+                   .offset(offset)
+                   .order(taken: :desc)
+
+      render json: items, each_serializer: ItemSerializer, root: "items", meta: { total: total }
+    rescue => e
+      render json: { error: "Search failed: #{e.message}" }, status: 500
+    end
+  end
+
+  # GET /items/:id/exif_fields
+  def exif_fields
+    @item = Item.find params[:item_id].to_i
+    @item.check_visibility_for current_user
+    
+    exif_data = @item.exif_data
+    if exif_data.present?
+      begin
+        fields = JSON.parse(exif_data).keys
+        render json: { fields: fields }
+      rescue JSON::ParserError
+        render json: { error: "Invalid EXIF data" }, status: 500
+      end
+    else
+      render json: { fields: [] }
+    end
+  end
+
   private
 
   def items_params

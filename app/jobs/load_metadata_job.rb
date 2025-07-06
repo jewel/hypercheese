@@ -2,6 +2,8 @@ require 'exifr'
 require 'exifr/jpeg'
 
 class LoadMetadataJob < ApplicationJob
+  MAX_EXIF_VALUE_SIZE = 1024 # 1KB limit for EXIF values
+
   def perform item_id
     item = Item.find item_id
     return if item.deleted
@@ -22,6 +24,9 @@ class LoadMetadataJob < ApplicationJob
         item.height = exif.height
         item.width = exif.width
       end
+
+      # Extract and store all EXIF data
+      item.exif_data = extract_exif_data(exif)
     rescue
       warn "Import EXIF problem: #$!"
       metadata = read_exiftool path
@@ -31,6 +36,9 @@ class LoadMetadataJob < ApplicationJob
       if date !~ /^0000:/ && date =~ /^(\d\d\d\d):(\d\d):(\d\d) (.*)$/
         item.taken = DateTime.parse "#$1-#$2-#$3 #$4 #{zone}"
       end
+
+      # Store exiftool metadata as EXIF data
+      item.exif_data = filter_exif_data(metadata).to_json
     end
 
     if item.variety == 'photo'
@@ -49,6 +57,59 @@ class LoadMetadataJob < ApplicationJob
   end
 
   private
+
+  def extract_exif_data(exif)
+    exif_hash = {}
+    
+    # Use introspection to get all available methods/data
+    exif.class.instance_methods(false).each do |method|
+      next if method.to_s.start_with?('_')
+      next if [:initialize, :[], :each, :keys, :values].include?(method)
+      
+      begin
+        value = exif.send(method)
+        next if value.nil?
+        
+        # Convert to string for size checking
+        value_str = value.to_s
+        next if value_str.bytesize > MAX_EXIF_VALUE_SIZE
+        
+        exif_hash[method.to_s] = value
+      rescue
+        # Skip any methods that cause errors
+      end
+    end
+    
+    # Also try to get the raw EXIF data if available
+    begin
+      if exif.respond_to?(:to_hash)
+        raw_data = exif.to_hash
+        raw_data.each do |key, value|
+          next if value.nil?
+          value_str = value.to_s
+          next if value_str.bytesize > MAX_EXIF_VALUE_SIZE
+          
+          exif_hash[key.to_s] = value
+        end
+      end
+    rescue
+      # Skip if to_hash fails
+    end
+    
+    exif_hash.to_json
+  end
+
+  def filter_exif_data(metadata)
+    filtered = {}
+    metadata.each do |key, value|
+      next if value.nil?
+      value_str = value.to_s
+      next if value_str.bytesize > MAX_EXIF_VALUE_SIZE
+      
+      filtered[key] = value
+    end
+    filtered
+  end
 
   def read_exiftool path
     data = `exiftool -t #{se path}`

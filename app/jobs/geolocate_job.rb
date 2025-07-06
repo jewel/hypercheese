@@ -19,9 +19,26 @@ class GeolocateJob < ApplicationJob
 
       # Load the photo and extract the GPS coordinates
       return unless exif
-      return unless exif.gps
-      latitude = exif.gps.latitude
-      longitude = exif.gps.longitude
+      
+      # Check if GPS data exists - handle both database and file-based EXIF
+      gps_data = nil
+      if exif.respond_to?(:gps)
+        gps_data = exif.gps
+      elsif exif.respond_to?(:gps_latitude) && exif.respond_to?(:gps_longitude)
+        # Handle case where GPS data is stored as separate fields
+        lat = exif.gps_latitude
+        lon = exif.gps_longitude
+        gps_data = OpenStruct.new(latitude: lat, longitude: lon) if lat && lon
+      else
+        # Try to get GPS data from database EXIF fields
+        lat = item.exif_field('gps_latitude') || item.exif_field('gps').try(:[], 'latitude')
+        lon = item.exif_field('gps_longitude') || item.exif_field('gps').try(:[], 'longitude')
+        gps_data = OpenStruct.new(latitude: lat, longitude: lon) if lat && lon
+      end
+      
+      return unless gps_data
+      latitude = gps_data.latitude
+      longitude = gps_data.longitude
       item.latitude = latitude
       item.longitude = longitude
       item.save!
