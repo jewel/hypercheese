@@ -9,6 +9,10 @@
 
     squareImage = Store.resizedURL 'square', item
 
+    imageStyle = {}
+    if item.rotate
+      imageStyle.transform = "rotate(#{item.rotate}deg)"
+
     <button className="shared-item" key={item.id} onClick={@onClick}>
-      <img src={squareImage} />
+      <img style={imageStyle} src={squareImage} />
     </button>

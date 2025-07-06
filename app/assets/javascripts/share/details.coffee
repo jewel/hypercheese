@@ -170,7 +170,10 @@
               />
 
             else
-              <img ref={@state.curImageRef} onClick={@toggleControls} src={@largeURL(@props.itemId)} />
+              imageStyle = {}
+              if item && item.rotate
+                imageStyle.transform = "rotate(#{item.rotate}deg)"
+              <img ref={@state.curImageRef} style={imageStyle} onClick={@toggleControls} src={@largeURL(@props.itemId)} />
           }
         </Swiper>
 

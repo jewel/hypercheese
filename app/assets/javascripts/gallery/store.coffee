@@ -397,6 +397,26 @@ class @Store
         @_ingestItemUpdates [res.item]
         @needsRedraw()
 
+  @rotateItem: (itemId, degrees) ->
+    @jax
+      url: "/items/#{itemId}/rotate"
+      type: "POST"
+      data:
+        degrees: degrees
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
+        @needsRedraw()
+
+  @rotateItem: (itemId, degrees) ->
+    @jax
+      url: "/items/#{itemId}/rotate"
+      type: "POST"
+      data:
+        degrees: degrees
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
+        @needsRedraw()
+
   @setZoom: (level) ->
     @state.zoom = level
     @needsRedraw()

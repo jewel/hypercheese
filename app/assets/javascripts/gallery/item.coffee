@@ -86,6 +86,7 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
   imageStyle =
     width: "#{imageWidth}px"
     height: "#{imageHeight}px"
+    transform: if item.rotate then "rotate(#{item.rotate}deg)" else null
 
   size = if imageWidth > 400
     if item.variety == 'video'

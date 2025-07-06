@@ -28,6 +28,7 @@ HyperCheese::Application.routes.draw do
       post :toggle_star
       post :toggle_bullhorn
       post :rate
+      post :rotate
     end
 
     resources :comments

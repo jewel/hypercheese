@@ -190,6 +190,21 @@ class ItemsController < ApplicationController
     render json: @item, serializer: ItemSerializer
   end
 
+  def rotate
+    require_write!
+
+    @item = Item.find params[:item_id].to_i
+    @item.check_visibility_for current_user
+    
+    degrees = params[:degrees].to_i
+    current_rotation = @item.rotate || 0
+    new_rotation = (current_rotation + degrees) % 360
+    
+    @item.update!(rotate: new_rotation)
+    
+    render json: @item, serializer: ItemSerializer
+  end
+
   def rate
     require_write!
 

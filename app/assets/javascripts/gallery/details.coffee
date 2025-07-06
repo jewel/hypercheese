@@ -101,6 +101,12 @@ component 'Details', ({itemId}) ->
   onZoom = (e) ->
     setZoom(!zoom)
 
+  onRotateLeft = (e) ->
+    Store.rotateItem itemId, -90
+
+  onRotateRight = (e) ->
+    Store.rotateItem itemId, 90
+
   onFullScreen = (e) ->
     html = document.documentElement
     if func = fullScreenFunction()
@@ -211,6 +217,8 @@ component 'Details', ({itemId}) ->
   imageStyle = {}
   if zoom
     imageStyle.objectFit = 'cover'
+  if item && item.rotate
+    imageStyle.transform = "rotate(#{item.rotate}deg)"
 
   <div className="details-wrapper">
     <div className={classes.join ' '}>
@@ -283,6 +291,16 @@ component 'Details', ({itemId}) ->
               title="Bookmark for future reference"
               onClick={onStar}
               icon={if item && item.starred then "fas fa-star" else "far fa-star"}
+            />
+            <ControlIcon
+              title="Rotate left"
+              onClick={onRotateLeft}
+              icon="fas fa-undo"
+            />
+            <ControlIcon
+              title="Rotate right"
+              onClick={onRotateRight}
+              icon="fas fa-redo"
             />
           </Writer>
           {
