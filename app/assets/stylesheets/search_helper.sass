@@ -16,9 +16,55 @@
   form
     :font-size 20px
 
+  .tag-picker
+    :background white
+    :border 1px solid #ddd
+    :border-radius 4px
+    :margin-top 10px
+    :padding 10px
+    :box-shadow 0 2px 4px rgba(0,0,0,0.1)
+    
+    .tag-picker-header
+      :margin-bottom 10px
+      
+      h4
+        :margin 0 0 10px 0
+        :font-size 16px
+        :color #333
+      
+      .input-group
+        :width 100%
+        :max-width 300px
+    
+    .tag-picker-list
+      :display flex
+      :flex-wrap wrap
+      :max-height 200px
+      :overflow-y auto
+      :border 1px solid #eee
+      :border-radius 4px
+      :padding 5px
+      
+      .tag
+        :text-align center
+        :padding 4px
+        :margin 2px
+        :width 72px
+        :overflow hidden
+        :cursor pointer
+        
+        &:hover
+          :background #f0f0f0
+        
+        &.selected
+          :background #09f
+          :border-radius 16px
+          :color white
+
   .tag-list
     :display flex
     :flex-wrap wrap
+    :margin-top 10px
 
     .tag
       :text-align center
@@ -26,6 +72,10 @@
       :margin 2px
       :width 72px
       :overflow hidden
+      :cursor pointer
+
+      &:hover
+        :background #f0f0f0
 
       &.selected
         :background #09f

@@ -2,12 +2,19 @@ component 'SearchHelper', ({close, spacerHeight}) ->
   [searchString, setSearchString] = React.useState Store.state.query
   [userInput, setUserInput] = React.useState null
   [showCriteriaPicker, setShowCriteriaPicker] = React.useState false
+  [showTagPicker, setShowTagPicker] = React.useState false
+  [tagPickerFilter, setTagPickerFilter] = React.useState ''
   [caretPosition, setCaretPosition] = React.useState 0
   searchRef = React.useRef()
 
   onShowCriteriaPicker = (e) ->
     e.preventDefault()
     setShowCriteriaPicker !showCriteriaPicker
+
+  onShowTagPicker = (e) ->
+    e.preventDefault()
+    setShowTagPicker !showTagPicker
+    setTagPickerFilter ''
 
   onSelectCriteria = (e, opt) ->
     e.preventDefault()
@@ -59,6 +66,9 @@ component 'SearchHelper', ({close, spacerHeight}) ->
     Store.search searchString, true
     Store.navigate '/search/' + encodeURI(searchString)
 
+  onTagPickerFilterChange = (e) ->
+    setTagPickerFilter e.target.value
+
   optionHelper = (field, options...) ->
     val = ""
     <select className="form-control" defaultValue={val}>
@@ -74,6 +84,37 @@ component 'SearchHelper', ({close, spacerHeight}) ->
     searchString
 
   query = new SearchQuery searchString, caretPosition
+
+  # Filter tags for tag picker
+  getFilteredTagsForPicker = ->
+    if tagPickerFilter == ''
+      return Store.state.tags
+    
+    filter = tagPickerFilter.toLowerCase()
+    Store.state.tags.filter (tag) ->
+      (tag.alias || tag.label).toLowerCase().indexOf(filter) >= 0
+
+  # Get tags to show in the main tag list (only matching ones)
+  getTagsToShow = ->
+    used = {}
+    others = {}
+    query.tags.map (tag) ->
+      used[tag.id] = true
+    query.others.map (tag) ->
+      others[tag.id] = true
+
+    # Only show matching tags when there's a query with partial matches
+    if query.useOthers
+      # Show matching tags (others) and already selected tags
+      Store.state.tags.filter (tag) ->
+        used[tag.id] || others[tag.id]
+    else if query.tags.length > 0
+      # If we have selected tags but no partial match, show only selected tags
+      Store.state.tags.filter (tag) ->
+        used[tag.id]
+    else
+      # No query or tags, show no tags
+      []
 
   <div className="search-helper" style={{paddingTop: spacerHeight}}>
     <form onSubmit={onSearch} className="form-inline">
@@ -100,6 +141,9 @@ component 'SearchHelper', ({close, spacerHeight}) ->
         <a href="javascript:" onClick={onShowCriteriaPicker} className="btn">
           advanced...
         </a>
+        <a href="javascript:" onClick={onShowTagPicker} className="btn">
+          <i className="fa fa-tags"/> browse tags
+        </a>
       </div>
       {
         if !userInput? && query.unknown.length > 0
@@ -121,24 +165,60 @@ component 'SearchHelper', ({close, spacerHeight}) ->
         }
       </div>
     </form>
+    
+    {
+      if showTagPicker
+        <div className="tag-picker">
+          <div className="tag-picker-header">
+            <h4>Browse Tags</h4>
+            <div className="input-group">
+              <span className="input-group-addon"><i className="fa fa-search"/></span>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="Filter tags..."
+                value={tagPickerFilter}
+                onChange={onTagPickerFilterChange}
+              />
+            </div>
+          </div>
+          <div className="tag-picker-list">
+            {
+              getFilteredTagsForPicker().map (tag) ->
+                used = {}
+                query.tags.map (selectedTag) ->
+                  used[selectedTag.id] = true
+                
+                selected = used[tag.id]
+                
+                onClick = ->
+                  if !selected
+                    query.tags.push tag
+                    setSearchString query.stringify()
+                  else
+                    query.tags = query.tags.filter (e) -> e.id != tag.id
+                    setSearchString query.stringify()
+
+                <Tag tag={tag} key={tag.id} selected={selected} label onClick={onClick}/>
+            }
+          </div>
+        </div>
+    }
+
     <div className="tag-list">
       {
-        used = {}
-        others = {}
-        query.tags.map (tag) ->
-          used[tag.id] = true
-        query.others.map (tag) ->
-          others[tag.id] = true
-        Store.state.tags.map (tag) ->
+        getTagsToShow().map (tag) ->
+          used = {}
+          query.tags.map (selectedTag) ->
+            used[selectedTag.id] = true
+          
           selected = used[tag.id]
-          if query.useOthers && !others[tag.id] && !used[tag.id]
-            return
-          if !used[tag.id]
-            onClick = ->
+          
+          onClick = ->
+            if !selected
               query.tags.push tag
               setSearchString query.stringify()
-          else
-            onClick = ->
+            else
               query.tags = query.tags.filter (e) -> e.id != tag.id
               setSearchString query.stringify()
 
