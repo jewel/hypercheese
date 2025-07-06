@@ -119,6 +119,23 @@ class Item < ActiveRecord::Base
     IndexVisuallyJob.set(priority: 6 + p).perform_later id
   end
 
+  # Schedule jobs with force regeneration (used when reimporting)
+  def schedule_jobs_with_force_regeneration priority_offset=0
+    # Deprioritize video since everything takes longer with video
+    p = priority_offset
+    p += 10 if video?
+
+    LoadMetadataJob.set(priority: 0 + p).perform_later id, force_reload: true
+    GenerateThumbsJob.set(priority: 1 + p).perform_later id, force_regenerate: true
+    if video?
+      GenerateExplodedVideoJob.set(priority: 2 + p).perform_later id
+      GenerateVideoStreamJob.set(priority: 3 + p).perform_later id
+    end
+    GeolocateJob.set(priority: 4 + p).perform_later id
+    FindFacesJob.set(priority: 5 + p).perform_later id
+    IndexVisuallyJob.set(priority: 6 + p).perform_later id
+  end
+
   def similar_items
     store = EmbeddingStore.new "clip", 768
     video_store = EmbeddingStore.new "video-clip", 768

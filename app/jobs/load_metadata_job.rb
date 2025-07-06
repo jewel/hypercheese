@@ -2,11 +2,14 @@ require 'exifr'
 require 'exifr/jpeg'
 
 class LoadMetadataJob < ApplicationJob
-  def perform item_id
+  def perform item_id, force_reload: false
     item = Item.find item_id
     return if item.deleted
 
-    return if item.taken && item.width && item.height && (item.duration || item.variety == 'photo')
+    @force_reload = force_reload
+
+    # Skip if we already have complete metadata and not forcing reload
+    return if !@force_reload && item.taken && item.width && item.height && (item.duration || item.variety == 'photo')
 
     path = item.full_path
 
@@ -34,14 +37,16 @@ class LoadMetadataJob < ApplicationJob
     end
 
     if item.variety == 'photo'
-      if !item.height
+      if !item.height || @force_reload
         item.width, item.height = MiniMagick::Image.open(path)[:dimensions]
       end
     elsif item.variety == 'video'
-      data = Probe.video path
-      item.width = data[:width]
-      item.height = data[:height]
-      item.duration = data[:duration]
+      if !item.duration || @force_reload
+        data = Probe.video path
+        item.width = data[:width]
+        item.height = data[:height]
+        item.duration = data[:duration]
+      end
     end
 
     item.taken ||= File.mtime path

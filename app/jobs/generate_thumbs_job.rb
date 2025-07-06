@@ -7,9 +7,11 @@ class GenerateThumbsJob < ApplicationJob
     :large => "1850x1000"
   }
 
-  def perform item_id
+  def perform item_id, force_regenerate: false
     @item = Item.find item_id
     return if @item.deleted
+
+    @force_regenerate = force_regenerate
 
     if @item.photo?
       generate_thumbs
@@ -23,7 +25,7 @@ class GenerateThumbsJob < ApplicationJob
   def generate_thumbs
     SIZES.each do |size,dim|
       dest = @item.resized_path size
-      next if File.exist? dest
+      next if File.exist?(dest) && !@force_regenerate && !needs_regeneration?(dest)
 
       build_thumb @item.full_path, dest, size
     end
@@ -33,7 +35,7 @@ class GenerateThumbsJob < ApplicationJob
     need_generation = false
     SIZES.each do |size,dim|
       dest = @item.resized_path size
-      next if File.exist?( dest )
+      next if File.exist?(dest) && !@force_regenerate && !needs_regeneration?(dest)
       need_generation = true
     end
 
@@ -58,7 +60,7 @@ class GenerateThumbsJob < ApplicationJob
     SIZES.each do |size,dim|
       dest = @item.resized_path size
       temp = "#{dest}.thumb.jpg"
-      next if File.exist?( dest )
+      next if File.exist?(dest) && !@force_regenerate && !needs_regeneration?(dest)
 
       build_thumb tmp_file, temp, size
       dim = "#{dim}x#{dim}" unless dim =~ /x/
@@ -109,5 +111,16 @@ class GenerateThumbsJob < ApplicationJob
       File.chmod 0644, temp
       File.rename temp, dest
     end
+  end
+
+  # Check if thumbnail needs regeneration based on source file mtime
+  def needs_regeneration?(thumbnail_path)
+    return true unless File.exist?(thumbnail_path)
+    
+    source_path = @item.full_path
+    return true unless File.exist?(source_path)
+    
+    # Compare modification times
+    File.mtime(source_path) > File.mtime(thumbnail_path)
   end
 end
