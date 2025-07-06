@@ -30,6 +30,15 @@ HyperCheese::Application.routes.draw do
       post :rate
     end
 
+    resources :albums do
+      member do
+        post :add_items
+        delete 'remove_item/:item_id', action: :remove_item
+        post :share
+      end
+    end
+
+    get 'users/albums', to: 'albums#user_albums'
     resources :comments
 
     resources :tags
@@ -42,6 +51,15 @@ HyperCheese::Application.routes.draw do
     get ':share_id/items' => 'shares#items'
     get ':share_id/download_item/:item_id' => 'shares#download_item'
     get ':share_id/(*path)' => 'shares#show'
+  end
+
+  scope :album_shares do
+    get ':share_id' => 'album_shares#show'
+    get ':share_id/download' => 'album_shares#download'
+    get ':share_id/items' => 'album_shares#items'
+    get ':share_id/download_item/:item_id' => 'album_shares#download_item'
+    post ':share_id/upload' => 'album_shares#upload'
+    get ':share_id/(*path)' => 'album_shares#show'
   end
 
   root to: 'home#index'
@@ -63,6 +81,7 @@ HyperCheese::Application.routes.draw do
   get 'items/(*path)' => 'home#index'
   get 'search/(*path)' => 'home#index'
   get 'tags/(*path)' => 'home#index'
+  get 'albums/(*path)' => 'home#index'
   get 'upload' => 'home#index'
 
   scope :files do

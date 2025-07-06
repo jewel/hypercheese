@@ -251,6 +251,62 @@ class @Store
     ).then (res) ->
       res.url
 
+  # Album methods
+  @fetchUserAlbums: ->
+    return @state.userAlbums if @state.userAlbums
+    @state.userAlbums = []
+    
+    @jax
+      url: '/users/albums'
+      success: (res) =>
+        @state.userAlbums = res.albums
+        @needsRedraw()
+    
+    @state.userAlbums
+
+  @createAlbum: (name, description) ->
+    @jax
+      url: '/albums'
+      type: 'POST'
+      data:
+        album:
+          name: name
+          description: description
+      success: (res) =>
+        @state.userAlbums = @state.userAlbums || []
+        @state.userAlbums.unshift res.album
+        @needsRedraw()
+
+  @addSelectionToAlbum: (albumId) ->
+    ids = []
+    for id of @state.selection
+      ids.push id
+
+    return if ids.length == 0
+
+    @jax
+      url: "/albums/#{albumId}/add_items"
+      type: 'POST'
+      data:
+        item_ids: ids
+      success: (res) =>
+        # Update the album in our state
+        for album, i in @state.userAlbums
+          if album.id == albumId
+            @state.userAlbums[i] = res.album
+            break
+        @clearSelection()
+        @needsRedraw()
+
+  @shareAlbum: (albumId, allowsUploads = false) ->
+    @jax
+      url: "/albums/#{albumId}/share"
+      type: 'POST'
+      data:
+        allows_uploads: allowsUploads
+      success: (res) =>
+        res.url
+
   @clearSelection: ->
     @state.selection = {}
     @state.selectionCount = 0

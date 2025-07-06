@@ -2,6 +2,9 @@ component 'SelectBar', ({fixed}) ->
   [caretPosition, setCaretPosition] = useState 0
   [showTagLabels, setShowTagLabels] = useState false
   [spacerHeight, setSpacerHeight] = useState 0
+  [showAlbumForm, setShowAlbumForm] = useState false
+  [newAlbumName, setNewAlbumName] = useState ''
+  [newAlbumDescription, setNewAlbumDescription] = useState ''
   selectbarRef = React.useRef null
 
   updateSpacerHeight = ->
@@ -37,6 +40,17 @@ component 'SelectBar', ({fixed}) ->
   shareSelection = (e) ->
     Store.shareSelection().then (url) ->
       window.prompt "The items are available at this link:", url
+
+  addToAlbum = (albumId) ->
+    Store.addSelectionToAlbum albumId
+
+  createNewAlbum = (e) ->
+    e.preventDefault()
+    if newAlbumName.trim()
+      Store.createAlbum newAlbumName, newAlbumDescription
+      setNewAlbumName ''
+      setNewAlbumDescription ''
+      setShowAlbumForm false
 
   publishSelection = (e) ->
     Store.changeSelectionVisibility true
@@ -135,6 +149,32 @@ component 'SelectBar', ({fixed}) ->
 
         <div className="ms-auto">
           <Writer>
+            <div className="btn-group me-2">
+              <button type="button" title="Add to Album" className="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i className="fa fa-plus"/> Album
+              </button>
+              <ul className="dropdown-menu">
+                {
+                  albums = Store.fetchUserAlbums()
+                  if albums.length > 0
+                    albums.map (album) ->
+                      <li key={album.id}>
+                        <a className="dropdown-item" href="javascript:" onClick={ -> addToAlbum(album.id) }>
+                          {album.name} ({album.item_count})
+                        </a>
+                      </li>
+                }
+                {
+                  if albums.length > 0
+                    <li><hr className="dropdown-divider"/></li>
+                }
+                <li>
+                  <a className="dropdown-item" href="javascript:" onClick={ -> setShowAlbumForm true }>
+                    <i className="fa fa-plus"/> Create New Album
+                  </a>
+                </li>
+              </ul>
+            </div>
             <button type="button" title="Share" className="btn me-2" onClick={shareSelection}><i className="fa fa-share-alt"/></button>
           </Writer>
           <a title="Download Originals" className="btn me-2" href={downloadLink}><i className="fa fa-download"/></a>
@@ -167,6 +207,41 @@ component 'SelectBar', ({fixed}) ->
         </div>
       </div>
     </nav>
+
+    {
+      if showAlbumForm
+        <div className="album-form-overlay">
+          <div className="album-form">
+            <h4>Create New Album</h4>
+            <form onSubmit={createNewAlbum}>
+              <div className="mb-3">
+                <label className="form-label">Album Name</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  value={newAlbumName}
+                  onChange={(e) -> setNewAlbumName(e.target.value)}
+                  autoFocus
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Description (optional)</label>
+                <textarea 
+                  className="form-control" 
+                  value={newAlbumDescription}
+                  onChange={(e) -> setNewAlbumDescription(e.target.value)}
+                  rows="3"
+                />
+              </div>
+              <div>
+                <button type="submit" className="btn btn-primary me-2">Create Album</button>
+                <button type="button" className="btn btn-secondary" onClick={ -> setShowAlbumForm false }>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+    }
 
     <div className={helperClasses.join ' '}>
       {

@@ -16,6 +16,8 @@ class Item < ActiveRecord::Base
   has_many :sources, through: :item_paths
   has_many :faces
   has_many :clip_frames
+  has_many :album_items, dependent: :destroy
+  has_many :albums, through: :album_items
   belongs_to :group
   belongs_to :event
 

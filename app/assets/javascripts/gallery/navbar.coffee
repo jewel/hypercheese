@@ -105,6 +105,7 @@ component 'NavBar', ({showingResults}) ->
             <i className="fa fa-ellipsis-v"/>
           </button>
           <ul className="dropdown-menu dropdown-menu-end">
+            <li><Link className="dropdown-item" href="/albums">Albums</Link></li>
             <li><Link className="dropdown-item" href="/tags">Tags</Link></li>
             <li><Link className="dropdown-item" href="/upload">Upload</Link></li>
             {

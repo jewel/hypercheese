@@ -5,6 +5,8 @@ class User < ActiveRecord::Base
   has_many :sponsored_users, class_name: "User", foreign_key: "sponsor_id"
   has_many :comments
   has_many :item_tags, foreign_key: "added_by"
+  has_many :albums, dependent: :destroy
+  has_many :album_items, foreign_key: "added_by"
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
