@@ -33,6 +33,7 @@ HyperCheese::Application.routes.draw do
     resources :comments
 
     resources :tags
+    resources :search_histories, only: [:index, :create, :destroy]
     get 'users/current', to: 'current_user#current'
   end
 

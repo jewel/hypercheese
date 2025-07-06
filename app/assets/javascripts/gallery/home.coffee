@@ -6,6 +6,7 @@ pluralize = (count, obj) ->
 
 component 'Home', ->
   recent = Store.fetchRecent()
+  searchHistory = Store.fetchSearchHistory()
   <div className="container-fluid cheese-home">
     <h1>Welcome to HyperCheese</h1>
 
@@ -58,6 +59,36 @@ component 'Home', ->
           </div>
       }
     </div>
+
+    {
+      if searchHistory.length > 0
+        <div>
+          <div className="d-flex justify-content-between align-items-center">
+            <h2>Recent Searches</h2>
+            <button 
+              className="btn btn-outline-danger btn-sm"
+              onClick={-> Store.clearSearchHistory()}
+            >
+              Clear History
+            </button>
+          </div>
+          <div className="recent-searches">
+            {
+              searchHistory.map (search) ->
+                <div key={search.id} className="btn-group" style={{marginBottom: '5px', marginRight: '5px'}}>
+                  <Link 
+                    className="btn btn-outline-secondary btn-sm" 
+                    href={"/search/#{encodeURIComponent(search.query)}"}
+                  >
+                    {search.query}
+                    <span className="badge badge-secondary ms-2">{search.result_count}</span>
+                  </Link>
+                </div>
+            }
+          </div>
+          <br/>
+        </div>
+    }
 
     <h2>Recent Activity</h2>
     <div className="recent-activity">

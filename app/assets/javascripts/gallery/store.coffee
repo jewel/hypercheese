@@ -63,6 +63,7 @@ class @Store
       judgeIcons: false
       canWrite: true
       isAdmin: false
+      searchHistory: null
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
@@ -101,6 +102,27 @@ class @Store
         @state.recent = res
         @needsRedraw()
     blank
+
+  @fetchSearchHistory: ->
+    return @state.searchHistory if @state.searchHistory
+    blank = []
+    return blank if @loadingSearchHistory
+    @loadingSearchHistory = true
+    @jax
+      url: '/search_histories'
+      success: (res) =>
+        @loadingSearchHistory = false
+        @state.searchHistory = res
+        @needsRedraw()
+    blank
+
+  @clearSearchHistory: ->
+    @jax
+      url: '/search_histories'
+      type: 'DELETE'
+      success: (res) =>
+        @state.searchHistory = []
+        @needsRedraw()
 
   @fetchItem: (itemId) ->
     item = @getItem itemId
@@ -472,6 +494,18 @@ class @Store
           @state.itemsById[item.id] = item
 
         @state.searchKey = res.meta.search_key
+
+        # Save search history for successful searches
+        if batchStart == 0 && @state.query && @state.query.length > 0
+          @jax
+            url: '/search_histories'
+            type: 'POST'
+            data:
+              query: @state.query
+              result_count: @state.resultCount
+            success: (res) =>
+              # Invalidate search history cache to show updated results
+              @state.searchHistory = null
 
         @needsRedraw()
 

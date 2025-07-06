@@ -1,4 +1,5 @@
 require_dependency 'search'
+require_dependency 'search_query_formatter'
 require 'digest'
 
 class ItemsController < ApplicationController
@@ -51,6 +52,12 @@ class ItemsController < ApplicationController
 
     res = subset.map do |item_id|
       items_by_id[item_id.to_i]
+    end
+
+    # Record search history if this is a new search
+    if offset == 0 && params[:query] && params[:query].present?
+      query_string = SearchQueryFormatter.format_query(params[:query])
+      SearchHistory.record_search(current_user, query_string, total) if query_string.present?
     end
 
     render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: total }
