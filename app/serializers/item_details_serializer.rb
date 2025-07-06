@@ -1,5 +1,5 @@
 class ItemDetailsSerializer < ActiveModel::Serializer
-  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations
+  attributes :id, :taken, :width, :height, :exif, :probe, :paths, :ages, :filesize, :pretty_size, :faces, :aesthetics_score, :locations, :speed_segments
   has_many :comments, include: true
 
   def exif
@@ -62,5 +62,10 @@ class ItemDetailsSerializer < ActiveModel::Serializer
       age_map[tag.id] = age
     end
     age_map
+  end
+
+  def speed_segments
+    return [] unless object.video?
+    object.speed_segments_json
   end
 end

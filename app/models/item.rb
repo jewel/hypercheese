@@ -16,6 +16,7 @@ class Item < ActiveRecord::Base
   has_many :sources, through: :item_paths
   has_many :faces
   has_many :clip_frames
+  has_many :video_speed_segments, dependent: :destroy
   belongs_to :group
   belongs_to :event
 
@@ -103,6 +104,24 @@ class Item < ActiveRecord::Base
     variety == 'video'
   end
 
+  # Check if this video has slow motion segments
+  def has_slow_motion?
+    video? && video_speed_segments.exists?
+  end
+
+  # Get speed segments as JSON for JavaScript player
+  def speed_segments_json
+    return [] unless video?
+    video_speed_segments.as_json_segments
+  end
+
+  # Check if this appears to be a Pixel slow motion video
+  def pixel_slow_motion?
+    return false unless video?
+    metadata = VideoMetadataExtractor.new(self).extract_metadata
+    metadata[:is_pixel_slow_motion] || false
+  end
+
   def schedule_jobs priority_offset=0
     # Deprioritize video since everything takes longer with video
     p = priority_offset
@@ -113,10 +132,11 @@ class Item < ActiveRecord::Base
     if video?
       GenerateExplodedVideoJob.set(priority: 2 + p).perform_later id
       GenerateVideoStreamJob.set(priority: 3 + p).perform_later id
+      ExtractVideoSpeedSegmentsJob.set(priority: 4 + p).perform_later id
     end
-    GeolocateJob.set(priority: 4 + p).perform_later id
-    FindFacesJob.set(priority: 5 + p).perform_later id
-    IndexVisuallyJob.set(priority: 6 + p).perform_later id
+    GeolocateJob.set(priority: 5 + p).perform_later id
+    FindFacesJob.set(priority: 6 + p).perform_later id
+    IndexVisuallyJob.set(priority: 7 + p).perform_later id
   end
 
   def similar_items

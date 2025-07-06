@@ -28,6 +28,13 @@ HyperCheese::Application.routes.draw do
       post :toggle_star
       post :toggle_bullhorn
       post :rate
+      
+      # Video speed segments nested routes
+      resources :video_speed_segments, except: [:new, :edit] do
+        collection do
+          post :extract
+        end
+      end
     end
 
     resources :comments

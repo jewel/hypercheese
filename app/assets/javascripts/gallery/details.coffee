@@ -232,6 +232,7 @@ component 'Details', ({itemId}) ->
               poster={largeURL(itemId)}
               itemId={itemId}
               itemCode={item.code}
+              speedSegments={item.speed_segments || []}
             />
           else
             <img
