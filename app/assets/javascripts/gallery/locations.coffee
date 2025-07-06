@@ -74,7 +74,8 @@ component 'Locations', ->
                 <tbody>
                   {
                     filteredLocations.map (location) ->
-                      searchUrl = "/search/in:#{encodeURIComponent(location.name)}"
+                      name = location.name.replace(/ /g, "-")
+                      searchUrl = "/search/in:#{encodeURIComponent(name)}"
                       <tr key={location.id}>
                         <td>
                           <Link href={searchUrl}>
