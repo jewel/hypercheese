@@ -231,6 +231,42 @@ class ItemsController < ApplicationController
     redirect_to "/data/resized/#{params[:size]}/#{item.id}-#{item.code}.#{params[:ext]}"
   end
 
+  # Serve image tiles for progressive loading
+  def tiles
+    expires_in 10.years
+    item = Item.find params[:item_id].to_i
+    item.check_visibility_for current_user
+    
+    zoom = params[:zoom].to_f
+    tile_x = params[:tile_x].to_i
+    tile_y = params[:tile_y].to_i
+    tile_size = params[:tile_size].to_i
+    
+    # Validate parameters
+    return head :bad_request unless zoom > 0 && tile_size > 0
+    
+    # For now, we'll serve existing resized images as tiles
+    # In a full implementation, you would generate actual tiles from the source image
+    size = case zoom
+           when 0...1.5
+             'square'
+           when 1.5...3.0
+             'large'
+           else
+             'exploded'
+           end
+    
+    # Generate tile from existing resized image
+    tile_path = generate_tile(item, size, tile_x, tile_y, tile_size)
+    
+    if tile_path && File.exist?(tile_path)
+      send_file tile_path, type: 'image/jpeg', disposition: 'inline'
+    else
+      # Fallback to regular resized image
+      redirect_to "/data/resized/#{size}/#{item.id}-#{item.code}.jpg"
+    end
+  end
+
   def similar
     @item = Item.find params[:item_id].to_i
     @item.check_visibility_for current_user
@@ -250,5 +286,36 @@ class ItemsController < ApplicationController
 
   def item_tag_params
     params.permit items: [], tags: []
+  end
+
+  def generate_tile(item, size, tile_x, tile_y, tile_size)
+    # Generate tile cache directory
+    cache_dir = Rails.root.join('tmp', 'tiles', item.id.to_s, size)
+    cache_dir.mkpath
+    
+    tile_filename = "#{tile_x}_#{tile_y}_#{tile_size}.jpg"
+    tile_path = cache_dir.join(tile_filename)
+    
+    # Return cached tile if it exists
+    return tile_path if tile_path.exist?
+    
+    # Path to the source resized image
+    source_path = Rails.root.join('data', 'resized', size, "#{item.id}-#{item.code}.jpg")
+    
+    # Check if source image exists
+    return nil unless source_path.exist?
+    
+    # Generate tile using ImageMagick
+    # This is a simplified tile generation - in practice you'd want more sophisticated logic
+    system("convert", source_path.to_s, 
+           "-crop", "#{tile_size}x#{tile_size}+#{tile_x * tile_size}+#{tile_y * tile_size}",
+           "+repage", 
+           "-quality", "85",
+           tile_path.to_s)
+    
+    tile_path.exist? ? tile_path : nil
+  rescue => e
+    Rails.logger.error "Error generating tile: #{e.message}"
+    nil
   end
 end

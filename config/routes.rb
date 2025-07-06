@@ -73,4 +73,5 @@ HyperCheese::Application.routes.draw do
   end
 
   get 'data/resized/:size/:item_id.:ext' => 'items#resized', constraints: { item_id: /\d+/ }
+  get 'data/tiles/:item_id/:zoom/:tile_x/:tile_y/:tile_size.jpg' => 'items#tiles', constraints: { item_id: /\d+/ }
 end
