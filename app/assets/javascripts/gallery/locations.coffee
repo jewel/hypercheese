@@ -6,6 +6,7 @@ component 'Locations', ->
 
   useEffect ->
     fetchLocations()
+    ->
   , []
 
   fetchLocations = ->
@@ -27,6 +28,7 @@ component 'Locations', ->
       filtered = locations.filter (location) ->
         location.name.toLowerCase().includes(filter.toLowerCase())
       setFilteredLocations filtered
+    ->
   , [locations, filter]
 
   onFilterChange = (e) ->
