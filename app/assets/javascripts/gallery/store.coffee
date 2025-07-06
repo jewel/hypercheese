@@ -63,6 +63,7 @@ class @Store
       judgeIcons: false
       canWrite: true
       isAdmin: false
+      locations: null
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
@@ -101,6 +102,18 @@ class @Store
         @state.recent = res
         @needsRedraw()
     blank
+
+  @fetchLocations: ->
+    return @state.locations if @state.locations
+    return null if @loading
+    @loading = true
+    @jax
+      url: '/locations'
+      success: (res) =>
+        @loading = false
+        @state.locations = res
+        @needsRedraw()
+    null
 
   @fetchItem: (itemId) ->
     item = @getItem itemId

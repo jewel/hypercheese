@@ -1,35 +1,20 @@
 component 'Locations', ->
-  [locations, setLocations] = React.useState []
-  [loading, setLoading] = React.useState true
   [filter, setFilter] = React.useState ''
   [filteredLocations, setFilteredLocations] = React.useState []
 
-  useEffect ->
-    fetchLocations()
-    ->
-  , []
-
-  fetchLocations = ->
-    setLoading true
-    fetch('/api/locations')
-      .then (response) -> response.json()
-      .then (data) ->
-        setLocations data
-        setFilteredLocations data
-        setLoading false
-      .catch (error) ->
-        console.error 'Error fetching locations:', error
-        setLoading false
+  locations = Store.fetchLocations()
+  loading = locations == null
 
   useEffect ->
-    if filter.trim() == ''
-      setFilteredLocations locations
-    else
-      filtered = locations.filter (location) ->
-        location.name.toLowerCase().includes(filter.toLowerCase())
-      setFilteredLocations filtered
+    if locations != null
+      if filter.trim() == ''
+        setFilteredLocations locations
+      else
+        filtered = locations.filter (location) ->
+          location.name.toLowerCase().includes(filter.toLowerCase())
+        setFilteredLocations filtered
     ->
-  , [locations, filter]
+  , [filter, locations]
 
   onFilterChange = (e) ->
     setFilter e.target.value
@@ -38,9 +23,11 @@ component 'Locations', ->
     <div className="row">
       <div className="col-12">
         <h1>Locations</h1>
-        <p className="text-muted">
-          {locations.length} total locations with photos
-        </p>
+        {
+          <p className="text-muted">
+            {locations?.length || "?"} total locations with photos
+          </p>
+        }
       </div>
     </div>
 
