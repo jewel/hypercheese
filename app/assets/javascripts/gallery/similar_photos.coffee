@@ -3,6 +3,8 @@ component 'SimilarPhotos', ({itemId}) ->
     loading: true
     items: []
 
+  navigate = useNavigate()
+
   useEffect ->
     Store.jax
       url: "/items/#{itemId}/similar"
@@ -16,7 +18,7 @@ component 'SimilarPhotos', ({itemId}) ->
   navigateTo = (item) ->
     (e) ->
       e.preventDefault()
-      Store.navigate "/items/#{item.id}"
+      navigate("/items/#{item.id}", { state: { search: Store.state.query } })
 
   if state.loading
     return <i className="fa fa-spinner fa-spin" style={fontSize: 48}/>

@@ -1,74 +1,57 @@
-parseUrl = ->
-  path = window.location.pathname
-  if path == '' || path == '/'
-    return
-      page: 'home'
+# Router-enabled pages
+component 'HomePage', ->
+  <div>
+    <NavBar initialSearch="" showingResults={false} />
+    <ErrorBoundary>
+      <Home/>
+    </ErrorBoundary>
+  </div>
 
-  parts = path.split('/')
-  if parts.length == 1 || parts[0] != ''
-    console.warn "Invalid URL: #{path}"
-    return
-      page: 'home'
+component 'TagsPage', ->
+  <div>
+    <NavBar initialSearch="" showingResults={false} />
+    <ErrorBoundary>
+      <TagList/>
+    </ErrorBoundary>
+  </div>
 
-  if parts[1] == 'items'
-    return
-      page: 'item'
-      itemId: Math.round(parts[2])
-
-  if parts[1] == 'tags' && parts[2]
-    return
-      page: 'tag'
-      tagId: parts[2]
-
-  if parts[1] == 'tags'
-    return
-      page: 'tags'
-
-  if parts[1] == 'upload'
-    return
-      page: 'upload'
-
-  if parts[1] == 'search'
-    str = decodeURI parts[2]
-    Store.search str
-    return
-      page: 'search'
-      search: str
-
-  console.warn "Invalid URL: #{path}"
-  return
-    page: 'home'
-
-component 'GalleryApp', withErrorBoundary ->
-  # Break down state into separate variables
-  [page, setPage] = React.useState -> parseUrl().page
-  [itemId, setItemId] = React.useState -> parseUrl().itemId
-  [tagId, setTagId] = React.useState -> parseUrl().tagId
-  [search, setSearch] = React.useState -> parseUrl().search || ''
-  [update, setUpdate] = React.useState 0
-  [draggingCount, setDraggingCount] = React.useState 0
-  uploaderRef = React.useRef null
-
-  # Update page title when search changes
-  useEffect ->
-    if search
-      document.title = "Hypercheese: #{search}"
+component 'TagPage', ->
+  {id} = useParams()
+  tag = Store.state.tagsById[id]
+  
+  if !tag
+    if Store.state.tags.length > 0
+      return <div>
+        <NavBar initialSearch="" showingResults={false} />
+        <h1>Tag not found</h1>
+      </div>
     else
-      document.title = "Hypercheese"
-    ->
-  , [search]
+      return <div>
+        <NavBar initialSearch="" showingResults={false} />
+        <div>Loading...</div>
+      </div>
+
+  <div>
+    <NavBar initialSearch="" showingResults={false} />
+    <ErrorBoundary>
+      <TagEditor tag={tag}/>
+    </ErrorBoundary>
+  </div>
+
+component 'UploadPage', ->
+  [draggingCount, setDraggingCount] = React.useState(0)
+  uploaderRef = React.useRef(null)
 
   onGlobalDragEnter = (e) ->
     e.preventDefault()
     e.stopPropagation()
-    # Only show upload dialog if dragging files
     if e.dataTransfer.types.includes('Files')
-      setDraggingCount (prev) -> prev + 1
+      setDraggingCount((prev) -> prev + 1)
 
   onGlobalDragLeave = (e) ->
     e.preventDefault()
     e.stopPropagation()
-    setDraggingCount (prev) -> prev - 1
+    setDraggingCount((prev) -> prev - 1)
 
   onGlobalDragOver = (e) ->
     e.preventDefault()
@@ -77,121 +60,32 @@ component 'GalleryApp', withErrorBoundary ->
   onGlobalDrop = (e) ->
     e.preventDefault()
     e.stopPropagation()
-    setDraggingCount 0
-
+    setDraggingCount(0)
+    
     if e.dataTransfer.files.length > 0
-      # Navigate to upload page if not already there
-      if page != 'upload'
-        Store.navigate '/upload'
-      # Queue the files for upload
-      uploaderRef.current?.addFiles e.dataTransfer.files
-
-  onKeyUp = (e) ->
-    if e.keyCode == 27
-      while lastOpened = Store.state.openStack.pop()
-        if lastOpened == 'item' && page == 'item'
-          Store.navigateBack()
-          break
-        if lastOpened == 'select' && Store.state.selectionCount > 0 || Store.state.selectMode
-          Store.state.selectMode = false
-          Store.clearSelection()
-          break
-
-  onTouchStart = ->
-    # No way to flip-flop on this at the moment, since touch events also create
-    # mouse events for backwards compatibility.
-
-    # For larger touch screens such as tablets or laptops, we want autofocus on
-    # the select bar
-    Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 600
+      uploaderRef.current?.addFiles(e.dataTransfer.files)
 
   useEffect ->
-    Store.onChange ->
-      setUpdate (prev) -> prev + 1
-
-    Store.onNavigate ->
-      newState = parseUrl()
-      setPage newState.page
-      setItemId newState.itemId
-      setTagId newState.tagId
-      setSearch newState.search || ''
-      window.scrollTo 0, 0
-
-    window.addEventListener 'popstate', (e) ->
-      newState = parseUrl()
-      setPage newState.page
-      setItemId newState.itemId
-      setTagId newState.tagId
-      setSearch newState.search || ''
-      if e.state.scrollPos?
-        window.requestAnimationFrame ->
-          window.scrollTo 0, e.state.scrollPos
-
-    window.addEventListener 'keyup', onKeyUp
-
-    document.addEventListener 'dragenter', onGlobalDragEnter
-    document.addEventListener 'dragleave', onGlobalDragLeave
-    document.addEventListener 'dragover', onGlobalDragOver
-    document.addEventListener 'drop', onGlobalDrop
+    document.addEventListener('dragenter', onGlobalDragEnter)
+    document.addEventListener('dragleave', onGlobalDragLeave)
+    document.addEventListener('dragover', onGlobalDragOver)
+    document.addEventListener('drop', onGlobalDrop)
 
     ->
-      document.removeEventListener 'dragenter', onGlobalDragEnter
-      document.removeEventListener 'dragleave', onGlobalDragLeave
-      document.removeEventListener 'dragover', onGlobalDragOver
-      document.removeEventListener 'drop', onGlobalDrop
+      document.removeEventListener('dragenter', onGlobalDragEnter)
+      document.removeEventListener('dragleave', onGlobalDragLeave)
+      document.removeEventListener('dragover', onGlobalDragOver)
+      document.removeEventListener('drop', onGlobalDrop)
   , []
 
-  if page == 'home'
-    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Home/></ErrorBoundary></div>
-
-  if page == 'tags'
-    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><TagList/></ErrorBoundary></div>
-
-  if page == 'upload'
-    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>
-
-  if page == 'tag'
-    tag = Store.state.tagsById[tagId]
-    if !tag
-      if Store.state.tags.length > 0
-        return <div><NavBar initialSearch={search} showingResults={false} /><h1>Tag not found</h1></div>
-      else
-        return <div><NavBar initialSearch={search} showingResults={false} /><div>Loading...</div></div>
-
-    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><TagEditor tag={tag}/></ErrorBoundary></div>
-
-  unless page == 'item' || page == 'search'
-    return <div><NavBar initialSearch={search} showingResults={false} /><div>Routing error for {page}</div></div>
-
-  showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
-  showItem = page == 'item' && itemId != null
-
-  # The overflow-y parameter on the html tag needs to be set BEFORE
-  # Results.initialState is called.  That's because having a scrollbar appear
-  # doesn't cause a resize event to fire (and even if it did, it'd be too
-  # late to properly calculate our desired scroll position)
-  document.documentElement.style.overflowY = if showItem
-    'auto'
-  else
-    'scroll'
-
   classes = ['react-wrapper']
-  classes.push 'showing-details' if showItem
-  classes.push 'showing-upload' if draggingCount > 0
+  classes.push('showing-upload') if draggingCount > 0
 
-  <div className={classes.join ' '} onTouchStart={onTouchStart}>
-    {
-      if !showItem && !showSelection
-        <NavBar initialSearch={search} showingResults={true} />
-      else if showSelection
-        <SelectBar showZoom={!showItem} fixed={!showItem}/>
-    }
-    {
-      if showItem
-        <ErrorBoundary><Details itemId={itemId} search={search}/></ErrorBoundary>
-      else
-        <ErrorBoundary><Results key="res"/></ErrorBoundary>
-    }
+  <div className={classes.join(' ')}>
+    <NavBar initialSearch="" showingResults={false} />
+    <ErrorBoundary>
+      <Upload ref={uploaderRef}/>
+    </ErrorBoundary>
     {
       if draggingCount > 0
         <div className="global-upload-overlay">
@@ -202,3 +96,226 @@ component 'GalleryApp', withErrorBoundary ->
         </div>
     }
   </div>
+
+component 'SearchPage', ->
+  {query} = useParams()
+  [update, setUpdate] = React.useState(0)
+  [draggingCount, setDraggingCount] = React.useState(0)
+  navigate = useNavigate()
+  uploaderRef = React.useRef(null)
+
+  # Decode the search query
+  searchQuery = if query then decodeURIComponent(query) else ''
+
+  # Update search when query changes
+  useEffect ->
+    if searchQuery
+      Store.search(searchQuery)
+      document.title = "Hypercheese: #{searchQuery}"
+    else
+      document.title = "Hypercheese"
+  , [searchQuery]
+
+  onGlobalDragEnter = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    if e.dataTransfer.types.includes('Files')
+      setDraggingCount((prev) -> prev + 1)
+
+  onGlobalDragLeave = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount((prev) -> prev - 1)
+
+  onGlobalDragOver = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+  onGlobalDrop = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount(0)
+    
+    if e.dataTransfer.files.length > 0
+      navigate('/upload')
+      uploaderRef.current?.addFiles(e.dataTransfer.files)
+
+  useEffect ->
+    Store.onChange ->
+      setUpdate((prev) -> prev + 1)
+
+    document.addEventListener('dragenter', onGlobalDragEnter)
+    document.addEventListener('dragleave', onGlobalDragLeave)
+    document.addEventListener('dragover', onGlobalDragOver)
+    document.addEventListener('drop', onGlobalDrop)
+
+    ->
+      document.removeEventListener('dragenter', onGlobalDragEnter)
+      document.removeEventListener('dragleave', onGlobalDragLeave)
+      document.removeEventListener('dragover', onGlobalDragOver)
+      document.removeEventListener('drop', onGlobalDrop)
+  , []
+
+  showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
+
+  classes = ['react-wrapper']
+  classes.push('showing-upload') if draggingCount > 0
+
+  <div className={classes.join(' ')}>
+    {
+      if !showSelection
+        <NavBar initialSearch={searchQuery} showingResults={true} />
+      else
+        <SelectBar showZoom={true} fixed={true}/>
+    }
+    <ErrorBoundary>
+      <Results key="res"/>
+    </ErrorBoundary>
+    {
+      if draggingCount > 0
+        <div className="global-upload-overlay">
+          <div className="upload-message">
+            <i className="fa fa-cloud-upload fa-3x"/>
+            <p>Drop files to upload</p>
+          </div>
+        </div>
+    }
+  </div>
+
+component 'ItemPage', ->
+  {id} = useParams()
+  location = useLocation()
+  [update, setUpdate] = React.useState(0)
+  [draggingCount, setDraggingCount] = React.useState(0)
+  navigate = useNavigate()
+  uploaderRef = React.useRef(null)
+
+  itemId = parseInt(id)
+  
+  # Get search query from URL state or default to empty
+  searchQuery = location.state?.search || ''
+
+  onGlobalDragEnter = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    if e.dataTransfer.types.includes('Files')
+      setDraggingCount((prev) -> prev + 1)
+
+  onGlobalDragLeave = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount((prev) -> prev - 1)
+
+  onGlobalDragOver = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+  onGlobalDrop = (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    setDraggingCount(0)
+    
+    if e.dataTransfer.files.length > 0
+      navigate('/upload')
+      uploaderRef.current?.addFiles(e.dataTransfer.files)
+
+  onKeyUp = (e) ->
+    if e.keyCode == 27
+      while lastOpened = Store.state.openStack.pop()
+        if lastOpened == 'item'
+          navigate(-1)
+          break
+        if lastOpened == 'select' && Store.state.selectionCount > 0 || Store.state.selectMode
+          Store.state.selectMode = false
+          Store.clearSelection()
+          break
+
+  useEffect ->
+    Store.onChange ->
+      setUpdate((prev) -> prev + 1)
+
+    window.addEventListener('keyup', onKeyUp)
+    document.addEventListener('dragenter', onGlobalDragEnter)
+    document.addEventListener('dragleave', onGlobalDragLeave)
+    document.addEventListener('dragover', onGlobalDragOver)
+    document.addEventListener('drop', onGlobalDrop)
+
+    ->
+      window.removeEventListener('keyup', onKeyUp)
+      document.removeEventListener('dragenter', onGlobalDragEnter)
+      document.removeEventListener('dragleave', onGlobalDragLeave)
+      document.removeEventListener('dragover', onGlobalDragOver)
+      document.removeEventListener('drop', onGlobalDrop)
+  , []
+
+  useEffect ->
+    # Set document overflow for item view
+    document.documentElement.style.overflowY = 'auto'
+    window.scrollTo(0, 0)
+    
+    ->
+      document.documentElement.style.overflowY = 'scroll'
+  , []
+
+  showSelection = Store.state.selectionCount > 0 || Store.state.selectMode
+
+  classes = ['react-wrapper', 'showing-details']
+  classes.push('showing-upload') if draggingCount > 0
+
+  <div className={classes.join(' ')}>
+    {
+      if showSelection
+        <SelectBar showZoom={false} fixed={false}/>
+    }
+    <ErrorBoundary>
+      <Details itemId={itemId} search={searchQuery}/>
+    </ErrorBoundary>
+    {
+      if draggingCount > 0
+        <div className="global-upload-overlay">
+          <div className="upload-message">
+            <i className="fa fa-cloud-upload fa-3x"/>
+            <p>Drop files to upload</p>
+          </div>
+        </div>
+    }
+  </div>
+
+component 'GalleryApp', withErrorBoundary ->
+  navigate = useNavigate()
+  
+  onTouchStart = ->
+    # For larger touch screens such as tablets or laptops, we want autofocus on
+    # the select bar
+    Store.state.hasTouch = Math.min($(window).width(), $(window).height()) < 600
+
+  useEffect ->
+    # Initialize Store with navigation callback
+    Store.setNavigate(navigate)
+    
+    # Handle initial search if we're on a search page
+    pathname = window.location.pathname
+    if pathname.startsWith('/search/')
+      parts = pathname.split('/')
+      if parts[2]
+        searchQuery = decodeURIComponent(parts[2])
+        Store.search(searchQuery)
+  , []
+
+  <div onTouchStart={onTouchStart}>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/tags" element={<TagsPage />} />
+      <Route path="/tags/:id" element={<TagPage />} />
+      <Route path="/upload" element={<UploadPage />} />
+      <Route path="/search" element={<SearchPage />} />
+      <Route path="/search/:query" element={<SearchPage />} />
+      <Route path="/items/:id" element={<ItemPage />} />
+      <Route path="*" element={<div><NavBar initialSearch="" showingResults={false} /><div>Page not found</div></div>} />
+    </Routes>
+  </div>
+
+component 'GalleryAppRoot', ->
+  <BrowserRouter>
+    <GalleryApp />
+  </BrowserRouter>

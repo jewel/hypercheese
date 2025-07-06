@@ -12,6 +12,15 @@ window.useEffect = React.useEffect;
 window.useRef = React.useRef;
 window.useMemo = React.useMemo;
 
+// React Router DOM
+import { BrowserRouter, Routes, Route, useParams, useNavigate, useLocation } from 'react-router-dom';
+window.BrowserRouter = BrowserRouter;
+window.Routes = Routes;
+window.Route = Route;
+window.useParams = useParams;
+window.useNavigate = useNavigate;
+window.useLocation = useLocation;
+
 // create-react-class
 import createReactClass from 'create-react-class';
 window.createReactClass = createReactClass;

@@ -10,7 +10,8 @@
     "jquery": "^3.7.1",
     "leaflet": "^1.9.4",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.3"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --loader:.css=css --loader:.png=file --loader:.jpg=file --loader:.gif=file --loader:.svg=file",

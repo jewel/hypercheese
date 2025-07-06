@@ -7,4 +7,4 @@
 $ ->
   Store.init()
   root = createRoot document.getElementById('content')
-  root.render <GalleryApp/>
+  root.render <GalleryAppRoot/>

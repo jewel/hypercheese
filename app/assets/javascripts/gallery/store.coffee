@@ -531,21 +531,34 @@ class @Store
   @needsRedraw: ->
     @callback() if @callback
 
+  @setNavigate: (navigateFunction) ->
+    @navigateFunction = navigateFunction
+
   @navigate: (url) ->
-    # Save off scroll position in old state
-    history.replaceState {scrollPos: window.scrollY}, '', window.location
-    history.pushState {}, '', url
-    @navigateCallback() if @navigateCallback
+    if @navigateFunction
+      @navigateFunction(url)
+    else
+      # Fallback to direct navigation
+      window.location.href = url
 
   @navigateWithoutHistory: (url) ->
-    history.replaceState {}, '', url
-    @navigateCallback() if @navigateCallback
+    if @navigateFunction
+      @navigateFunction(url, { replace: true })
+    else
+      # Fallback to direct navigation
+      window.location.replace(url)
 
   @navigateBack: ->
-    history.back()
+    if @navigateFunction
+      @navigateFunction(-1)
+    else
+      # Fallback to browser back
+      history.back()
 
   @onChange: (callback) ->
     @callback = callback
 
   @onNavigate: (callback) ->
+    # This method is no longer needed with React Router
+    # but keeping it for backward compatibility
     @navigateCallback = callback

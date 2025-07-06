@@ -1,6 +1,7 @@
 component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
   [lastTouchEvent, setLastTouchEvent] = useState null
   [touchTimer, setTouchTimer] = useState null
+  navigate = useNavigate()
 
   onClick = (e) ->
     if e.button == 0
@@ -12,7 +13,8 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
         Store.toggleSelection item.id
       else
         e.preventDefault()
-        Store.navigate "/items/#{item.id}"
+        # Pass search state when navigating to item page
+        navigate("/items/#{item.id}", { state: { search: Store.state.query } })
 
   onMouseUp = (e) ->
     return unless e.button == 2
