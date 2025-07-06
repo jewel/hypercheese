@@ -204,6 +204,23 @@ class ItemsController < ApplicationController
     render json: @item, serializer: ItemSerializer
   end
 
+  def update_date
+    require_write!
+
+    @item = Item.find params[:item_id].to_i
+    @item.check_visibility_for current_user
+    
+    fuzzy_date = params[:fuzzy_date]
+    precise_date = parse_fuzzy_date(fuzzy_date)
+    
+    @item.fuzzy_date = fuzzy_date
+    @item.taken = precise_date
+    @item.save!
+
+    @item.reload
+    render json: @item, serializer: ItemSerializer
+  end
+
   def download
     ids = params[:ids].split(/,/).map { |_| _.to_i }
     items = Item.where(id: ids).includes(:item_paths)
@@ -250,5 +267,41 @@ class ItemsController < ApplicationController
 
   def item_tag_params
     params.permit items: [], tags: []
+  end
+
+  def parse_fuzzy_date(fuzzy_date)
+    return nil if fuzzy_date.blank?
+    
+    # Extract postfix (e.g., "1985 #3" -> ["1985", "3"])
+    postfix = 0
+    date_part = fuzzy_date.strip
+    if date_part =~ /^(.+)\s+#(\d+)$/
+      date_part = $1.strip
+      postfix = $2.to_i
+    end
+    
+    # Parse different date formats
+    case date_part
+    when /^\d{4}s$/ # Decade format like "1980s"
+      decade = date_part.to_i
+      DateTime.new(decade, 1, 1, 0, 0, postfix)
+    when /^\d{4}$/ # Year format like "1985"
+      year = date_part.to_i
+      DateTime.new(year, 1, 1, 0, 0, postfix)
+    when /^\d{4}-\d{2}$/ # Month format like "1985-03"
+      year, month = date_part.split('-').map(&:to_i)
+      DateTime.new(year, month, 1, 0, 0, postfix)
+    when /^\d{4}-\d{2}-\d{2}$/ # Day format like "1985-03-15"
+      year, month, day = date_part.split('-').map(&:to_i)
+      DateTime.new(year, month, day, 0, 0, postfix)
+    when /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/ # Full datetime format
+      DateTime.parse(date_part) + postfix.seconds
+    else
+      # Try to parse as a full date string
+      DateTime.parse(date_part) + postfix.seconds
+    end
+  rescue ArgumentError => e
+    # If parsing fails, return nil
+    nil
   end
 end

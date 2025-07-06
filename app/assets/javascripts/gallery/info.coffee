@@ -60,7 +60,7 @@ component 'Info', ({item, isVisible, containerRef}) ->
             </div>
           </td>
         </tr>
-        {fact 'calendar', new Date(details.taken).toLocaleString()}
+        {fact 'calendar', <DateEditor itemId={item.id} currentDate={details.taken} fuzzyDate={details.fuzzy_date}/>}
         {
           fact('location-arrow',
             <React.Fragment>

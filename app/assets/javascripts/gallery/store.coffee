@@ -397,6 +397,18 @@ class @Store
         @_ingestItemUpdates [res.item]
         @needsRedraw()
 
+  @updateItemDate: (itemId, fuzzyDate) ->
+    @jax
+      url: "/items/#{itemId}/update_date"
+      type: "POST"
+      data:
+        fuzzy_date: fuzzyDate
+      success: (res) =>
+        @_ingestItemUpdates [res.item]
+        # Also update the details cache
+        @state.details[itemId] = res.item if @state.details[itemId]
+        @needsRedraw()
+
   @setZoom: (level) ->
     @state.zoom = level
     @needsRedraw()
