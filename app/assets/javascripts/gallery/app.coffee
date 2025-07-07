@@ -28,6 +28,19 @@ parseUrl = ->
     return
       page: 'locations'
 
+  if parts[1] == 'places' && parts[2] == 'new'
+    return
+      page: 'place-new'
+
+  if parts[1] == 'places' && parts[2] && parts[3] == 'edit'
+    return
+      page: 'place-edit'
+      placeId: parts[2]
+
+  if parts[1] == 'places'
+    return
+      page: 'places'
+
   if parts[1] == 'upload'
     return
       page: 'upload'
@@ -48,6 +61,7 @@ component 'GalleryApp', withErrorBoundary ->
   [page, setPage] = React.useState -> parseUrl().page
   [itemId, setItemId] = React.useState -> parseUrl().itemId
   [tagId, setTagId] = React.useState -> parseUrl().tagId
+  [placeId, setPlaceId] = React.useState -> parseUrl().placeId
   [search, setSearch] = React.useState -> parseUrl().search || ''
   [update, setUpdate] = React.useState 0
   [draggingCount, setDraggingCount] = React.useState 0
@@ -118,6 +132,7 @@ component 'GalleryApp', withErrorBoundary ->
       setPage newState.page
       setItemId newState.itemId
       setTagId newState.tagId
+      setPlaceId newState.placeId
       setSearch newState.search || ''
       window.scrollTo 0, 0
 
@@ -126,6 +141,7 @@ component 'GalleryApp', withErrorBoundary ->
       setPage newState.page
       setItemId newState.itemId
       setTagId newState.tagId
+      setPlaceId newState.placeId
       setSearch newState.search || ''
       if e.state.scrollPos?
         window.requestAnimationFrame ->
@@ -153,6 +169,22 @@ component 'GalleryApp', withErrorBoundary ->
 
   if page == 'locations'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Locations/></ErrorBoundary></div>
+
+  if page == 'places'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Places/></ErrorBoundary></div>
+
+  if page == 'place-new'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><PlaceForm/></ErrorBoundary></div>
+
+  if page == 'place-edit'
+    place = Store.state.places?.find (p) -> p.id.toString() == placeId
+    if !place
+      if Store.state.places?.length > 0
+        return <div><NavBar initialSearch={search} showingResults={false} /><h1>Place not found</h1></div>
+      else
+        return <div><NavBar initialSearch={search} showingResults={false} /><div>Loading...</div></div>
+
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><PlaceForm place={place}/></ErrorBoundary></div>
 
   if page == 'upload'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>

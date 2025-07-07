@@ -2,9 +2,9 @@ component 'LeafletMap', ({exif}) ->
   # Configure Leaflet icon paths to work with Rails asset pipeline
   delete L.Icon.Default.prototype._getIconUrl
   L.Icon.Default.mergeOptions
-    iconRetinaUrl: <%= asset_url('leaflet/marker-icon-2x.png').to_json %>
-    iconUrl: <%= asset_url('leaflet/marker-icon.png').to_json %>
-    shadowUrl: <%= asset_url('leaflet/marker-shadow.png').to_json %>
+    iconRetinaUrl: LeafletAssets.iconRetinaUrl
+    iconUrl: LeafletAssets.iconUrl
+    shadowUrl: LeafletAssets.shadowUrl
 
   mapRef = React.useRef()
   markerRef = React.useRef()

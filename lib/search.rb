@@ -124,7 +124,10 @@ class Search
 
     if @query[:in]
       location = @query[:in].gsub /[-_]/, ' '
-      items = items.where ['id in ( select item_id from item_locations where location_id in ( select id from locations where name = ? ) )', location]
+      items = items.where [
+        'id in ( select item_id from item_locations where location_id in ( select id from locations where name = ? ) ) OR id in ( select item_id from item_places where place_id in ( select id from places where name = ? ) )',
+        location, location
+      ]
     end
 
     if @query[:near]

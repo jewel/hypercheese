@@ -5,6 +5,8 @@ class User < ActiveRecord::Base
   has_many :sponsored_users, class_name: "User", foreign_key: "sponsor_id"
   has_many :comments
   has_many :item_tags, foreign_key: "added_by"
+  has_many :created_places, class_name: 'Place', foreign_key: 'created_by'
+  has_many :item_places
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,

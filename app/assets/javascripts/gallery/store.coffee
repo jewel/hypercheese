@@ -64,6 +64,7 @@ class @Store
       canWrite: true
       isAdmin: false
       locations: null
+      places: null
 
   @_updateTagIndexes: ->
     @state.tagsById = {}
@@ -112,6 +113,18 @@ class @Store
       success: (res) =>
         @loading = false
         @state.locations = res
+        @needsRedraw()
+    null
+
+  @fetchPlaces: ->
+    return @state.places if @state.places
+    return null if @loading
+    @loading = true
+    @jax
+      url: '/places/with_item_counts'
+      success: (res) =>
+        @loading = false
+        @state.places = res
         @needsRedraw()
     null
 

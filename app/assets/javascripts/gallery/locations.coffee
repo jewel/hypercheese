@@ -3,18 +3,34 @@ component 'Locations', ->
   [filteredLocations, setFilteredLocations] = React.useState []
 
   locations = Store.fetchLocations()
-  loading = locations == null
+  places = Store.fetchPlaces()
+  loading = locations == null || places == null
 
   useEffect ->
-    if locations != null
+    if locations != null && places != null
+      # Merge locations and places, adding a type field to distinguish them
+      allLocations = []
+
+      if locations
+        locations.forEach (location) ->
+          allLocations.push({...location, type: 'location'})
+
+      if places
+        places.forEach (place) ->
+          allLocations.push({...place, type: 'place'})
+
+      # Sort by item_count descending
+      allLocations.sort (a, b) ->
+        (b.item_count || 0) - (a.item_count || 0)
+
       if filter.trim() == ''
-        setFilteredLocations locations
+        setFilteredLocations allLocations
       else
-        filtered = locations.filter (location) ->
-          location.name.toLowerCase().includes(filter.toLowerCase())
+        filtered = allLocations.filter (item) ->
+          item.name.toLowerCase().includes(filter.toLowerCase())
         setFilteredLocations filtered
     ->
-  , [filter, locations]
+  , [filter, locations, places]
 
   onFilterChange = (e) ->
     setFilter e.target.value
@@ -22,10 +38,17 @@ component 'Locations', ->
   <div className="container-fluid">
     <div className="row">
       <div className="col-12">
-        <h1>Locations</h1>
+        <div className="d-flex justify-content-between align-items-center">
+          <h1>Locations</h1>
+          <Writer>
+            <Link href="/places/new" className="btn btn-primary">
+              <i className="fa fa-plus"/> Create Place
+            </Link>
+          </Writer>
+        </div>
         {
           <p className="text-muted">
-            {locations?.length || "?"} total locations with photos
+            {filteredLocations.length} total locations and places
           </p>
         }
       </div>
@@ -40,7 +63,7 @@ component 'Locations', ->
           <input
             type="text"
             className="form-control"
-            placeholder="Filter locations by name..."
+            placeholder="Filter locations and places by name..."
             value={filter}
             onChange={onFilterChange}
           />
@@ -48,7 +71,7 @@ component 'Locations', ->
       </div>
       <div className="col-md-6">
         <p className="text-muted mt-2">
-          Showing {filteredLocations.length} locations
+          Showing {filteredLocations.length} locations and places
         </p>
       </div>
     </div>
@@ -67,8 +90,9 @@ component 'Locations', ->
               <table className="table table-striped">
                 <thead>
                   <tr>
-                    <th>Location</th>
+                    <th>Location/Place</th>
                     <th className="text-end">Photo Count</th>
+                    <th className="text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -76,18 +100,57 @@ component 'Locations', ->
                     filteredLocations.map (location) ->
                       name = location.name.replace(/ /g, "-")
                       searchUrl = "/search/in:#{encodeURIComponent(name)}"
-                      <tr key={location.id}>
+                      icon = if location.type == 'place' then 'fa-map-marker' else 'fa-map-pin'
+                      badgeClass = if location.type == 'place' then 'bg-success' else 'bg-primary'
+                      <tr key={"#{location.type}-#{location.id}"}>
                         <td>
                           <Link href={searchUrl}>
+                            <i className={"fa #{icon} me-2"}></i>
                             {location.name}
                           </Link>
                         </td>
                         <td className="text-end">
                           <Link href={searchUrl} className="text-decoration-none">
-                            <span className="badge bg-primary">
-                              {location.photo_count?.toLocaleString() || 0}
+                            <span className={"badge #{badgeClass}"}>
+                              {location.item_count?.toLocaleString() || 0}
                             </span>
                           </Link>
+                        </td>
+                        <td className="text-end">
+                          {
+                            if location.type == 'place'
+                              <Writer>
+                                <div className="btn-group btn-group-sm">
+                                  <Link
+                                    href={"/places/#{location.id}/edit"}
+                                    className="btn btn-outline-secondary"
+                                  >
+                                    <i className="fa fa-edit"/> Edit
+                                  </Link>
+                                  <button
+                                    className="btn btn-outline-danger"
+                                    onClick={() ->
+                                      if confirm 'Are you sure you want to delete this place?'
+                                        fetch "/api/places/#{location.id}",
+                                          method: 'DELETE'
+                                          headers:
+                                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                        .then (response) ->
+                                          if response.ok
+                                            # Refresh places from store after deleting
+                                            Store.state.places = null
+                                            Store.fetchPlaces()
+                                          else
+                                            throw new Error 'Failed to delete place'
+                                        .catch (err) ->
+                                          alert "Error deleting place: #{err.message}"
+                                    }
+                                  >
+                                    <i className="fa fa-trash"/> Delete
+                                  </button>
+                                </div>
+                              </Writer>
+                          }
                         </td>
                       </tr>
                   }
