@@ -48,6 +48,14 @@ parseUrl = ->
   if parts[1] == 'search'
     str = decodeURI parts[2]
     Store.search str
+
+    if parts[3]
+      itemId = Math.round(parts[3])
+      return
+        page: 'item'
+        itemId: itemId
+        search: str
+
     return
       page: 'search'
       search: str

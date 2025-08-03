@@ -1,9 +1,10 @@
-component 'Details', ({itemId}) ->
+component 'Details', ({itemId, search}) ->
   [playing, setPlaying] = React.useState false
   [showControls, setShowControls] = React.useState true
   [slideShow, setSlideShow] = React.useState false
   [zoom, setZoom] = React.useState false
   [infoVisible, setInfoVisible] = React.useState false
+  [showSearchHelper, setShowSearchHelper] = React.useState false
 
   videoRef = React.useRef()
   infoRef = React.useRef()
@@ -117,6 +118,12 @@ component 'Details', ({itemId}) ->
     e.stopPropagation()
     Store.navigateBack()
 
+  onToggleSearchHelper = ->
+    setShowSearchHelper !showSearchHelper
+
+  closeSearchHelper = ->
+    setShowSearchHelper false
+
   toggleControls = (e) ->
     # Note: this preventDefault() causes the controls to be inoperable in FF
     e.preventDefault()
@@ -173,7 +180,10 @@ component 'Details', ({itemId}) ->
   linkTo = (dir) ->
     newItemId = neighbor(dir)
     if newItemId
-      return '/items/' + newItemId
+      if search
+        return '/search/' + encodeURI(search) + '/' + newItemId
+      else
+        return '/items/' + newItemId
 
   siteIcon = ->
     return _siteIcon if _siteIcon?
@@ -252,9 +262,16 @@ component 'Details', ({itemId}) ->
       <ControlIcon condition={prevLink} className="prev-control" href={prevLink} onClick={navigatePrev} icon="fa-arrow-left" />
       <ControlIcon condition={nextLink} className="control next-control" href={nextLink} onClick={navigateNext} icon="fa-arrow-right" />
       <div className="controls top">
-        <Link className="control home" href="/">
-          <img src={siteIcon()}/>
-        </Link>
+        <div className="left-side-controls">
+          <Link className="control home" href="/">
+            <img src={siteIcon()}/>
+          </Link>
+          <ControlIcon
+            title="Search"
+            onClick={onToggleSearchHelper}
+            icon="fa fa-search"
+          />
+        </div>
 
         <div></div>
 
@@ -327,5 +344,11 @@ component 'Details', ({itemId}) ->
         <ErrorBoundary>
           <Info containerRef={infoRef} item={item} isVisible={infoVisible}/>
         </ErrorBoundary>
+    }
+    {
+      if showSearchHelper
+        <div className="search-helper-float">
+          <SearchHelper spacerHeight={0} itemId={itemId} close={closeSearchHelper}/>
+        </div>
     }
   </div>

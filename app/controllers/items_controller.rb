@@ -53,7 +53,19 @@ class ItemsController < ApplicationController
       items_by_id[item_id.to_i]
     end
 
-    render json: res, each_serializer: ItemSerializer, root: "items", meta: { search_key: search_key, total: total }
+    meta = { search_key: search_key, total: total }
+
+    # If item_id is provided, find its index in the full search results
+    if params[:item_id]
+      item_id = params[:item_id].to_i
+      path.open('rb') do |f|
+        all_ids = f.read.unpack 'V*'
+        item_index = all_ids.index item_id
+        meta[:item_index] = item_index if item_index
+      end
+    end
+
+    render json: res, each_serializer: ItemSerializer, root: "items", meta: meta
   end
 
   def visibility

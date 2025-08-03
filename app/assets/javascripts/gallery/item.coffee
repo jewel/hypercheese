@@ -12,7 +12,10 @@ component 'Item', ({item, imageWidth, imageHeight, showTagbox}) ->
         Store.toggleSelection item.id
       else
         e.preventDefault()
-        Store.navigate "/items/#{item.id}"
+        if Store.state.query
+          Store.navigate "/search/#{encodeURI Store.state.query}/#{item.id}"
+        else
+          Store.navigate "/items/#{item.id}"
 
   onMouseUp = (e) ->
     return unless e.button == 2

@@ -427,7 +427,7 @@ class @Store
     @state.zoom = level
     @needsRedraw()
 
-  @search: (q, force=false) ->
+  @search: (q, force=false, item_id=null, callback=null) ->
     unless force
       return if q == @state.query
     @state.searchKey = null
@@ -437,9 +437,9 @@ class @Store
     @state.resultCount = null
     @state.selection = {}
     @state.selectionCount = 0
-    @executeSearch 0, 0
+    @executeSearch 0, 0, item_id, callback
 
-  @executeSearch: (start, end) ->
+  @executeSearch: (start, end, item_id=null, callback=null) ->
     return unless @state.tagsLoaded
     batchSize = 100
 
@@ -481,13 +481,18 @@ class @Store
 
     query = new SearchQuery @state.query
 
+    data =
+      limit: batchEnd - batchStart + 1
+      offset: batchStart
+      query: query.as_json()
+      search_key: @state.searchKey
+
+    if item_id
+      data.item_id = item_id
+
     @searchRequest = @jax
       url: "/items"
-      data:
-        limit: batchEnd - batchStart + 1
-        offset: batchStart
-        query: query.as_json()
-        search_key: @state.searchKey
+      data: data
       success: (res) =>
         @state.searching = false
 
@@ -498,6 +503,9 @@ class @Store
           @state.itemsById[item.id] = item
 
         @state.searchKey = res.meta.search_key
+
+        if callback
+          callback res.meta.item_index
 
         @needsRedraw()
 

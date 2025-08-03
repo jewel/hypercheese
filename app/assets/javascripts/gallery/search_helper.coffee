@@ -1,8 +1,9 @@
-component 'SearchHelper', ({close, spacerHeight}) ->
+component 'SearchHelper', ({close, spacerHeight, itemId}) ->
   [searchString, setSearchString] = React.useState Store.state.query
   [userInput, setUserInput] = React.useState null
   [showCriteriaPicker, setShowCriteriaPicker] = React.useState false
   [caretPosition, setCaretPosition] = React.useState 0
+  [isLoading, setIsLoading] = React.useState false
   searchRef = React.useRef()
 
   onShowCriteriaPicker = (e) ->
@@ -56,8 +57,18 @@ component 'SearchHelper', ({close, spacerHeight}) ->
       return
 
     close()
-    Store.search searchString, true
-    Store.navigate '/search/' + encodeURI(searchString)
+
+    if itemId
+      setIsLoading true
+      Store.search searchString, true, itemId, (itemIndex) ->
+        setIsLoading false
+        if itemIndex?
+          Store.navigate '/search/' + encodeURI(searchString) + '/' + itemId
+        else
+          Store.navigate '/search/' + encodeURI(searchString)
+    else
+      Store.search searchString, true
+      Store.navigate '/search/' + encodeURI(searchString)
 
   optionHelper = (field, options...) ->
     val = ""
@@ -74,6 +85,13 @@ component 'SearchHelper', ({close, spacerHeight}) ->
     searchString
 
   query = new SearchQuery searchString, caretPosition
+
+  if isLoading
+    return <div className="search-helper" style={{paddingTop: spacerHeight}}>
+      <div style={textAlign: 'center', margin: 48}>
+        <i className="fa fa-spinner fa-spin" style={fontSize: 48}/>
+      </div>
+    </div>
 
   <div className="search-helper" style={{paddingTop: spacerHeight}}>
     <form onSubmit={onSearch} className="form-inline">
