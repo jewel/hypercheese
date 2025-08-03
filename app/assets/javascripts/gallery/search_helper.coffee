@@ -63,7 +63,10 @@ component 'SearchHelper', ({close, spacerHeight, itemId}) ->
       Store.search searchString, true, itemId, (itemIndex) ->
         setIsLoading false
         if itemIndex?
-          Store.navigate '/search/' + encodeURI(searchString) + '/' + itemId
+          if searchString
+            Store.navigate '/search/' + encodeURI(searchString) + '/' + itemId
+          else
+            Store.navigate '/items/' + itemId
         else
           Store.navigate '/search/' + encodeURI(searchString)
     else
