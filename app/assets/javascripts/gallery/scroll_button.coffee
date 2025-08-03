@@ -48,17 +48,17 @@ component 'ScrollButton', ({height, top, visible}) ->
     scrollWindow()
     setPosition null
 
+  # Height of widget in pixels
+  widgetHeight = 40
+
   scrollWindow = ->
     windowHeight = document.documentElement.clientHeight
-    targetTop = position / (windowHeight - height) * (height - windowHeight)
+    targetTop = position / (windowHeight - widgetHeight) * (height - windowHeight)
     window.scroll 0, targetTop
-
-  # Height of widget in pixels
-  height = 40
 
   initialPosition = ->
     windowHeight = document.documentElement.clientHeight
-    top / (height - windowHeight) * (windowHeight - height)
+    top / (height - windowHeight) * (windowHeight - widgetHeight)
 
   useEffect ->
     window.addEventListener 'mousemove', onMouseMove, false
