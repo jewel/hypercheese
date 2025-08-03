@@ -116,7 +116,7 @@ component 'Details', ({itemId, search}) ->
 
   onClose = (e) ->
     e.stopPropagation()
-    Store.navigateBack()
+    Store.navigate '/search/' + encodeURI(search)
 
   onToggleSearchHelper = ->
     setShowSearchHelper !showSearchHelper
