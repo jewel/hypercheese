@@ -133,6 +133,8 @@ class @Store
     return item if item
     return null if @loading
 
+    return unless @state.tagsLoaded
+
     query = new SearchQuery @state.query
 
     @loading = true
