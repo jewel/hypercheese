@@ -58,6 +58,7 @@ class @Store
       zoom: defaultZoom
       highlight: null
       recent: null
+      unpublishedItemCounts: null
       hasTouch: false
       openStack: []
       judgeIcons: false
@@ -103,6 +104,20 @@ class @Store
         @state.recent = res
         @needsRedraw()
     blank
+
+  @fetchUnpublishedItemCounts: ->
+    return @state.unpublishedItemCounts if @state.unpublishedItemCounts
+    return null if @loadingUnpublishedItemCounts
+    @loadingUnpublishedItemCounts = true
+    @jax
+      url: '/unpublished_item_counts'
+      success: (res) =>
+        @loadingUnpublishedItemCounts = false
+        @state.unpublishedItemCounts = res
+        @needsRedraw()
+      error: (xhr, status, error) =>
+        @loadingUnpublishedItemCounts = false
+    null
 
   @fetchLocations: ->
     return @state.locations if @state.locations

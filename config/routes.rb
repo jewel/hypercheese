@@ -13,6 +13,7 @@ HyperCheese::Application.routes.draw do
 
   scope path: '/api' do
     get 'activity', to: 'home#activity'
+    get 'unpublished_item_counts', to: 'home#unpublished_item_counts'
 
     resources :items do
       collection do

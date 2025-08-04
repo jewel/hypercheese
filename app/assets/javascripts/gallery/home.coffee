@@ -6,6 +6,7 @@ pluralize = (count, obj) ->
 
 component 'Home', ->
   recent = Store.fetchRecent()
+  itemCounts = Store.fetchUnpublishedItemCounts()
   <div className="container-fluid cheese-home">
     <h1>Welcome to HyperCheese</h1>
 
@@ -49,16 +50,33 @@ component 'Home', ->
     <br/>
     <div>
       {
-        if recent.new_items > 0
+        if !itemCounts
           <div className="btn-group">
-            <Link className="btn btn-primary" href="/search/visibility:unknown">{recent.new_items} New Item(s)</Link>
+            <button className="btn btn-primary" disabled>
+              <i className="fa fa-spinner fa-spin"></i> Loading...
+            </button>
           </div>
-      }
-      {' '}
-      {
-        if recent.private_items > 0
+          {' '}
           <div className="btn-group">
-            <Link className="btn btn-outline-secondary" href="/search/visibility:unpublished">Your {recent.private_items} Private Item(s)</Link>
+            <button className="btn btn-outline-secondary" disabled>
+              <i className="fa fa-spinner fa-spin"></i> Loading...
+            </button>
+          </div>
+        else
+          <div>
+            {
+              if itemCounts.new_items > 0
+                <div className="btn-group">
+                  <Link className="btn btn-primary" href="/search/visibility:unknown">{itemCounts.new_items} New Item(s)</Link>
+                </div>
+            }
+            {' '}
+            {
+              if itemCounts.private_items > 0
+                <div className="btn-group">
+                  <Link className="btn btn-outline-secondary" href="/search/visibility:unpublished">Your {itemCounts.private_items} Private Item(s)</Link>
+                </div>
+            }
           </div>
       }
     </div>

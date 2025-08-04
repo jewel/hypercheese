@@ -52,10 +52,13 @@ class HomeController < ApplicationController
       _.values.first["created_at"]
     end.reverse
 
-    json['new_items'] = current_user.items.where( published: nil ).count
+    render json: json
+  end
 
-    json['private_items'] = current_user.items.where( published: false ).count
-
+  def unpublished_item_counts
+    json = {}
+    json['new_items'] = current_user.items.where( published: nil ).from("items USE INDEX (index_items_on_published)").count
+    json['private_items'] = current_user.items.where( published: false ).from("items USE INDEX (index_items_on_published)").count
     render json: json
   end
 end
