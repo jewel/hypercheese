@@ -127,27 +127,6 @@ component 'Locations', ->
                                   >
                                     <i className="fa fa-edit"/> Edit
                                   </Link>
-                                  <button
-                                    className="btn btn-outline-danger"
-                                    onClick={() ->
-                                      if confirm 'Are you sure you want to delete this place?'
-                                        fetch "/api/places/#{location.id}",
-                                          method: 'DELETE'
-                                          headers:
-                                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                        .then (response) ->
-                                          if response.ok
-                                            # Refresh places from store after deleting
-                                            Store.state.places = null
-                                            Store.fetchPlaces()
-                                          else
-                                            throw new Error 'Failed to delete place'
-                                        .catch (err) ->
-                                          alert "Error deleting place: #{err.message}"
-                                    }
-                                  >
-                                    <i className="fa fa-trash"/> Delete
-                                  </button>
                                 </div>
                               </Writer>
                           }

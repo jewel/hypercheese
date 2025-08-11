@@ -49,10 +49,46 @@ component 'PlaceForm', ({place, onSubmit, onCancel}) ->
       alert "Error saving place: #{err.message}"
       setSubmitting false
 
+  deletePlace = ->
+    return unless place?
+    if confirm 'Are you sure you want to delete this place?'
+      fetch "/api/places/#{place.id}",
+        method: 'DELETE'
+        headers:
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      .then (response) ->
+        if response.ok
+          Store.state.places = null
+          Store.fetchPlaces()
+          Store.navigate '/locations'
+        else
+          throw new Error 'Failed to delete place'
+      .catch (err) ->
+        alert "Error deleting place: #{err.message}"
+
   <div className="container-fluid">
     <div className="row">
       <div className="col-12">
-        <h1>{if place then 'Edit Place' else 'Create New Place'}</h1>
+        <div className="d-flex justify-content-between align-items-center">
+          <h1>{if place then 'Edit Place' else 'Create New Place'}</h1>
+          {
+            if place?
+              <Writer>
+                <div className="btn-group">
+                  <button type="button" className="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i className="fa fa-ellipsis-v"/>
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <a className="dropdown-item text-danger" href="javascript:" onClick={deletePlace}>
+                        <i className="fa fa-trash"/> Delete Place
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </Writer>
+          }
+        </div>
       </div>
     </div>
     <div className="row">
