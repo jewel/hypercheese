@@ -106,7 +106,16 @@ class Item < ActiveRecord::Base
   end
 
   def schedule_jobs priority_offset=0
-    # Deprioritize video since everything takes longer with video
+    # The priority should be:
+    # 1st: images
+    # 2nd: videos
+    # 3rd: AI features for images
+    # 4th: AI features for videos
+    #
+    # The reason we want priorities at all is sometimes large batches of videos
+    # cor photos come in and they push everyone else's imports back for hours.
+    # By prioritizing each step, we can have the most important stuff happen
+    # first.
     p = priority_offset
     p += 10 if video?
 
@@ -117,8 +126,8 @@ class Item < ActiveRecord::Base
       GenerateVideoStreamJob.set(priority: 3 + p).perform_later id
     end
     GeolocateJob.set(priority: 4 + p).perform_later id
-    FindFacesJob.set(priority: 5 + p).perform_later id
-    IndexVisuallyJob.set(priority: 6 + p).perform_later id
+    FindFacesJob.set(priority: 25 + p).perform_later id
+    IndexVisuallyJob.set(priority: 26 + p).perform_later id
   end
 
   def similar_items
