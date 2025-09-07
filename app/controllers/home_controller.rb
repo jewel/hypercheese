@@ -31,29 +31,6 @@ class HomeController < ApplicationController
       taggings_by_group[ "#{tagging["date"]}-#{tagging["added_by"]}" ].push tagging
     end
 
-    # Face detection events grouped by cluster tag
-    face_detections = ActiveRecord::Base.connection.select_all("
-      SELECT
-        cluster_faces.tag_id,
-        DATE(i.created_at) date,
-        MAX(i.created_at) created_at,
-        COUNT(f.id) face_count,
-        GROUP_CONCAT(DISTINCT i.id) items,
-        t.label as tag_label
-      FROM faces f
-      JOIN items i ON f.item_id = i.id
-      LEFT JOIN faces cluster_faces ON f.cluster_id = cluster_faces.id
-      LEFT JOIN tags t ON cluster_faces.tag_id = t.id
-      WHERE i.created_at > DATE_SUB(NOW(), INTERVAL #{cutoff_days} DAY)
-        AND i.deleted = 0
-        AND i.published = 1
-        AND f.cluster_id IS NOT NULL
-        AND cluster_faces.tag_id IS NOT NULL
-      GROUP BY 1, 2
-      HAVING face_count > 0
-      ORDER BY created_at DESC
-    ")
-
     # Get recent items first
     recent_items = ActiveRecord::Base.connection.select_all("
       SELECT id, code, created_at
@@ -63,6 +40,24 @@ class HomeController < ApplicationController
         AND published = 1
       ORDER BY created_at DESC
     ")
+
+    # Get identified faces for those items
+    if recent_items.any?
+      item_ids = recent_items.map { |item| item["id"] }.join(",")
+      identified_face_data = ActiveRecord::Base.connection.select_all("
+        SELECT f.id, f.item_id, i.code, i.created_at, cluster_faces.tag_id, t.label as tag_label
+        FROM faces f
+        JOIN items i ON f.item_id = i.id
+        LEFT JOIN faces cluster_faces ON f.cluster_id = cluster_faces.id
+        LEFT JOIN tags t ON cluster_faces.tag_id = t.id
+        WHERE f.item_id IN (#{item_ids})
+          AND f.cluster_id IS NOT NULL
+          AND cluster_faces.tag_id IS NOT NULL
+        ORDER BY f.id
+      ")
+    else
+      identified_face_data = []
+    end
 
     # Get unidentified faces for those items
     if recent_items.any?
@@ -80,8 +75,40 @@ class HomeController < ApplicationController
       unidentified_face_data = []
     end
 
-    face_detections.each do |detection|
-      detection["items"] = CollapseRange.collapse detection["items"].split(",").map(&:to_i).sort
+    # Group identified faces by tag and date in Ruby
+    identified_faces_by_tag_and_date = {}
+    identified_face_data.each do |face|
+      tag_id = face["tag_id"].to_i
+      date = face["created_at"].to_date
+      key = "#{tag_id}-#{date}"
+
+      identified_faces_by_tag_and_date[key] ||= {
+        "tag_id" => tag_id,
+        "tag_label" => face["tag_label"],
+        "date" => date,
+        "created_at" => face["created_at"],
+        "faces" => [],
+        "items" => []
+      }
+
+      identified_faces_by_tag_and_date[key]["faces"] << face["id"].to_i
+      identified_faces_by_tag_and_date[key]["items"] << face["item_id"].to_i
+      # Update to latest created_at for this group
+      if face["created_at"] > identified_faces_by_tag_and_date[key]["created_at"]
+        identified_faces_by_tag_and_date[key]["created_at"] = face["created_at"]
+      end
+    end
+
+    # Convert to final structure
+    face_detections = identified_faces_by_tag_and_date.values.map do |group|
+      {
+        "tag_id" => group["tag_id"],
+        "tag_label" => group["tag_label"],
+        "date" => group["date"].to_s,
+        "created_at" => group["created_at"],
+        "face_count" => group["faces"].size,
+        "items" => CollapseRange.collapse(group["items"].uniq.sort)
+      }
     end
 
     # Group unidentified faces by date in Ruby
