@@ -32,6 +32,35 @@
       :height 32px
       :width 32px
       :border-radius 50%
+      :transition transform 0.2s ease
+
+      &:hover
+        :transform scale(1.2)
+        :z-index 10
+
+    .tag
+      :position relative
+
+  .unidentified-faces
+    :margin-bottom 15px
+
+    .face-grid
+      :display flex
+      :flex-wrap wrap
+      :gap 2px
+      :margin-bottom 8px
+
+    .face-thumb
+      :width 36px
+      :height 36px
+      :object-fit cover
+      :border-radius 3px
+      :transition transform 0.2s ease
+      :border 1px solid #ddd
+
+      &:hover
+        :transform scale(1.2)
+        :z-index 10
 
   .group
     :margin-bottom 15px

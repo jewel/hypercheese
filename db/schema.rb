@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_04_143221) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_07_225932) do
   create_table "bullhorns", id: :integer, charset: "latin1", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "item_id", null: false
@@ -146,6 +146,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_04_143221) do
     t.integer "added_by"
     t.datetime "created_at", precision: nil
     t.index ["added_by"], name: "index_item_tags_on_added_by"
+    t.index ["created_at"], name: "index_item_tags_on_created_at"
     t.index ["item_id"], name: "index_item_tags_on_item_id"
     t.index ["tag_id"], name: "index_item_tags_on_tag_id"
   end
@@ -171,6 +172,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_04_143221) do
     t.float "latitude"
     t.float "longitude"
     t.float "duration"
+    t.index ["created_at"], name: "index_items_on_created_at"
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["published"], name: "index_items_on_published"
     t.index ["taken"], name: "index_items_on_taken"

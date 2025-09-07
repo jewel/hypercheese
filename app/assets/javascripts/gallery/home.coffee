@@ -139,6 +139,38 @@ component 'Home', ->
               </div>
               {pluralize(count, "tag")} added <em>&mdash; {tagging.user?.name}, {new Date(tagging.created_at).toLocaleString()}</em>
             </div>
+          else if face_detection = activity.face_detection
+            count = 0
+            <div className="clearfix tagging" key="f#{face_detection.created_at}">
+              <div className="tagging-list">
+                {
+                  face_detection.list.map (f) ->
+                    count += f.face_count
+                    tag = Store.state.tagsById[f.tag_id]
+                    return unless tag
+                    <Link href="/search/item:#{f.items}">
+                      <Tag key={f.tag_id} tag={tag}>
+                        +{f.face_count.toLocaleString()}
+                      </Tag>
+                    </Link>
+                }
+              </div>
+              {pluralize(count, "face")} detected <em>&mdash; {new Date(face_detection.created_at).toLocaleString()}</em>
+            </div>
+          else if unidentified_faces = activity.unidentified_faces
+            <div className="clearfix unidentified-faces" key="u#{unidentified_faces.created_at}">
+              <div className="face-grid">
+                {
+                  unidentified_faces.faces.map (face) ->
+                    face_url = "/data/faces/#{face.item_id}-#{face.face_id}-#{face.item_code}.jpg"
+
+                    <Link href="/items/#{face.item_id}">
+                      <img key={face.face_id} className="face-thumb" src={face_url} title="Unidentified person - click to view item"/>
+                    </Link>
+                }
+              </div>
+              {pluralize(unidentified_faces.face_count, "unknown face")} detected <em>&mdash; {new Date(unidentified_faces.created_at).toLocaleString()}</em>
+            </div>
       }
     </div>
   </div>
