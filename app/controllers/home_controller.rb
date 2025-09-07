@@ -54,34 +54,61 @@ class HomeController < ApplicationController
       ORDER BY created_at DESC
     ")
 
-    # Unidentified face events (faces without tags)
-    unidentified_faces = ActiveRecord::Base.connection.select_all("
-      SELECT
-        DATE(i.created_at) date,
-        MAX(i.created_at) created_at,
-        GROUP_CONCAT(CONCAT(f.id, ':', i.id, ':', i.code) ORDER BY f.id) face_data,
-        GROUP_CONCAT(DISTINCT i.id) items,
-        COUNT(f.id) face_count
-      FROM faces f
-      JOIN items i ON f.item_id = i.id
-      LEFT JOIN faces cluster_faces ON f.cluster_id = cluster_faces.id
-      WHERE i.created_at > DATE_SUB(NOW(), INTERVAL #{cutoff_days} DAY)
-        AND i.deleted = 0
-        AND i.published = 1
-        AND (f.cluster_id IS NULL OR cluster_faces.tag_id IS NULL)
-        AND f.tag_id IS NULL
-      GROUP BY DATE(i.created_at)
-      HAVING face_count > 0
+    # Get recent items first
+    recent_items = ActiveRecord::Base.connection.select_all("
+      SELECT id, code, created_at
+      FROM items
+      WHERE created_at > DATE_SUB(NOW(), INTERVAL #{cutoff_days} DAY)
+        AND deleted = 0
+        AND published = 1
       ORDER BY created_at DESC
     ")
+
+    # Get unidentified faces for those items
+    if recent_items.any?
+      item_ids = recent_items.map { |item| item["id"] }.join(",")
+      unidentified_face_data = ActiveRecord::Base.connection.select_all("
+        SELECT f.id, f.item_id, i.code, i.created_at
+        FROM faces f
+        JOIN items i ON f.item_id = i.id
+        WHERE f.item_id IN (#{item_ids})
+          AND f.tag_id IS NULL
+          AND f.cluster_id IS NULL
+        ORDER BY f.id
+      ")
+    else
+      unidentified_face_data = []
+    end
 
     face_detections.each do |detection|
       detection["items"] = CollapseRange.collapse detection["items"].split(",").map(&:to_i).sort
     end
 
-    unidentified_faces.each do |detection|
-      detection["items"] = CollapseRange.collapse detection["items"].split(",").map(&:to_i).sort
+    # Group unidentified faces by date in Ruby
+    unidentified_faces_by_date = {}
+    unidentified_face_data.each do |face|
+      date = face["created_at"].to_date
+      unidentified_faces_by_date[date] ||= {
+        "date" => date,
+        "created_at" => face["created_at"],
+        "faces" => []
+      }
+      unidentified_faces_by_date[date]["faces"] << {
+        "face_id" => face["id"].to_i,
+        "item_id" => face["item_id"].to_i,
+        "item_code" => face["code"]
+      }
     end
+
+    # Convert to array and update created_at to max for each day
+    unidentified_faces = unidentified_faces_by_date.values.map do |day_data|
+      max_created_at = day_data["faces"].map { |f| f["created_at"] || day_data["created_at"] }.max || day_data["created_at"]
+      day_data["created_at"] = max_created_at
+      day_data["face_count"] = day_data["faces"].size
+      # Create items list for compatibility
+      day_data["items"] = CollapseRange.collapse(day_data["faces"].map { |f| f["item_id"] }.uniq.sort)
+      day_data
+    end.sort_by { |d| d["created_at"] }.reverse
 
     # Group face detections by date
     face_detections_by_date = {}
@@ -120,22 +147,13 @@ class HomeController < ApplicationController
       }
     end
 
-    json['activity'] += unidentified_faces.map do |detection|
-      faces = detection["face_data"].split(",").map do |face_info|
-        face_id, item_id, item_code = face_info.split(":")
-        {
-          "face_id" => face_id.to_i,
-          "item_id" => item_id.to_i,
-          "item_code" => item_code,
-        }
-      end
-
+    json['activity'] += unidentified_faces.map do |day_data|
       {
         "unidentified_faces" => {
-          "created_at" => detection["created_at"],
-          "face_count" => detection["face_count"].to_i,
-          "items" => detection["items"],
-          "faces" => faces,
+          "created_at" => day_data["created_at"],
+          "face_count" => day_data["face_count"],
+          "items" => day_data["items"],
+          "faces" => day_data["faces"],
         },
       }
     end
