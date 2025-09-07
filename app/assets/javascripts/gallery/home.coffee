@@ -103,22 +103,24 @@ component 'Home', ->
               <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
             </p>
           else if group = activity.item_group
-            <p className="clearfix group" key="g#{group.item_id}">
-              {img_for group}
-              <span className="text">
-                <Link href="/search/item:#{group.ids}">
-                  {
-                    msg = []
-                    if group.photo_count
-                      msg.push pluralize(group.photo_count, "photo")
-                    if group.video_count
-                      msg.push pluralize(group.video_count, "video")
-                    msg.join ' and '
-                  }
-                </Link> added to {group.source}
-              </span><br/>
-              <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
-            </p>
+            <div className="clearfix group" key="g#{group.item_id}">
+              <PhotoGroup group={group} />
+              <div className="group-text">
+                <span className="text">
+                  <Link href="/search/item:#{group.id_range}">
+                    {
+                      msg = []
+                      if group.photo_count
+                        msg.push pluralize(group.photo_count, "photo")
+                      if group.video_count
+                        msg.push pluralize(group.video_count, "video")
+                      msg.join ' and '
+                    }
+                  </Link> added to {group.source}
+                </span><br/>
+                <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
+              </div>
+            </div>
           else if tagging = activity.tagging
             count = 0
             <div className="clearfix tagging" key="t#{tagging.created_at}">

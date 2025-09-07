@@ -9,6 +9,8 @@ class UpdateActivityJob < ApplicationJob
     attr_accessor :video_count
     attr_accessor :item
     attr_accessor :ids
+    attr_accessor :id_samples
+    attr_accessor :id_range
     def created_at
       @item.created_at
     end
@@ -16,6 +18,9 @@ class UpdateActivityJob < ApplicationJob
 
   def perform *args
     cutoff = 45.days.ago
+    if Rails.env.development?
+      cutoff = 450.days.ago
+    end
     events = []
     # events += Comment.includes(:item, :user).where('created_at > ?', cutoff).to_a
     events += Bullhorn.includes(:item, :user).where('created_at > ?', cutoff).to_a
@@ -55,7 +60,8 @@ class UpdateActivityJob < ApplicationJob
     groups << last if last.item
 
     groups.each do |group|
-      group.ids = CollapseRange.collapse group.ids.sort
+      group.id_range = CollapseRange.collapse group.ids.sort
+      group.id_samples = group.ids.sample 20
     end
 
     events += groups
@@ -84,7 +90,8 @@ class UpdateActivityJob < ApplicationJob
             photo_count: event.photo_count,
             video_count: event.video_count,
             source: label,
-            ids: event.ids,
+            id_range: event.id_range,
+            id_samples: event.id_samples,
             item_id: event.item.id,
           }
         }

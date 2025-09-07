@@ -32,3 +32,57 @@
       :height 32px
       :width 32px
       :border-radius 50%
+
+  .group
+    :margin-bottom 15px
+
+    .photo-group
+      :display flex
+      :flex-wrap wrap
+      :margin-bottom 8px
+
+      .photo-group-item
+        :margin 2px
+        :text-decoration none
+
+        img
+          :width 80px
+          :height 80px
+          :object-fit cover
+          :border-radius 4px
+          :transition transform 0.2s ease
+
+        &:hover img
+          :transform scale(1.15)
+          :z-index 10
+
+    .group-text
+      :margin-left 0
+
+@media (max-width: 768px)
+  .recent-activity
+    .group
+      .photo-group
+        .photo-group-item
+          img
+            :width 60px
+            :height 60px
+
+        .photo-group-more
+          :width 60px
+          :height 60px
+          :font-size 12px
+
+@media (max-width: 480px)
+  .recent-activity
+    .group
+      .photo-group
+        .photo-group-item
+          img
+            :width 50px
+            :height 50px
+
+        .photo-group-more
+          :width 50px
+          :height 50px
+          :font-size 10px
