@@ -27,9 +27,12 @@ component 'PhotoGroup', ({group}) ->
 
   <div className="photo-group">
     {
-      itemsToShow.map (id) ->
+      itemsToShow.map (sample) ->
+        id = sample.id
+        code = sample.code
+
         <Link key={id} href="/items/#{id}" className="photo-group-item">
-          <ItemImg id={id} size="square" />
+          <ItemImg id={id} code={code} size="square" />
         </Link>
     }
   </div>

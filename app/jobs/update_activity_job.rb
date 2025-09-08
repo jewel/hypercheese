@@ -61,7 +61,9 @@ class UpdateActivityJob < ApplicationJob
 
     groups.each do |group|
       group.id_range = CollapseRange.collapse group.ids.sort
-      group.id_samples = group.ids.sample 20
+      sample_ids = group.ids.sample 20
+      sample_items = Item.where(id: sample_ids).pluck(:id, :code)
+      group.id_samples = sample_items.map { |id, code| { id: id, code: code } }
     end
 
     events += groups
