@@ -1,4 +1,30 @@
 .recent-activity
+  .activity-placeholder
+    :background-color #f8f9fa
+    :border 1px solid #e9ecef
+    :border-radius 4px
+    :display flex
+    :align-items center
+    :justify-content center
+    :margin-bottom 15px
+    :color #6c757d
+    :transition background-color 0.3s ease
+
+    &:hover
+      :background-color #e9ecef
+
+    &.comment, &.bullhorn
+      :min-height 120px
+
+    &.group
+      :min-height 200px
+
+    &.tagging, &.face_detection
+      :min-height 100px
+
+    &.unidentified_faces
+      :min-height 150px
+
   p
     img
       :width 100px

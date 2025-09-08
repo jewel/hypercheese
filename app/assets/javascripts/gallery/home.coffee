@@ -4,9 +4,78 @@ pluralize = (count, obj) ->
   else
     "#{count.toLocaleString()} #{obj}s"
 
+# Lazy loading state for activity items
+lazyActivityState =
+  loadedItems: new Set()
+  observer: null
+
+# Initialize intersection observer for lazy loading
+initLazyLoading = ->
+  return if lazyActivityState.observer
+
+  lazyActivityState.observer = new IntersectionObserver (entries) ->
+    entries.forEach (entry) ->
+      if entry.isIntersecting
+        activityId = entry.target.dataset.activityId
+        if activityId
+          lazyActivityState.loadedItems.add activityId
+          Store.needsRedraw()
+  , {
+    threshold: 0.5,
+    rootMargin: '50% 0px 50% 0px'
+  }
+
+# Cleanup observer when needed
+cleanupLazyLoading = ->
+  if lazyActivityState.observer
+    lazyActivityState.observer.disconnect()
+    lazyActivityState.observer = null
+
+# Component for activity placeholder
+component 'ActivityPlaceholder', (props) ->
+  React.useEffect ->
+    element = document.querySelector("[data-activity-id='#{props.activityId}']")
+    if element && lazyActivityState.observer
+      lazyActivityState.observer.observe element
+
+    # Cleanup on unmount
+    ->
+      if element && lazyActivityState.observer
+        lazyActivityState.observer.unobserve element
+  , [props.activityId]
+
+  <div
+    className="activity-placeholder #{props.type}"
+    data-activity-id={props.activityId}
+    style={{
+      height: props.estimatedHeight || '120px',
+      backgroundColor: '#f8f9fa',
+      border: '1px solid #e9ecef',
+      borderRadius: '4px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: '15px',
+      color: '#6c757d'
+    }}
+  >
+    <div>
+      <i className="fa fa-spinner fa-spin" style={{marginRight: '8px'}}></i>
+      Loading activity...
+    </div>
+  </div>
+
 component 'Home', ->
   recent = Store.fetchRecent()
   itemCounts = Store.fetchUnpublishedItemCounts()
+
+  # Initialize lazy loading when component mounts
+  React.useEffect ->
+    initLazyLoading()
+    # Cleanup on unmount
+    -> cleanupLazyLoading()
+  , []
+
   <div className="container-fluid cheese-home">
     <h1>Welcome to HyperCheese</h1>
 
@@ -89,21 +158,53 @@ component 'Home', ->
             <ItemImg id={object.item_id} />
           </Link>
 
-        recent.activity.map (activity) ->
+        # Generate unique activity IDs and determine which items to load initially
+        recent.activity.map (activity, index) ->
+          activityId = "activity-#{index}"
+
+          # Load first few items immediately, rest are lazy loaded
+          shouldLoadImmediately = index < 3
+          isLoaded = shouldLoadImmediately || lazyActivityState.loadedItems.has(activityId)
+
+          unless isLoaded
+            # Return placeholder for unloaded items
+            activityType = 'comment' if activity.comment
+            activityType = 'bullhorn' if activity.bullhorn
+            activityType = 'group' if activity.item_group
+            activityType = 'tagging' if activity.tagging
+            activityType = 'face_detection' if activity.face_detection
+            activityType = 'unidentified_faces' if activity.unidentified_faces
+            activityType = 'unknown'
+
+            estimatedHeight = switch activityType
+              when 'comment', 'bullhorn' then '120px'
+              when 'group' then '200px'
+              when 'tagging', 'face_detection' then '100px'
+              when 'unidentified_faces' then '150px'
+              else '120px'
+
+            return <ActivityPlaceholder
+              key={activityId}
+              activityId={activityId}
+              type={activityType}
+              estimatedHeight={estimatedHeight}
+            />
+
+          # Render actual activity content with proper key
           if comment = activity.comment
-            <p className="clearfix comment" key="c#{comment.id}">
+            <p className="clearfix comment" key={activityId}>
               {img_for comment}
               <span className="text">{comment.text}</span><br/>
               <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
             </p>
           else if bullhorn = activity.bullhorn
-            <p className="clearfix bullhorn" key="s#{bullhorn.id}">
+            <p className="clearfix bullhorn" key={activityId}>
               {img_for bullhorn}
               <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
               <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
             </p>
           else if group = activity.item_group
-            <div className="clearfix group" key="g#{group.item_id}">
+            <div className="clearfix group" key={activityId}>
               <PhotoGroup group={group} />
               <div className="group-text">
                 <span className="text">
@@ -123,7 +224,7 @@ component 'Home', ->
             </div>
           else if tagging = activity.tagging
             count = 0
-            <div className="clearfix tagging" key="t#{tagging.created_at}">
+            <div className="clearfix tagging" key={activityId}>
               <div className="tagging-list">
                 {
                   tagging.list.map (t) ->
@@ -141,7 +242,7 @@ component 'Home', ->
             </div>
           else if face_detection = activity.face_detection
             count = 0
-            <div className="clearfix tagging" key="f#{face_detection.created_at}">
+            <div className="clearfix tagging" key={activityId}>
               <div className="tagging-list">
                 {
                   face_detection.list.map (f) ->
@@ -158,7 +259,7 @@ component 'Home', ->
               {pluralize(count, "face")} detected <em>&mdash; {new Date(face_detection.created_at).toLocaleString()}</em>
             </div>
           else if unidentified_faces = activity.unidentified_faces
-            <div className="clearfix unidentified-faces" key="u#{unidentified_faces.created_at}">
+            <div className="clearfix unidentified-faces" key={activityId}>
               <div className="face-grid">
                 {
                   unidentified_faces.faces.map (face) ->
