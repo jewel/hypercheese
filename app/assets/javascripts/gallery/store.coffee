@@ -76,18 +76,15 @@ class @Store
   @canWrite: ->
     @state.canWrite
 
-  @isLoadingActivity: ->
-    @loadingActivity
-
   @fetchRecent: ->
     return @state.recent if @state.recent
     blank = {activity: [], sources: [], taggings: []}
-    return blank if @loadingActivity
-    @loadingActivity = true
+    return blank if @state.loadingActivity || @state.failedLoadingActivity
+    @state.loadingActivity = true
     @jax
       url: '/activity'
       success: (res) =>
-        @loadingActivity = false
+        @state.loadingActivity = false
         usersById = {}
         if res.users
           for user in res.users
@@ -107,7 +104,8 @@ class @Store
         @state.recent = res
         @needsRedraw()
       error: (xhr, status, error) =>
-        @loadingActivity = false
+        @state.loadingActivity = false
+        @state.failedLoadingActivity = true
         @needsRedraw()
     blank
 

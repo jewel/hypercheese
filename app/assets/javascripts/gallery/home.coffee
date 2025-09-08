@@ -68,7 +68,6 @@ component 'ActivityPlaceholder', (props) ->
 component 'Home', ->
   recent = Store.fetchRecent()
   itemCounts = Store.fetchUnpublishedItemCounts()
-  isLoadingActivity = Store.isLoadingActivity()
 
   # Initialize lazy loading when component mounts
   React.useEffect ->
@@ -154,7 +153,7 @@ component 'Home', ->
     <h2>Recent Activity</h2>
     <div className="recent-activity">
       {
-        if isLoadingActivity
+        if Store.state.loadingActivity
           <div style={{
             textAlign: 'center',
             padding: '40px',
@@ -162,6 +161,14 @@ component 'Home', ->
           }}>
             <i className="fa fa-spinner fa-spin fa-2x" style={{marginBottom: '10px'}}></i>
             <div>Loading recent activity...</div>
+          </div>
+        else if Store.state.failedLoadingActivity
+          <div style={{
+            textAlign: 'center',
+            padding: '40px',
+            color: '#6c757d'
+          }}>
+            Failed to load recent activity.
           </div>
         else
           img_for = (object) ->
