@@ -69,6 +69,7 @@ class HomeController < ApplicationController
         WHERE f.item_id IN (#{item_ids})
           AND f.tag_id IS NULL
           AND f.cluster_id IS NULL
+          AND i.variety = 'photo'
         ORDER BY f.id
       ")
     else
