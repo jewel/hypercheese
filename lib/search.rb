@@ -176,7 +176,7 @@ class Search
     end
 
     if @query[:item]
-      ids = expand_list @query[:item]
+      ids = CollapseRange.expand @query[:item].join(",")
       items = items.where 'id in (?)', ids
     end
 
@@ -261,23 +261,6 @@ class Search
 
     @items = items
     @executed = true
-  end
-
-  def expand_list groups
-    ids = []
-    groups.each do |seq|
-      start, finish = seq.split '-'
-      finish ||= start
-
-      # Check for partial digit shorthand
-      # Example: 1000-2 as an encoding for 1000-1002
-      if finish.to_i < start.to_i
-        finish = start[0...-finish.size] + finish
-      end
-
-      ids.concat (start.to_i..finish.to_i).to_a
-    end
-    ids
   end
 
   def descendants tag_ids
