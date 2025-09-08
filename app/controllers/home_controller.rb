@@ -194,8 +194,6 @@ class HomeController < ApplicationController
       _.values.first["created_at"]
     end.reverse
 
-    json['activity'] = json['activity'] + json['activity'] + json['activity']
-
     render json: json
   end
 

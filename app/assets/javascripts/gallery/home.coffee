@@ -68,6 +68,7 @@ component 'ActivityPlaceholder', (props) ->
 component 'Home', ->
   recent = Store.fetchRecent()
   itemCounts = Store.fetchUnpublishedItemCounts()
+  isLoadingActivity = Store.isLoadingActivity()
 
   # Initialize lazy loading when component mounts
   React.useEffect ->
@@ -153,125 +154,135 @@ component 'Home', ->
     <h2>Recent Activity</h2>
     <div className="recent-activity">
       {
-        img_for = (object) ->
-          <Link href="/items/#{object.item_id}">
-            <ItemImg id={object.item_id} />
-          </Link>
+        if isLoadingActivity
+          <div style={{
+            textAlign: 'center',
+            padding: '40px',
+            color: '#6c757d'
+          }}>
+            <i className="fa fa-spinner fa-spin fa-2x" style={{marginBottom: '10px'}}></i>
+            <div>Loading recent activity...</div>
+          </div>
+        else
+          img_for = (object) ->
+            <Link href="/items/#{object.item_id}">
+              <ItemImg id={object.item_id} />
+            </Link>
 
-        # Generate unique activity IDs and determine which items to load initially
-        recent.activity.map (activity, index) ->
-          activityId = "activity-#{index}"
+          # Generate unique activity IDs and determine which items to load initially
+          recent.activity.map (activity, index) ->
+            activityId = "activity-#{index}"
 
-          # Load first few items immediately, rest are lazy loaded
-          shouldLoadImmediately = index < 3
-          isLoaded = shouldLoadImmediately || lazyActivityState.loadedItems.has(activityId)
+            # Load first few items immediately, rest are lazy loaded
+            shouldLoadImmediately = index < 3
+            isLoaded = shouldLoadImmediately || lazyActivityState.loadedItems.has(activityId)
 
-          unless isLoaded
-            # Return placeholder for unloaded items
-            activityType = 'comment' if activity.comment
-            activityType = 'bullhorn' if activity.bullhorn
-            activityType = 'group' if activity.item_group
-            activityType = 'tagging' if activity.tagging
-            activityType = 'face_detection' if activity.face_detection
-            activityType = 'unidentified_faces' if activity.unidentified_faces
-            activityType = 'unknown'
+            unless isLoaded
+              # Return placeholder for unloaded items
+              activityType = 'comment' if activity.comment
+              activityType = 'bullhorn' if activity.bullhorn
+              activityType = 'group' if activity.item_group
+              activityType = 'tagging' if activity.tagging
+              activityType = 'face_detection' if activity.face_detection
+              activityType = 'unidentified_faces' if activity.unidentified_faces
+              activityType = 'unknown'
 
-            estimatedHeight = switch activityType
-              when 'comment', 'bullhorn' then '120px'
-              when 'group' then '200px'
-              when 'tagging', 'face_detection' then '100px'
-              when 'unidentified_faces' then '150px'
-              else '120px'
+              estimatedHeight = switch activityType
+                when 'comment', 'bullhorn' then '120px'
+                when 'group' then '200px'
+                when 'tagging', 'face_detection' then '100px'
+                when 'unidentified_faces' then '150px'
+                else '120px'
 
-            return <ActivityPlaceholder
-              key={activityId}
-              activityId={activityId}
-              type={activityType}
-              estimatedHeight={estimatedHeight}
-            />
+              return <ActivityPlaceholder
+                key={activityId}
+                activityId={activityId}
+                type={activityType}
+                estimatedHeight={estimatedHeight}
+              />
 
-          # Render actual activity content with proper key
-          if comment = activity.comment
-            <p className="clearfix comment" key={activityId}>
-              {img_for comment}
-              <span className="text">{comment.text}</span><br/>
-              <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
-            </p>
-          else if bullhorn = activity.bullhorn
-            <p className="clearfix bullhorn" key={activityId}>
-              {img_for bullhorn}
-              <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
-              <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
-            </p>
-          else if group = activity.item_group
-            <div className="clearfix group" key={activityId}>
-              <PhotoGroup group={group} />
-              <div className="group-text">
-                <span className="text">
-                  <Link href="/search/item:#{group.id_range}">
-                    {
-                      msg = []
-                      if group.photo_count
-                        msg.push pluralize(group.photo_count, "photo")
-                      if group.video_count
-                        msg.push pluralize(group.video_count, "video")
-                      msg.join ' and '
-                    }
-                  </Link> added to {group.source}
-                </span><br/>
-                <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
+            # Render actual activity content with proper key
+            if comment = activity.comment
+              <p className="clearfix comment" key={activityId}>
+                {img_for comment}
+                <span className="text">{comment.text}</span><br/>
+                <em>&mdash; {comment.user.name}, {new Date(comment.created_at).toLocaleString()}</em>
+              </p>
+            else if bullhorn = activity.bullhorn
+              <p className="clearfix bullhorn" key={activityId}>
+                {img_for bullhorn}
+                <span className="text"><i className="fa fa-bullhorn"></i></span><br/>
+                <em>&mdash; {bullhorn.user.name}, {new Date(bullhorn.created_at).toLocaleString()}</em>
+              </p>
+            else if group = activity.item_group
+              <div className="clearfix group" key={activityId}>
+                <PhotoGroup group={group} />
+                <div className="group-text">
+                  <span className="text">
+                    <Link href="/search/item:#{group.id_range}">
+                      {
+                        msg = []
+                        if group.photo_count
+                          msg.push pluralize(group.photo_count, "photo")
+                        if group.video_count
+                          msg.push pluralize(group.video_count, "video")
+                        msg.join ' and '
+                      }
+                    </Link> added to {group.source}
+                  </span><br/>
+                  <em>&mdash; {new Date(group.created_at).toLocaleString()}</em>
+                </div>
               </div>
-            </div>
-          else if tagging = activity.tagging
-            count = 0
-            <div className="clearfix tagging" key={activityId}>
-              <div className="tagging-list">
-                {
-                  tagging.list.map (t) ->
-                    count += t.count
-                    tag = Store.state.tagsById[t.tag_id]
-                    return unless tag
-                    <Link href="/search/item:#{t.items}">
-                      <Tag key={t.tag_id} tag={tag}>
-                        +{t.count.toLocaleString()}
-                      </Tag>
-                    </Link>
-                }
+            else if tagging = activity.tagging
+              count = 0
+              <div className="clearfix tagging" key={activityId}>
+                <div className="tagging-list">
+                  {
+                    tagging.list.map (t) ->
+                      count += t.count
+                      tag = Store.state.tagsById[t.tag_id]
+                      return unless tag
+                      <Link href="/search/item:#{t.items}">
+                        <Tag key={t.tag_id} tag={tag}>
+                          +{t.count.toLocaleString()}
+                        </Tag>
+                      </Link>
+                  }
+                </div>
+                {pluralize(count, "tag")} added <em>&mdash; {tagging.user?.name}, {new Date(tagging.created_at).toLocaleString()}</em>
               </div>
-              {pluralize(count, "tag")} added <em>&mdash; {tagging.user?.name}, {new Date(tagging.created_at).toLocaleString()}</em>
-            </div>
-          else if face_detection = activity.face_detection
-            count = 0
-            <div className="clearfix tagging" key={activityId}>
-              <div className="tagging-list">
-                {
-                  face_detection.list.map (f) ->
-                    count += f.face_count
-                    tag = Store.state.tagsById[f.tag_id]
-                    return unless tag
-                    <Link href="/search/item:#{f.items}">
-                      <Tag key={f.tag_id} tag={tag}>
-                        +{f.face_count.toLocaleString()}
-                      </Tag>
-                    </Link>
-                }
+            else if face_detection = activity.face_detection
+              count = 0
+              <div className="clearfix tagging" key={activityId}>
+                <div className="tagging-list">
+                  {
+                    face_detection.list.map (f) ->
+                      count += f.face_count
+                      tag = Store.state.tagsById[f.tag_id]
+                      return unless tag
+                      <Link href="/search/item:#{f.items}">
+                        <Tag key={f.tag_id} tag={tag}>
+                          +{f.face_count.toLocaleString()}
+                        </Tag>
+                      </Link>
+                  }
+                </div>
+                {pluralize(count, "face")} detected <em>&mdash; {new Date(face_detection.created_at).toLocaleString()}</em>
               </div>
-              {pluralize(count, "face")} detected <em>&mdash; {new Date(face_detection.created_at).toLocaleString()}</em>
-            </div>
-          else if unidentified_faces = activity.unidentified_faces
-            <div className="clearfix unidentified-faces" key={activityId}>
-              <div className="face-grid">
-                {
-                  unidentified_faces.faces.map (face) ->
-                    face_url = "/data/faces/#{face.item_id}-#{face.face_id}-#{face.item_code}.jpg"
+            else if unidentified_faces = activity.unidentified_faces
+              <div className="clearfix unidentified-faces" key={activityId}>
+                <div className="face-grid">
+                  {
+                    unidentified_faces.faces.map (face) ->
+                      face_url = "/data/faces/#{face.item_id}-#{face.face_id}-#{face.item_code}.jpg"
 
-                    <Link href="/items/#{face.item_id}">
-                      <img key={face.face_id} className="face-thumb" src={face_url} title="Unidentified person - click to view item"/>
-                    </Link>
-                }
+                      <Link href="/items/#{face.item_id}">
+                        <img key={face.face_id} className="face-thumb" src={face_url} title="Unidentified person - click to view item"/>
+                      </Link>
+                  }
+                </div>
+                {pluralize(unidentified_faces.face_count, "unknown face")} detected <em>&mdash; {new Date(unidentified_faces.created_at).toLocaleString()}</em>
               </div>
-              {pluralize(unidentified_faces.face_count, "unknown face")} detected <em>&mdash; {new Date(unidentified_faces.created_at).toLocaleString()}</em>
-            </div>
       }
     </div>
   </div>
