@@ -31,12 +31,12 @@ class Item < ActiveRecord::Base
 
     delete_tag = Tag.where( label: 'delete' ).first
     if delete_tag
-      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
+      items = items.where [ 'items.id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
     end
 
     hidden_tag = Tag.where( label: 'Hidden' ).first
     if hidden_tag
-      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
+      items = items.where [ 'items.id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
     end
 
     items = items.where(published: true, deleted: false)
