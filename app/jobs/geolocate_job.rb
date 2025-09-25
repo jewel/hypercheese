@@ -1,7 +1,9 @@
 require_dependency 'r_tree'
+require 'csv'
 
 class GeolocateJob < ApplicationJob
   @@rtree = nil
+  @@country_codes = nil
 
   def perform item_id
     item = Item.find item_id
@@ -37,6 +39,13 @@ class GeolocateJob < ApplicationJob
         geoid = shape[:shapeID] || shape[:GEOID] || shape[:shapeGroup]
         raise "No geoid for #{shape.properties.inspect}" if geoid.blank?
         raise "No name for #{shape.properties.inspect}" if name.blank?
+
+        # Replace three-character country codes with full country names
+        if geoid.match?(/\A[A-Z]{3}\z/)
+          country_name = load_country_codes[geoid]
+          name = country_name if country_name
+        end
+
         location = Location.find_by_geoid geoid
         if location && location.name != name
           raise "Multiple locations for #{geoid.inspect}"
@@ -62,5 +71,19 @@ class GeolocateJob < ApplicationJob
     raise "geo index has not been built (run script/build-geo-index)" unless cache.exist?
     @@rtree = Marshal.load cache.open 'rb'
     @@rtree
+  end
+
+  def load_country_codes
+    return @@country_codes if @@country_codes
+    csv_path = Rails.root + "db/geo/wikipedia-iso-country-codes.csv"
+    @@country_codes = {}
+
+    CSV.foreach csv_path, headers: true do |row|
+      alpha3 = row['Alpha-3 code']
+      country_name = row['English short name lower case']
+      @@country_codes[alpha3] = country_name if alpha3 && country_name
+    end
+
+    @@country_codes
   end
 end
