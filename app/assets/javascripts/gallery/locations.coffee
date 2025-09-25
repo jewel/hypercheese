@@ -11,17 +11,13 @@ component 'Locations', ->
       # Merge locations and places, adding a type field to distinguish them
       allLocations = []
 
-      if locations
-        locations.forEach (location) ->
-          allLocations.push({...location, type: 'location'})
-
       if places
         places.forEach (place) ->
           allLocations.push({...place, type: 'place'})
 
-      # Sort by item_count descending
-      allLocations.sort (a, b) ->
-        (b.item_count || 0) - (a.item_count || 0)
+      if locations
+        locations.forEach (location) ->
+          allLocations.push({...location, type: 'location'})
 
       if filter.trim() == ''
         setFilteredLocations allLocations
