@@ -40,7 +40,7 @@ class Item < ActiveRecord::Base
     raise "Must be logged in to see this item" unless user
     sources.each do |source|
       next unless source.user_id
-      return if source.user_id = user.id
+      return if source.user_id == user.id
     end
     raise "Item #{id} is not published"
   end
