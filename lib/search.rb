@@ -42,8 +42,7 @@ class Search
     items = items.where published: published
 
     if !published
-      sources = Source.where user_id: @query[:current_user].id
-      items = items.where "id in ( select item_id from item_paths where source_id IN (?))", sources.map(&:id)
+      items = items.visible_to @query[:current_user]
     end
 
     case @query[:orientation]

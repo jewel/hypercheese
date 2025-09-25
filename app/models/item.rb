@@ -26,15 +26,36 @@ class Item < ActiveRecord::Base
     where published: true
   end
 
-  # Check visibility on small groups of items
-  #
-  # The main search results shouldn't use this, it's inefficient.
-  def self.check_visibility_for user
-    where(published: [nil, false]).includes(:item_paths, :sources).each do |item|
-      item.check_visibility_for user
-    end
-  end
+  scope :can_be_shown_everywhere, -> {
+    items = self
 
+    delete_tag = Tag.where( label: 'delete' ).first
+    if delete_tag
+      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', delete_tag.id ]
+    end
+
+    hidden_tag = Tag.where( label: 'Hidden' ).first
+    if hidden_tag
+      items = items.where [ 'id not in ( select item_id from item_tags where tag_id = ?)', hidden_tag.id ]
+    end
+
+    items = items.where(published: true, deleted: false)
+  }
+
+  scope :visible_to, ->(user) {
+    if user
+      where(
+        "published = 1 OR id IN (SELECT item_id FROM item_paths WHERE source_id IN (select id from sources where user_id = ?))",
+        user.id
+      )
+    else
+      where(published: true)
+    end
+  }
+
+  # Check visibility on one item
+  #
+  # Use the visible_to scope instead for larger batches of items
   def check_visibility_for user
     return if published
     raise "Must be logged in to see this item" unless user
@@ -177,7 +198,17 @@ class Item < ActiveRecord::Base
     output.sort_by! { -_1.first }
     ids = output.map { _1.last }
     ids = ids - [id]
-    Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).find ids.first(20)
+
+    # Fetch in batches because occasionally a deleted or unpublished item will
+    # be in the top results.
+    visible_items = []
+    ids.each_slice(20) do |batch_ids|
+      batch_items = Item.includes(:comments, :tags, :stars, :bullhorns, :ratings).can_be_shown_everywhere.where(id: batch_ids)
+      visible_items.concat batch_items.to_a
+      break if visible_items.length >= 20
+    end
+
+    visible_items.first 20
   end
 
   # Assign places based on GPS coordinates

@@ -71,8 +71,7 @@ class ItemsController < ApplicationController
   def visibility
     value = params[:value] == 'true'
     ids = items_params[:items].map { |_| _.to_i }
-    items = Item.where id: ids
-    items.check_visibility_for current_user
+    items = Item.where(id: ids).visible_to(current_user)
     Item.transaction do
       items.each do |item|
         item.published = value
@@ -94,9 +93,8 @@ class ItemsController < ApplicationController
       share.save
 
       ids = items_params[:items].map { |_| _.to_i }
-      items = Item.where id: ids
-      items.check_visibility_for current_user
-
+      items = Item.where(id: ids).visible_to(current_user)
+      includes(:comments, :tags, :stars, :bullhorns, :ratings)
       items.pluck(:id).each do |item_id|
         ShareItem.create share: share, item_id: item_id
       end
@@ -218,13 +216,13 @@ class ItemsController < ApplicationController
 
   def download
     ids = params[:ids].split(/,/).map { |_| _.to_i }
-    items = Item.where(id: ids).includes(:item_paths)
+    items = Item.visible_to(current_user).where(id: ids).includes(:item_paths)
     download_zip items
   end
 
   def convert
     ids = params[:ids].split(/,/).map { |_| _.to_i }
-    items = Item.where(id: ids).includes(:item_paths)
+    items = Item.visible_to(current_user).where(id: ids).includes(:item_paths)
     convert_to_jpeg_and_zip items
   end
 
