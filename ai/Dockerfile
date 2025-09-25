@@ -2,7 +2,7 @@ FROM python:3.8-slim
 
 WORKDIR /opt/app
 
-RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 wget -y \
+RUN apt-get update && apt-get install libsm6 libxext6 wget -y \
    && apt-get clean
 
 COPY requirements.txt .

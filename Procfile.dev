@@ -1,4 +1,3 @@
 web: bin/rails server -p 3000
 assets: yarn watch
-minio: minio server --console-address ":9001" originals/blobs/
 worker: rake jobs:work

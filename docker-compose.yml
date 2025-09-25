@@ -1,4 +1,3 @@
-version: '3'
 services:
   python:
     build: ai
@@ -6,3 +5,27 @@ services:
     tty: true
     ports:
       - "5000:5000"
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      - MARIADB_DATABASE=hypercheese_dev
+      - MARIADB_USER=cheese
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=devroot
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+  minio:
+    image: minio/minio
+    command: server --console-address ":9001" /data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./originals/blobs:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+volumes:
+  mariadb_data:
