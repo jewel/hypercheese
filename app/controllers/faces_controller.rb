@@ -3,7 +3,14 @@ class FacesController < ApplicationController
     @tags = Tag.find_by_sql "
       WITH clusters AS (
         SELECT cluster_id, SUM(1) count FROM faces
+        JOIN items ON faces.item_id = items.id
         WHERE cluster_id IS NOT NULL
+        AND items.published = 1
+        AND items.deleted = 0
+        AND items.id NOT IN (
+          SELECT item_id FROM item_tags
+          WHERE tag_id IN (SELECT id FROM tags WHERE label IN ('delete', 'Hidden'))
+        )
         GROUP BY 1
       ),
       total_faces AS (
@@ -15,6 +22,12 @@ class FacesController < ApplicationController
         SELECT tag_id, SUM(1) count FROM item_tags
         JOIN items ON item_id = items.id
         WHERE face_count IS NOT NULL
+        AND items.published = 1
+        AND items.deleted = 0
+        AND items.id NOT IN (
+          SELECT item_id FROM item_tags
+          WHERE tag_id IN (SELECT id FROM tags WHERE label IN ('delete', 'Hidden'))
+        )
         GROUP BY 1
       )
       SELECT tags.*, total_faces.count total_faces, total_items.count total_items
@@ -61,20 +74,20 @@ class FacesController < ApplicationController
 
   def show
     @face = Face.find params[:id]
-    @canonical_faces = Face.where.not(tag: nil).sort_by do |canon|
+    @canonical_faces = Face.joins(:item).merge(Item.can_be_shown_everywhere).where.not(tag: nil).sort_by do |canon|
       canon.embedding? && @face.embedding? && canon.distance(@face)
     end.reverse.first(10)
 
     if @face.tag
-      @other_canonical = Face.where(tag_id: @face.tag.id).to_a - [@face]
-      @cluster = Face.where(cluster_id: @face.id).includes(:item).order('similarity desc').limit(10_000)
+      @other_canonical = Face.joins(:item).merge(Item.can_be_shown_everywhere).where(tag_id: @face.tag.id).to_a - [@face]
+      @cluster = Face.joins(:item).merge(Item.can_be_shown_everywhere).where(cluster_id: @face.id).includes(:item).order('similarity desc').limit(10_000)
       @birthday = @face.tag.birthday
-      @birthday ||= @face.tag.items.order('taken').first&.taken
+      @birthday ||= @face.tag.items.can_be_shown_everywhere.order('taken').first&.taken
     else
       @hypothetical = {}
       output = @face.store.bulk_cosine_distance @face.embedding, Face::DISTANCE_THRESHOLD
       ids = output.map &:last
-      faces_by_id = Face.includes(:item, :cluster, cluster: :tag).where(id: ids).where(tag_id: nil).index_by &:id
+      faces_by_id = Face.joins(:item).merge(Item.can_be_shown_everywhere).includes(:item, :cluster, cluster: :tag).where(id: ids).where(tag_id: nil).index_by &:id
       output.each do |(distance, id)|
         other = faces_by_id[id]
         next unless other # face must have been deleted
@@ -91,7 +104,7 @@ class FacesController < ApplicationController
     2048.times do
       ids << rand(max)
     end
-    @faces = Face.where(cluster_id: nil, id: ids)
+    @faces = Face.joins(:item).merge(Item.can_be_shown_everywhere).where(cluster_id: nil, id: ids)
   end
 
   def mistagged
@@ -102,6 +115,12 @@ class FacesController < ApplicationController
       SELECT items.*
       FROM item_tags
       JOIN items ON item_id = items.id
+      WHERE items.published = 1
+      AND items.deleted = 0
+      AND items.id NOT IN (
+        SELECT item_id FROM item_tags
+        WHERE tag_id IN (SELECT id FROM tags WHERE label IN ('delete', 'Hidden'))
+      )
       WHERE tag_id = ?
       AND face_count IS NOT NULL
       AND item_id NOT IN (
@@ -124,7 +143,14 @@ class FacesController < ApplicationController
     # Faces that are in an image that doesn't have that tag
     @faces = Face.find_by_sql ["
       SELECT faces.* FROM faces
-      WHERE cluster_id IN (
+      JOIN items ON faces.item_id = items.id
+      WHERE items.published = 1
+      AND items.deleted = 0
+      AND items.id NOT IN (
+        SELECT item_id FROM item_tags
+        WHERE tag_id IN (SELECT id FROM tags WHERE label IN ('delete', 'Hidden'))
+      )
+      AND cluster_id IN (
         SELECT id
         FROM faces
         WHERE tag_id = ?

@@ -1,19 +1,19 @@
 %h1 Faces
 %p
   There are
-  = Face.all.count
+  = Face.joins(:item).merge(Item.can_be_shown_everywhere).count
   faces,
-  = Face.where.not(tag_id: nil).count
+  = Face.joins(:item).merge(Item.can_be_shown_everywhere).where.not(tag_id: nil).count
   canonical faces,
-  = Face.where.not(cluster_id: nil).count
+  = Face.joins(:item).merge(Item.can_be_shown_everywhere).where.not(cluster_id: nil).count
   clustered faces, and
   %a(href="/faces/unclustered")
-    = Face.where(cluster_id: nil).count
+    = Face.joins(:item).merge(Item.can_be_shown_everywhere).where(cluster_id: nil).count
   unclustered faces.
 .face-list
   - @tags.each do |tag|
     .face
-      - faces = tag.faces.includes(:item).to_a.sort_by { _1.item.taken }.reverse
+      - faces = tag.faces.joins(:item).merge(Item.can_be_shown_everywhere).includes(:item).to_a.sort_by { _1.item.taken }.reverse
       - faces.each do |face|
         %a(href="/faces/#{face.id}")
           %img{ src: face.url }
