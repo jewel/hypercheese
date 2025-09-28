@@ -94,7 +94,6 @@ class ItemsController < ApplicationController
 
       ids = items_params[:items].map { |_| _.to_i }
       items = Item.where(id: ids).visible_to(current_user)
-      includes(:comments, :tags, :stars, :bullhorns, :ratings)
       items.pluck(:id).each do |item_id|
         ShareItem.create share: share, item_id: item_id
       end
