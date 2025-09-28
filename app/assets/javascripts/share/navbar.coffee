@@ -42,7 +42,7 @@
       classes.push 'navbar-hidden'
 
     <div>
-      <nav style={visibility: 'invisible'} className="navbar navbar-static-top"></nav>
+      <nav style={visibility: 'invisible'} className="navbar fixed-top"></nav>
       <nav id="main-navbar" className={classes.join ' '}>
         <div className="container-fluid">
           <div className="navbar-brand">

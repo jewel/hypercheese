@@ -14,12 +14,22 @@
       html, .share-results {
         background: black;
       }
+      .share-results {
+        display: flex;
+        gap: 2px;
+        padding-top: 2px;
+        flex-wrap: wrap;
+      }
 
       .share-results .shared-item {
-        display: inline-block;
         width: 200px;
         height: 200px;
-        margin: 2px;
+        cursor: pointer;
+      }
+
+      .details-window.show-controls .control {
+        background: transparent;
+        border: none;
       }
 
       @media only screen and (max-width: 610px) {
