@@ -249,8 +249,8 @@ component 'Home', ->
                       count += t.count
                       tag = Store.state.tagsById[t.tag_id]
                       return unless tag
-                      <Link href="/search/item:#{t.items}">
-                        <Tag key={t.tag_id} tag={tag}>
+                      <Link key={t.tag_id} href="/search/item:#{t.items}">
+                        <Tag tag={tag}>
                           +{t.count.toLocaleString()}
                         </Tag>
                       </Link>
@@ -267,8 +267,8 @@ component 'Home', ->
                       count += f.face_count
                       tag = Store.state.tagsById[f.tag_id]
                       return unless tag
-                      <Link href="/search/item:#{f.items}">
-                        <Tag key={f.tag_id} tag={tag}>
+                      <Link key={f.tag_id} href="/search/item:#{f.items}">
+                        <Tag tag={tag}>
                           +{f.face_count.toLocaleString()}
                         </Tag>
                       </Link>
@@ -283,8 +283,8 @@ component 'Home', ->
                     unidentified_faces.faces.map (face) ->
                       face_url = "/data/faces/#{face.item_id}-#{face.face_id}-#{face.item_code}.jpg"
 
-                      <Link href="/items/#{face.item_id}">
-                        <img key={face.face_id} className="face-thumb" src={face_url} title="Unidentified person - click to view item"/>
+                      <Link key={face.face_id} href="/items/#{face.item_id}">
+                        <img className="face-thumb" src={face_url} title="Unidentified person - click to view item"/>
                       </Link>
                   }
                 </div>
