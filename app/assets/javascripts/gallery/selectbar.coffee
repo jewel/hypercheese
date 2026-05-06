@@ -44,6 +44,10 @@ component 'SelectBar', ({fixed}) ->
   restrictSelection = (e) ->
     Store.changeSelectionVisibility false
 
+  selectAllInSearch = (e) ->
+    e.preventDefault()
+    Store.selectAllInCurrentSearch()
+
   changeNewTags = (e) ->
     if e.target.value == '.'
       Store.addTagsToSelection Store.state.lastTags
@@ -143,6 +147,9 @@ component 'SelectBar', ({fixed}) ->
               <i className="fa fa-ellipsis-v"/>
             </button>
             <ul className="dropdown-menu dropdown-menu-end">
+              <li>
+                <a className="dropdown-item" href="javascript:" onClick={selectAllInSearch}><i className="fa fa-check-square"/> Select all in search</a>
+              </li>
               <li>
                 <a className="dropdown-item" title="Convert to JPEG and Download" href={convertLink}><i className="fa fa-flask"/> Download as JPEG</a>
               </li>
