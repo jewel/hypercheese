@@ -1,5 +1,5 @@
 class @SearchQuery
-  @optionList: 'not any only reverse untagged item path comment has_comments orientation type year month day source'.split ' '
+  @optionList: 'not any only reverse untagged item path comment has_comments orientation type year month day source near radius'.split ' '
   @keywords:
     any: true
     only: true
@@ -23,7 +23,7 @@ class @SearchQuery
     threshold: true
     in: true
     near: true
-    miles: true
+    radius: true
     duration: true
 
   @multiple:

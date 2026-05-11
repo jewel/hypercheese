@@ -103,6 +103,10 @@ component 'Home', ->
       </div>
       {' '}
       <div className="btn-group">
+        <Link className="btn btn-outline-secondary" href="/map">Map</Link>
+      </div>
+      {' '}
+      <div className="btn-group">
         <a className="btn btn-outline-secondary" href="/faces/">Faces</a>
       </div>
       {' '}

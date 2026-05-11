@@ -130,13 +130,17 @@ class Search
     end
 
     if @query[:near]
-      lat, lon = @query[:near].split /,/
-      n_miles = 1.0
-      if @query[:miles]
-        n_miles = @query[:miles].to_f
+      lat, lon = @query[:near].to_s.split /,/, 2
+      lat = lat.to_f
+      lon = lon.to_f
+
+      n_miles = if @query[:radius]
+        @query[:radius].to_f / 1609.344
+      else
+        1.0
       end
 
-      earth_radius_miles = 3960
+      n_miles = 0 if n_miles < 0
 
       given_coordinate = RGeo::Geographic.spherical_factory(srid: 4326).point(lon, lat)
 

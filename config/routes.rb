@@ -71,6 +71,7 @@ HyperCheese::Application.routes.draw do
   get 'tags/(*path)' => 'home#index'
   get 'locations' => 'home#index'
   get 'places/(*path)' => 'home#index'
+  get 'map' => 'home#index'
   get 'upload' => 'home#index'
 
   scope :files do

@@ -14,8 +14,8 @@ component 'PlaceMap', ({latitude, longitude, radius, onLocationChange, onRadiusC
   # Initialize map only once
   useEffect ->
     unless mapInstanceRef.current
-      defaultLat = latitude || 40.7706
-      defaultLng = longitude || -111.8919
+      defaultLat = if Number.isFinite(latitude) then latitude else 40.7706
+      defaultLng = if Number.isFinite(longitude) then longitude else -111.8919
 
       mapInstanceRef.current = L.map(mapRef.current, {
         scrollWheelZoom: true
@@ -43,13 +43,13 @@ component 'PlaceMap', ({latitude, longitude, radius, onLocationChange, onRadiusC
   useEffect ->
     return unless mapInstanceRef.current
 
-    if latitude && longitude
+    if Number.isFinite(latitude) && Number.isFinite(longitude)
       if markerRef.current
         markerRef.current.setLatLng([latitude, longitude])
       else
         markerRef.current = L.marker([latitude, longitude]).addTo(mapInstanceRef.current)
 
-      if radius && radius > 0
+      if Number.isFinite(radius) && radius > 0
         if circleRef.current
           circleRef.current.setLatLng([latitude, longitude])
           circleRef.current.setRadius(radius)

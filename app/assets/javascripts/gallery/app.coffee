@@ -45,6 +45,10 @@ parseUrl = ->
     return
       page: 'upload'
 
+  if parts[1] == 'map'
+    return
+      page: 'map'
+
   if parts[1] == 'search'
     str = decodeURI parts[2]
     Store.search str
@@ -196,6 +200,9 @@ component 'GalleryApp', withErrorBoundary ->
 
   if page == 'upload'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><Upload ref={uploaderRef}/></ErrorBoundary></div>
+
+  if page == 'map'
+    return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><MapPage/></ErrorBoundary></div>
 
   if page == 'tag'
     tag = Store.state.tagsById[tagId]

@@ -37,9 +37,14 @@ component 'Locations', ->
         <div className="d-flex justify-content-between align-items-center">
           <h1>Locations</h1>
           <Writer>
-            <Link href="/places/new" className="btn btn-primary">
-              <i className="fa fa-plus"/> Create Place
-            </Link>
+            <div className="btn-group">
+              <Link href="/map" className="btn btn-outline-secondary">
+                <i className="fa fa-map"/> Map
+              </Link>
+              <Link href="/places/new" className="btn btn-primary">
+                <i className="fa fa-plus"/> Create Place
+              </Link>
+            </div>
           </Writer>
         </div>
         {
