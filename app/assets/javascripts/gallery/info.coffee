@@ -64,8 +64,8 @@ component 'Info', ({item, isVisible, containerRef}) ->
         {
           fact('location-arrow',
             <React.Fragment>
-              <LeafletMap exif={details.exif}/>
-              <GPSCoord exif={details.exif}/>
+              <LeafletMap latitude={details.latitude} longitude={details.longitude}/>
+              <GPSCoord latitude={details.latitude} longitude={details.longitude}/>
               {
                 if details.locations?.length > 0
                   <React.Fragment>
