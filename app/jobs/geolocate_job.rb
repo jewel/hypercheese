@@ -1,5 +1,6 @@
 require_dependency 'r_tree'
 require 'csv'
+require 'json'
 
 class GeolocateJob < ApplicationJob
   @@rtree = nil
@@ -17,13 +18,13 @@ class GeolocateJob < ApplicationJob
     factory = RGeo::Geographic.simple_mercator_factory
 
     Item.transaction do
-      exif = item.exif
+      # EXIFR can read GPS from JPEG photos, but not from videos.
+      # For video files, use exiftool to read GPSLatitude/GPSLongitude.
+      coords = extract_coordinates item
+      return unless coords
 
-      # Load the photo and extract the GPS coordinates
-      return unless exif
-      return unless exif.gps
-      latitude = exif.gps.latitude
-      longitude = exif.gps.longitude
+      latitude = coords[:latitude]
+      longitude = coords[:longitude]
       item.latitude = latitude
       item.longitude = longitude
       item.save!
@@ -63,6 +64,40 @@ class GeolocateJob < ApplicationJob
       # Also assign places based on GPS coordinates
       item.assign_places!
     end
+  end
+
+  def extract_coordinates item
+    if item.video?
+      extract_coordinates_from_exiftool item.full_path
+    else
+      extract_coordinates_from_exif item
+    end
+  end
+
+  def extract_coordinates_from_exif item
+    exif = item.exif
+    return nil unless exif
+    return nil unless exif.gps
+
+    {
+      latitude: exif.gps.latitude,
+      longitude: exif.gps.longitude,
+    }
+  end
+
+  def extract_coordinates_from_exiftool path
+    data = `exiftool -n -j -GPSLatitude -GPSLongitude #{se path}`
+    raise "exiftool failed for #{path.inspect}" unless $? == 0
+
+    metadata = JSON.parse(data).first || {}
+    latitude = metadata['GPSLatitude']
+    longitude = metadata['GPSLongitude']
+    return nil if latitude.nil? || longitude.nil?
+
+    {
+      latitude: latitude.to_f,
+      longitude: longitude.to_f,
+    }
   end
 
   def load_geoindex
