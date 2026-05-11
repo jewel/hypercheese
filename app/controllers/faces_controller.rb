@@ -121,7 +121,7 @@ class FacesController < ApplicationController
         SELECT item_id FROM item_tags
         WHERE tag_id IN (SELECT id FROM tags WHERE label IN ('delete', 'Hidden'))
       )
-      WHERE tag_id = ?
+      AND tag_id = ?
       AND face_count IS NOT NULL
       AND item_id NOT IN (
         SELECT item_id
