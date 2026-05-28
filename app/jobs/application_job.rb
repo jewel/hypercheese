@@ -9,6 +9,7 @@ class ApplicationJob < ActiveJob::Base
 
   def run cmd
     puts "[job] " + cmd
+    cmd = "nice -n 19 ionice -c 2 -n 7 #{cmd}" if cmd.include?('ffmpeg')
     system( cmd ) or raise "Could not run #{cmd}"
     $? == 0 or raise "Failed command"
   end
