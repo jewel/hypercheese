@@ -285,6 +285,45 @@ class @Store
       else
         alert "Unpublished"
 
+  # Select every item in the current search (same query + search_key as the grid).
+  @selectAllInCurrentSearch: ->
+    return unless @state.tagsLoaded
+    unless @state.searchKey && @state.resultCount > 0
+      alert "Nothing to select yet — wait for results or open a search."
+      return
+
+    @clearSelection()
+
+    query = new SearchQuery @state.query
+    batchSize = 1000
+    total = @state.resultCount
+    offset = 0
+
+    run = =>
+      return @needsRedraw() if offset >= total
+
+      @jax
+        url: "/items"
+        data:
+          limit: Math.min(batchSize, total - offset)
+          offset: offset
+          query: query.as_json()
+          search_key: @state.searchKey
+        success: (res) =>
+          if !res.items?.length
+            @needsRedraw()
+            return
+          for item in res.items
+            @state.itemsById[item.id] = item
+            @selectItem item.id, true
+          offset += res.items.length
+          if offset < total
+            run()
+          else
+            @needsRedraw()
+
+    run()
+
   @shareSelection: ->
     ids = []
     for id of @state.selection
