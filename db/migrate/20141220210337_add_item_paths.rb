@@ -1,4 +1,4 @@
-class AddItemPaths < ActiveRecord::Migration
+class AddItemPaths < ActiveRecord::Migration[4.2]
   def change
     create_table :item_paths do |t|
       t.string :path

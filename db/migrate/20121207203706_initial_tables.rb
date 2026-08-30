@@ -1,4 +1,4 @@
-class InitialTables < ActiveRecord::Migration
+class InitialTables < ActiveRecord::Migration[4.2]
   def change
     create_table :items do |t|
       t.datetime :taken

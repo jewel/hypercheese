@@ -1,4 +1,4 @@
-class CreateShares < ActiveRecord::Migration
+class CreateShares < ActiveRecord::Migration[4.2]
   def change
     create_table :shares do |t|
       t.references :user
