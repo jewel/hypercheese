@@ -5,25 +5,7 @@ class ItemsController < ApplicationController
   respond_to :json
 
   def index
-    search_key = params[:search_key]
-    path = Rails.root.join('tmp/searches').join search_key if search_key
-
-    if search_key == '' || path && !path.exist?
-      query = params[:query] || {}
-      query[:current_user] = current_user
-      search = Search.new query
-      ids = search.ids
-      str = ids.pack 'V*'
-      search_key = Digest::MD5.hexdigest str
-      dir = Rails.root.join('tmp/searches')
-      Dir.mkdir dir unless dir.exist?
-      path = dir + search_key
-      temp = "#{path}.#$$.tmp"
-      File.binwrite temp, str
-      File.rename temp, path
-    end
-
-    raise "Invalid key" unless search_key =~ /\A[a-f0-9]{32}\Z/
+    search_key, path = search_results_file
 
     limit = (params[:limit] || 1000).to_i
     offset = (params[:offset] || 0).to_i
@@ -251,7 +233,57 @@ class ItemsController < ApplicationController
     end
   end
 
+  # Binary payload of every geotagged item in the search, in search order:
+  #   uint32 count, uint32 total, uint32 ids[count], float32 lats[count], float32 lons[count],
+  #   then the codes joined by newlines.
+  # All little-endian.
+  def map
+    _, path = search_results_file
+    ids = path.binread.unpack 'V*'
+
+    order = {}
+    ids.each_with_index { |id, i| order[id] = i }
+
+    rows = []
+    ids.each_slice 20_000 do |slice|
+      rows.concat Item.where(id: slice).where.not(latitude: nil).where.not(longitude: nil).pluck(:id, :latitude, :longitude, :code)
+    end
+    rows.sort_by! { order[_1[0]] }
+
+    out = [rows.size, ids.size].pack 'VV'
+    out << rows.map { _1[0] }.pack('V*')
+    out << rows.map { _1[1] }.pack('e*')
+    out << rows.map { _1[2] }.pack('e*')
+    out << rows.map { _1[3] }.join("\n").b
+
+    send_data out, type: 'application/octet-stream', disposition: 'inline'
+  end
+
   private
+
+  def search_results_file
+    search_key = params[:search_key]
+    path = Rails.root.join('tmp/searches').join search_key if search_key.present?
+
+    if search_key.blank? || !path.exist?
+      query = params[:query] || {}
+      query[:current_user] = current_user
+      search = Search.new query
+      ids = search.ids
+      str = ids.pack 'V*'
+      search_key = Digest::MD5.hexdigest str
+      dir = Rails.root.join('tmp/searches')
+      Dir.mkdir dir unless dir.exist?
+      path = dir + search_key
+      temp = "#{path}.#$$.tmp"
+      File.binwrite temp, str
+      File.rename temp, path
+    end
+
+    raise "Invalid key" unless search_key =~ /\A[a-f0-9]{32}\Z/
+
+    [search_key, path]
+  end
 
   def items_params
     params.permit items: []

@@ -91,6 +91,12 @@ component 'NavBar', ({showingResults, initialSearch}) ->
               <span className="badge bg-secondary">{Store.state.resultCount.toLocaleString()}</span>
           }
         </button>
+        {
+          if showingResults
+            <Link title="Map" className="btn btn-outline-secondary me-2" href={"/search/#{encodeURI Store.state.query}/map"}>
+              <i className="fa fa-map-marker fa-fw"/>
+            </Link>
+        }
         <div className="ms-auto d-flex gap-2">
           {
             if showingResults

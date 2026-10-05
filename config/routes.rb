@@ -21,6 +21,7 @@ HyperCheese::Application.routes.draw do
         post :remove_tag
         get :download
         get :convert
+        get :map
         post :shares
         post :visibility
       end

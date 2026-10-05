@@ -53,6 +53,11 @@ parseUrl = ->
     str = decodeURI parts[2]
     Store.search str
 
+    if parts[3] == 'map'
+      return
+        page: 'search-map'
+        search: str
+
     if parts[3]
       itemId = Math.round(parts[3])
       return
@@ -203,6 +208,10 @@ component 'GalleryApp', withErrorBoundary ->
 
   if page == 'map'
     return <div><NavBar initialSearch={search} showingResults={false} /><ErrorBoundary><MapPage/></ErrorBoundary></div>
+
+  if page == 'search-map'
+    document.documentElement.style.overflowY = 'hidden'
+    return <ErrorBoundary><SearchMap search={search}/></ErrorBoundary>
 
   if page == 'tag'
     tag = Store.state.tagsById[tagId]

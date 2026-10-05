@@ -1,0 +1,62 @@
+.supermap
+  :position fixed
+  :top 0
+  :left 0
+  :right 0
+  :bottom 0
+  :display flex
+  :flex-direction column
+  :background #fff
+
+.supermap-header
+  :flex 0 0 auto
+  :display flex
+  :align-items center
+  :gap 0.5rem
+  :padding 0.5rem
+  :border-bottom 1px solid #ccc
+
+.supermap-query
+  :overflow hidden
+  :text-overflow ellipsis
+  :white-space nowrap
+
+.supermap-body
+  :position relative
+  :flex 1 1 auto
+  :min-height 0
+
+.supermap-map
+  :position absolute
+  :top 0
+  :left 0
+  :right 0
+  :bottom 0
+
+.supermap-map.supermap-hovering
+  :cursor pointer
+
+.supermap-preview
+  :position absolute
+  :z-index 1001
+  :pointer-events none
+  :transform translate(-50%, calc(-100% - 12px))
+  :background #fff
+  :padding 4px
+  :border-radius 4px
+  :box-shadow 0 2px 8px rgba(0, 0, 0, 0.4)
+  :text-align center
+  :font-size 12px
+
+  img
+    :display block
+    :width 150px
+    :height 150px
+    :object-fit cover
+
+  &.below
+    :transform translate(-50%, 12px)
+
+  &.touch
+    :pointer-events auto
+    :cursor pointer
