@@ -234,9 +234,9 @@ class ItemsController < ApplicationController
   end
 
   # Binary payload of every geotagged item in the search, in search order:
-  #   uint32 count, uint32 total, uint32 ids[count], float32 lats[count], float32 lons[count],
+  #   uint32 count, uint32 total, float64 lats[count], float64 lons[count], uint32 ids[count],
   #   then the codes joined by newlines.
-  # All little-endian.
+  # All little-endian.  The float64 arrays come first to keep them 8-byte aligned.
   def map
     _, path = search_results_file
     ids = path.binread.unpack 'V*'
@@ -251,9 +251,9 @@ class ItemsController < ApplicationController
     rows.sort_by! { order[_1[0]] }
 
     out = [rows.size, ids.size].pack 'VV'
+    out << rows.map { _1[1] }.pack('E*')
+    out << rows.map { _1[2] }.pack('E*')
     out << rows.map { _1[0] }.pack('V*')
-    out << rows.map { _1[1] }.pack('e*')
-    out << rows.map { _1[2] }.pack('e*')
     out << rows.map { _1[3] }.join("\n").b
 
     send_data out, type: 'application/octet-stream', disposition: 'inline'

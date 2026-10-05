@@ -170,8 +170,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_25_053707) do
     t.string "code", null: false
     t.integer "face_count"
     t.float "aesthetics_score"
-    t.float "latitude"
-    t.float "longitude"
+    t.float "latitude", limit: 53
+    t.float "longitude", limit: 53
     t.float "duration"
     t.index ["created_at"], name: "index_items_on_created_at"
     t.index ["md5"], name: "index_items_on_md5", unique: true

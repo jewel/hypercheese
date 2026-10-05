@@ -33,10 +33,10 @@ loadMapData = (search) ->
   buf = await res.arrayBuffer()
 
   [n, total] = new Uint32Array buf, 0, 2
-  ids = new Uint32Array buf, 8, n
-  lats = new Float32Array buf, 8 + 4 * n, n
-  lons = new Float32Array buf, 8 + 8 * n, n
-  codes = if n > 0 then new TextDecoder().decode(new Uint8Array buf, 8 + 12 * n).split "\n" else []
+  lats = new Float64Array buf, 8, n
+  lons = new Float64Array buf, 8 + 8 * n, n
+  ids = new Uint32Array buf, 8 + 16 * n, n
+  codes = if n > 0 then new TextDecoder().decode(new Uint8Array buf, 8 + 20 * n).split "\n" else []
 
   # Normalized web mercator, 0..1 in both axes
   xs = new Float64Array n
