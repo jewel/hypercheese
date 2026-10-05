@@ -27,6 +27,7 @@ class GeolocateJob < ApplicationJob
       longitude = coords[:longitude]
       item.latitude = latitude
       item.longitude = longitude
+      item.gps_accuracy = coords[:accuracy]
       item.save!
 
       # Create a point object representing the location of the photo
@@ -82,11 +83,12 @@ class GeolocateJob < ApplicationJob
     {
       latitude: exif.gps.latitude,
       longitude: exif.gps.longitude,
+      accuracy: Array(exif.gps_h_positioning_error).first&.to_f,
     }
   end
 
   def extract_coordinates_from_exiftool path
-    data = `exiftool -n -j -GPSLatitude -GPSLongitude #{se path}`
+    data = `exiftool -n -j -GPSLatitude -GPSLongitude -GPSHPositioningError -LocationAccuracyHorizontal #{se path}`
     raise "exiftool failed for #{path.inspect}" unless $? == 0
 
     metadata = JSON.parse(data).first || {}
@@ -94,9 +96,12 @@ class GeolocateJob < ApplicationJob
     longitude = metadata['GPSLongitude']
     return nil if latitude.nil? || longitude.nil?
 
+    accuracy = metadata['GPSHPositioningError'] || metadata['LocationAccuracyHorizontal']
+
     {
       latitude: latitude.to_f,
       longitude: longitude.to_f,
+      accuracy: accuracy&.to_f,
     }
   end
 

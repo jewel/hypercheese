@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 # Re-read GPS coordinates from the source files for every geotagged item.
-# Only updates latitude/longitude; locations and places are left alone.
+# Only updates latitude/longitude/gps_accuracy; locations and places are left alone.
 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
@@ -14,7 +14,7 @@ updated = failed = 0
 Item.where(deleted: false).where.not(latitude: nil).find_each do |item|
   coords = job.extract_coordinates item
   next unless coords
-  item.update_columns latitude: coords[:latitude].to_f, longitude: coords[:longitude].to_f
+  item.update_columns latitude: coords[:latitude].to_f, longitude: coords[:longitude].to_f, gps_accuracy: coords[:accuracy]
   updated += 1
   puts "#{updated} updated" if updated % 1000 == 0
 rescue => e

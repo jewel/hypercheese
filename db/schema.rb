@@ -173,6 +173,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_25_053707) do
     t.float "latitude", limit: 53
     t.float "longitude", limit: 53
     t.float "duration"
+    t.float "gps_accuracy"
     t.index ["created_at"], name: "index_items_on_created_at"
     t.index ["md5"], name: "index_items_on_md5", unique: true
     t.index ["published"], name: "index_items_on_published"
